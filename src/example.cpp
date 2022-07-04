@@ -169,11 +169,19 @@ bool test_bench( void )
 	//----------------------------------------------------------------
 	//! @details algorithm:
 
+	//Create a root with a payload
 	User::Tree<int> cl_my_instance = User::Tree<int>( 99 );
 	std::cout << cl_my_instance.get_error() << "\n";
-
+	//Add two leaves to the root
     cl_my_instance.create_leaf( 33 );
     cl_my_instance.create_leaf( 117 );
+	//Add leaves to first leaf
+	cl_my_instance[0].create_leaf( 34 );
+	cl_my_instance[0].create_leaf( 35 );
+	cl_my_instance[0].create_leaf( 36 );
+	//Add leaves to second leaf
+	cl_my_instance[1].create_leaf( 118 );
+
 
 	cl_my_instance.print();
 

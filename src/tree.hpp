@@ -82,7 +82,8 @@ namespace User
 //!	@author     Orso Eric
 //! @version    2022-06-17
 //! @brief      Generic tree template implementation
-//! @copyright  BSD 3-Clause License Copyright (c) 2020, Orso Eric
+//! @copyright  BSD 3-Clause License Copyright (c) 2022, Orso Eric
+//! @TODO Method to access leaves
 //! @details
 //! \n A basic tree class that stores a template payload
 /************************************************************************************/
@@ -105,7 +106,6 @@ class Tree
 			static const bool CU1_EXTERNAL_CHECKS = true;
 			//Checks to be performed on input dependent on internal algorithms
 			static const bool CU1_INTERNAL_CHECKS = true;
-
         } Config;
 
         //! @brief Error codes of the class
@@ -115,6 +115,8 @@ class Tree
 			static constexpr const char *CPS8_OK = "OK";
 			//Generic error
 			static constexpr const char *CPS8_ERR = "ERR";
+			//Out Of Boundary
+			static constexpr const char *CPS8_ERR_OOB = "ERR:OOB";
         } Error_code;
 
         /*********************************************************************************************************************************************************
@@ -149,6 +151,7 @@ class Tree
         **********************************************************************************************************************************************************
         *********************************************************************************************************************************************************/
 
+        Tree<Payload> &operator []( int is32_index );
 
         /*********************************************************************************************************************************************************
         **********************************************************************************************************************************************************
@@ -261,6 +264,8 @@ class Tree
         **********************************************************************************************************************************************************
         *********************************************************************************************************************************************************/
 
+        //Dummy payload
+        static const Payload gccl_dummy;
         //! @brief Error code of the class
         const char *gps8_error_code;
 		//! @brief Payload stored inside a node
@@ -363,6 +368,49 @@ Tree<Payload>::~Tree( void )
     DRETURN();      //Trace Return
     return;         //OK
 }   //Destructor: Tree | void
+
+/*********************************************************************************************************************************************************
+**********************************************************************************************************************************************************
+**	PUBLIC OPERATORS
+**********************************************************************************************************************************************************
+*********************************************************************************************************************************************************/
+
+/***************************************************************************/
+//!	@brief Reference operator | operator [] | int
+/***************************************************************************/
+//!	@param is32_index | index to the leaves
+//! @return no return
+//!	@details
+//!	this = source | assignment operator.
+//!	take advantage of the std::vector assignment operator that is already implemented.
+//!	automagically fixes vector size and content.
+/***************************************************************************/
+
+template <class Payload>
+Tree<Payload> &Tree<Payload>::operator []( int is32_index )
+{
+	//Trace Enter
+	DENTER_ARG("Object: %p, Index: %d", (void *)this, is32_index );
+	//--------------------------------------------------------------------------
+    //  BODY
+    //--------------------------------------------------------------------------
+	//if: user asks for an element outside array range
+    if ((is32_index < 0) || (is32_index >= this->gclat_leaves.size()))
+    {
+		//Out Of Boundary
+		this->report_error(Error_code::CPS8_ERR_OOB);
+		DRETURN_ARG("ERR:OOB:");
+		//Return reference to dummy payload
+		//return this->gccl_dummy;
+    }
+
+    //--------------------------------------------------------------------------
+    //	RETURN
+    //--------------------------------------------------------------------------
+	//Trace Return from main
+	DRETURN();
+	return this->gclat_leaves[is32_index];
+}	//end method: operator & | int |
 
 /*********************************************************************************************************************************************************
 **********************************************************************************************************************************************************
