@@ -1,0 +1,26 @@
+# depslib dependency file v1.0
+1653289091 source:c:\data\project\project programming\project classes\2022-06-17 class tree template\src\debug.cpp
+	<cstdio>
+	"debug.h"
+
+1653289091 c:\data\project\project programming\project classes\2022-06-17 class tree template\src\debug.h
+	<cstdio>
+
+1655484849 source:c:\data\project\project programming\project classes\2022-06-17 class tree template\src\example.cpp
+	<cstdio>
+	<iostream>
+	"debug.h"
+	"tree.hpp"
+
+1655471817 c:\data\project\project programming\project classes\2022-06-17 class tree template\src\tree.h
+
+1655471816 source:c:\data\project\project programming\project classes\2022-06-17 class tree template\src\tree.cpp
+	<cstdio>
+	"debug.h"
+	<cstdio>
+	<iostream>
+	"tree.h"
+
+1656913874 c:\data\project\project programming\project classes\2022-06-17 class tree template\src\tree.hpp
+	<vector>
+

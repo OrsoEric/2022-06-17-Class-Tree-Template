@@ -1,0 +1,46 @@
+Start Debug!
+-->> "int main()" |
+	OrangeBot Projects
+	-->> "bool test_bench()" |
+		-->> "User::Tree<Payload>::Tree(Payload) [with Payload = int]" | This: 006cfecc
+			-->> "bool User::Tree<Payload>::init_class_vars() [with Payload = int]" |
+			<<-- "bool User::Tree<Payload>::init_class_vars() [with Payload = int]" |
+		<<-- "User::Tree<Payload>::Tree(Payload) [with Payload = int]" |
+		-->> "const char* User::Tree<Payload>::get_error() [with Payload = int]" |
+			-->> "bool User::Tree<Payload>::error_recovery() [with Payload = int]" |
+			<<-- "bool User::Tree<Payload>::error_recovery() [with Payload = int]" |
+		<<-- "const char* User::Tree<Payload>::get_error() [with Payload = int]" |
+		-->> "bool User::Tree<Payload>::create_leaf(Payload) [with Payload = int]" |
+			-->> "User::Tree<Payload>::Tree(Payload) [with Payload = int]" | This: 006cfe4c
+				-->> "bool User::Tree<Payload>::init_class_vars() [with Payload = int]" |
+				<<-- "bool User::Tree<Payload>::init_class_vars() [with Payload = int]" |
+			<<-- "User::Tree<Payload>::Tree(Payload) [with Payload = int]" |
+			-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 006cfe4c
+			<<-- "User::Tree<Payload>::~Tree() [with Payload = int]" |
+		<<-- "bool User::Tree<Payload>::create_leaf(Payload) [with Payload = int]" | Leaves: 1
+		-->> "bool User::Tree<Payload>::create_leaf(Payload) [with Payload = int]" |
+			-->> "User::Tree<Payload>::Tree(Payload) [with Payload = int]" | This: 006cfe4c
+				-->> "bool User::Tree<Payload>::init_class_vars() [with Payload = int]" |
+				<<-- "bool User::Tree<Payload>::init_class_vars() [with Payload = int]" |
+			<<-- "User::Tree<Payload>::Tree(Payload) [with Payload = int]" |
+			-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 007da970
+			<<-- "User::Tree<Payload>::~Tree() [with Payload = int]" |
+			-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 006cfe4c
+			<<-- "User::Tree<Payload>::~Tree() [with Payload = int]" |
+		<<-- "bool User::Tree<Payload>::create_leaf(Payload) [with Payload = int]" | Leaves: 2
+		-->> "bool User::Tree<Payload>::print(int) [with Payload = int]" |
+			-->> "bool User::Tree<Payload>::print(int) [with Payload = int]" |
+			<<-- "bool User::Tree<Payload>::print(int) [with Payload = int]" |
+			-->> "bool User::Tree<Payload>::print(int) [with Payload = int]" |
+			<<-- "bool User::Tree<Payload>::print(int) [with Payload = int]" |
+		<<-- "bool User::Tree<Payload>::print(int) [with Payload = int]" |
+	<<-- "bool test_bench()" |
+	-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 006cfecc
+	<<-- "User::Tree<Payload>::~Tree() [with Payload = int]" |
+	-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 007da990
+	<<-- "User::Tree<Payload>::~Tree() [with Payload = int]" |
+	-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 007da9a4
+	<<-- "User::Tree<Payload>::~Tree() [with Payload = int]" |
+<<-- "int main()" |
+
+Debug has Ended!
