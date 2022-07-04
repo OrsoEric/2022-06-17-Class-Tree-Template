@@ -399,9 +399,9 @@ Tree<Payload> &Tree<Payload>::operator []( int is32_index )
     {
 		//Out Of Boundary
 		this->report_error(Error_code::CPS8_ERR_OOB);
-		DRETURN_ARG("ERR:OOB:");
-		//Return reference to dummy payload
-		//return this->gccl_dummy;
+		//Error. Return reference to self
+		DRETURN_ARG("ERR:OOB | Index: %d | Size: %d", is32_index, this->gclat_leaves.size() );
+		return (*this);
     }
 
     //--------------------------------------------------------------------------
