@@ -163,6 +163,8 @@ class Tree
         bool create_leaf( Payload it_payload );
 		//Destroy the leaf of given index, recursively destroy all leaves of that leaf
         bool destroy_leaf( unsigned int is32_index );
+		//Swap the leaves of two different branches
+        //bool swap_leaves( void );
 
         /*********************************************************************************************************************************************************
         **********************************************************************************************************************************************************
