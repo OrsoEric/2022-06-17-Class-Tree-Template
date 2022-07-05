@@ -160,6 +160,8 @@ bool test_bench( void )
 	//	VARS
 	//----------------------------------------------------------------
 
+	bool u1_ret;
+
 	//----------------------------------------------------------------
 	//	INIT
 	//----------------------------------------------------------------
@@ -181,8 +183,13 @@ bool test_bench( void )
 	cl_my_instance[0].create_leaf( 36 );
 	//Add leaves to second leaf
 	cl_my_instance[1].create_leaf( 118 );
-
-
+	//Test Bracket OOB protection
+	u1_ret = cl_my_instance[2].create_leaf( 404 );
+	if (u1_ret == true)
+	{
+		std::cout << "create leaf failed with error: " << cl_my_instance.get_error() << "\n";
+	}
+	//Printout the Tree
 	cl_my_instance.print();
 
 	//----------------------------------------------------------------

@@ -179,6 +179,12 @@ class Tree
         **********************************************************************************************************************************************************
         *********************************************************************************************************************************************************/
 
+		//! @brief return true if class is in error. Errors needs to be acknoweldged by get_error to recover
+        bool is_error( void )
+        {
+			return (this->gps8_error_code != Error_code::CPS8_OK);	//true = ERR | false == OK
+        }
+
         /*********************************************************************************************************************************************************
         **********************************************************************************************************************************************************
         **  PUBLIC METHODS
@@ -191,8 +197,7 @@ class Tree
         bool print( int is32_depth );
         bool print( void )
         {
-			//Print everything from root down
-			return this->print( 0 );
+			return this->print( 0 ); //Print everything from root down
         }
 
         /*********************************************************************************************************************************************************
@@ -376,20 +381,18 @@ Tree<Payload>::~Tree( void )
 *********************************************************************************************************************************************************/
 
 /***************************************************************************/
-//!	@brief Reference operator | operator [] | int
+//!	@brief Bracket operator | operator [] | int
 /***************************************************************************/
 //!	@param is32_index | index to the leaves
-//! @return no return
+//! @return Tree & | reference to leaf of index | reference to self if fail
 //!	@details
-//!	this = source | assignment operator.
-//!	take advantage of the std::vector assignment operator that is already implemented.
-//!	automagically fixes vector size and content.
+//!	Bracket Operator access a leaf of a given index
+//!	If said leaf doesn't exist, class reports an OOB error
 /***************************************************************************/
 
 template <class Payload>
 Tree<Payload> &Tree<Payload>::operator []( int is32_index )
 {
-	//Trace Enter
 	DENTER_ARG("Object: %p, Index: %d", (void *)this, is32_index );
 	//--------------------------------------------------------------------------
     //  BODY
@@ -407,10 +410,9 @@ Tree<Payload> &Tree<Payload>::operator []( int is32_index )
     //--------------------------------------------------------------------------
     //	RETURN
     //--------------------------------------------------------------------------
-	//Trace Return from main
 	DRETURN();
 	return this->gclat_leaves[is32_index];
-}	//end method: operator & | int |
+}	//end method: Bracket operator | operator [] | int
 
 /*********************************************************************************************************************************************************
 **********************************************************************************************************************************************************
@@ -432,9 +434,20 @@ bool Tree<Payload>::create_leaf( Payload it_payload )
 {
     DENTER(); //Trace Enter
     //--------------------------------------------------------------------------
+    //	CHECK
+    //--------------------------------------------------------------------------
+	//if class is in error, leaf cannot be created
+    if (this->gps8_error_code != Error_code::CPS8_OK)
+    {
+		DRETURN_ARG("ERR: Tree is in error: %s | Cannot create leaf", this->gps8_error_code ); //Trace Return
+		return true;
+    }
+
+    //--------------------------------------------------------------------------
     //	BODY
     //--------------------------------------------------------------------------
 
+    //! @TODO a local Tree is created and destroyed just to allow vector to add an element. Rework to be more efficient.
     //Ask vector to allocate a new leaf with the given payload
     this->gclat_leaves.push_back( Tree( it_payload ) );
 
