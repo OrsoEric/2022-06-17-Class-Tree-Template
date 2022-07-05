@@ -151,7 +151,7 @@ class Tree
         **********************************************************************************************************************************************************
         *********************************************************************************************************************************************************/
 
-        Tree<Payload> &operator []( int is32_index );
+        Tree<Payload> &operator []( unsigned int is32_index );
 
         /*********************************************************************************************************************************************************
         **********************************************************************************************************************************************************
@@ -162,7 +162,7 @@ class Tree
 		//Create a new leaf with a given payload
         bool create_leaf( Payload it_payload );
 		//Destroy the leaf of given index, recursively destroy all leaves of that leaf
-        //bool destroy_leaf( int is32_leaf_index );
+        bool destroy_leaf( unsigned int is32_index );
 
         /*********************************************************************************************************************************************************
         **********************************************************************************************************************************************************
@@ -194,7 +194,7 @@ class Tree
 		//Tree public method
         bool my_public_method( void );
 		//Print the content of the tree in tree form
-        bool print( int is32_depth );
+        bool print( unsigned int iu32_depth );
         bool print( void )
         {
 			return this->print( 0 ); //Print everything from root down
@@ -381,9 +381,9 @@ Tree<Payload>::~Tree( void )
 *********************************************************************************************************************************************************/
 
 /***************************************************************************/
-//!	@brief Bracket operator | operator [] | int
+//!	@brief Bracket operator | operator [] | unsigned int
 /***************************************************************************/
-//!	@param is32_index | index to the leaves
+//!	@param iu32_index | index to the leaves
 //! @return Tree & | reference to leaf of index | reference to self if fail
 //!	@details
 //!	Bracket Operator access a leaf of a given index
@@ -391,19 +391,19 @@ Tree<Payload>::~Tree( void )
 /***************************************************************************/
 
 template <class Payload>
-Tree<Payload> &Tree<Payload>::operator []( int is32_index )
+Tree<Payload> &Tree<Payload>::operator []( unsigned int iu32_index )
 {
-	DENTER_ARG("Object: %p, Index: %d", (void *)this, is32_index );
+	DENTER_ARG("Object: %p, Index: %d", (void *)this, iu32_index );
 	//--------------------------------------------------------------------------
     //  BODY
     //--------------------------------------------------------------------------
 	//if: user asks for an element outside array range
-    if ((is32_index < 0) || (is32_index >= this->gclat_leaves.size()))
+    if (iu32_index >= this->gclat_leaves.size())
     {
 		//Out Of Boundary
 		this->report_error(Error_code::CPS8_ERR_OOB);
 		//Error. Return reference to self
-		DRETURN_ARG("ERR:OOB | Index: %d | Size: %d", is32_index, this->gclat_leaves.size() );
+		DRETURN_ARG("ERR:OOB | Index: %d | Size: %d", iu32_index, this->gclat_leaves.size() );
 		return (*this);
     }
 
@@ -411,7 +411,7 @@ Tree<Payload> &Tree<Payload>::operator []( int is32_index )
     //	RETURN
     //--------------------------------------------------------------------------
 	DRETURN();
-	return this->gclat_leaves[is32_index];
+	return this->gclat_leaves[iu32_index];
 }	//end method: Bracket operator | operator [] | int
 
 /*********************************************************************************************************************************************************
@@ -421,12 +421,13 @@ Tree<Payload> &Tree<Payload>::operator []( int is32_index )
 *********************************************************************************************************************************************************/
 
 /***************************************************************************/
-//! @brief Public method: my_public_method | void
+//! @brief Public Setter: create_leaf | Payload
 /***************************************************************************/
-// @param
+//! @param it_payload | payload to be attached to this leaf
 //! @return bool | false = OK | true = FAIL |
 //! @details
 //! \n Create a new leaf with a given payload
+//! \n std::vector takes care of memory allocation and destruction
 /***************************************************************************/
 
 template <class Payload>
@@ -456,7 +457,55 @@ bool Tree<Payload>::create_leaf( Payload it_payload )
     //--------------------------------------------------------------------------
     DRETURN_ARG("Leaves: %d", this->gclat_leaves.size() ); //Trace Return
     return false;	//OK
-}   //Public method: my_public_method | void
+}   //Public Setter: create_leaf | Payload
+
+/***************************************************************************/
+//! @brief Public Setter: destroy_leaf | unsigned int
+/***************************************************************************/
+//! @param iu32_index | index of the leaf
+//! @return bool | false = OK | true = FAIL |
+//! @details
+//! \n Destroy the leaf of given index, recursively destroy all leaves of that leaf
+/***************************************************************************/
+
+template <class Payload>
+bool Tree<Payload>::destroy_leaf( unsigned int iu32_index )
+{
+    DENTER(); //Trace Enter
+    //--------------------------------------------------------------------------
+    //	CHECK
+    //--------------------------------------------------------------------------
+	//if class is in error, leaf cannot be created
+    if (this->gps8_error_code != Error_code::CPS8_OK)
+    {
+		DRETURN_ARG("ERR: Tree is in error: %s | Cannot destroy leaf", this->gps8_error_code ); //Trace Return
+		return true;
+    }
+	//if: user asks for an element outside array range
+    if (iu32_index >= this->gclat_leaves.size())
+    {
+		//Out Of Boundary
+		this->report_error(Error_code::CPS8_ERR_OOB);
+		//Error
+		DRETURN_ARG("ERR:OOB | Index: %d | Size: %d", iu32_index, this->gclat_leaves.size() );
+		return true;
+    }
+
+    //--------------------------------------------------------------------------
+    //	BODY
+    //--------------------------------------------------------------------------
+
+    //! @TODO a local Tree is created and destroyed just to allow vector to add an element. Rework to be more efficient.
+
+    //Ask vector to allocate a new leaf with the given payload
+    this->gclat_leaves.erase( this->gclat_leaves.begin() +iu32_index );
+
+    //--------------------------------------------------------------------------
+    //	RETURN
+    //--------------------------------------------------------------------------
+    DRETURN_ARG("Leaves: %d", this->gclat_leaves.size() ); //Trace Return
+    return false;	//OK
+}   //Public Setter: destroy_leaf | unsigned int
 
 /*********************************************************************************************************************************************************
 **********************************************************************************************************************************************************
@@ -541,7 +590,7 @@ bool Tree<Payload>::my_public_method( void )
 /***************************************************************************/
 
 template <class Payload>
-bool Tree<Payload>::print( int is32_depth )
+bool Tree<Payload>::print( unsigned int iu32_depth )
 {
     DENTER(); //Trace Enter
     //--------------------------------------------------------------------------
@@ -553,9 +602,9 @@ bool Tree<Payload>::print( int is32_depth )
     //--------------------------------------------------------------------------
 
 	//Print a spacer for each level of descent into the tree
-    for (int i = 0;i < is32_depth;i++)
+    for (unsigned int i = 0;i < iu32_depth;i++)
 	{
-		if ( i != is32_depth-1 )
+		if ( i != iu32_depth-1 )
 		{
 			std::cout << "    ";
 		}
@@ -566,9 +615,9 @@ bool Tree<Payload>::print( int is32_depth )
 	}
 	std::cout << this->gt_payload << "\n";
 	//Recursively explore the tree at the next level of depth for each leaf
-	for (int i = 0;i < this->gclat_leaves.size();i++)
+	for (unsigned int i = 0;i < this->gclat_leaves.size();i++)
 	{
-		this->gclat_leaves.at(i).print( is32_depth+1 );
+		this->gclat_leaves.at(i).print( iu32_depth+1 );
 	}
 
     //--------------------------------------------------------------------------
@@ -665,16 +714,22 @@ bool Tree<Payload>::report_error( const char *ips8_error_code )
 template <class Payload>
 bool Tree<Payload>::error_recovery( void )
 {
-    DENTER(); //Trace Enter
+    DENTER_ARG("ERR: %s", this->gps8_error_code); //Trace Enter
     //--------------------------------------------------------------------------
     //	BODY
     //--------------------------------------------------------------------------
+	//If class is not OK
+    if (this->gps8_error_code != Error_code::CPS8_OK)
+    {
+		//Class is OK
+		this->gps8_error_code = Error_code::CPS8_OK;
+    }
 
     //--------------------------------------------------------------------------
     //	RETURN
     //--------------------------------------------------------------------------
-    DRETURN();      //Trace Return
-    return true;    //FAIL
+    DRETURN_ARG("Recovered: %s", this->gps8_error_code);      //Trace Return
+    return false;    //FAIL
 }   //Private Method: error_recovery | void |
 
 /***************************************************************************/

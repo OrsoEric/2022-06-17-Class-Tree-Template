@@ -191,6 +191,10 @@ bool test_bench( void )
 	}
 	//Printout the Tree
 	cl_my_instance.print();
+	//Delete a leaf and all it's sub leaves
+    cl_my_instance.destroy_leaf( 0 );
+    cl_my_instance.print();
+
 
 	//----------------------------------------------------------------
 	//	RETURN
