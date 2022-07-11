@@ -160,7 +160,10 @@ bool test_bench( void )
 	//	VARS
 	//----------------------------------------------------------------
 
+	//Temp return
 	bool u1_ret;
+	//Temp index
+	unsigned int u32_index = 0;
 
 	//----------------------------------------------------------------
 	//	INIT
@@ -174,6 +177,9 @@ bool test_bench( void )
 	//Create a root with a payload
 	User::Tree<int> cl_my_instance = User::Tree<int>( 99 );
 	std::cout << cl_my_instance.get_error() << "\n";
+
+	std::cout << "----------------------------------------\n";
+	std::cout << "Add some leaves and some leaves to those leaves\n";
 	//Add two leaves to the root
     cl_my_instance.create_leaf( 33 );
     cl_my_instance.create_leaf( 117 );
@@ -191,10 +197,28 @@ bool test_bench( void )
 	}
 	//Printout the Tree
 	cl_my_instance.print();
+
+	std::cout << "----------------------------------------\n";
+	std::cout << "Destroy a branch with leaves\n";
 	//Delete a leaf and all it's sub leaves
     cl_my_instance.destroy_leaf( 0 );
     cl_my_instance.print();
 
+    std::cout << "----------------------------------------\n";
+	std::cout << "Create leaves using the branch index from creation\n";
+    //Create a new leaf, and attach three leaves to it, knows the branch index
+    u1_ret = cl_my_instance.create_leaf( 33, u32_index );
+    if (u1_ret == false)
+    {
+		cl_my_instance[u32_index].create_leaf( 37 );
+		cl_my_instance[u32_index].create_leaf( 38 );
+		cl_my_instance[u32_index].create_leaf( 39 );
+	}
+	else
+	{
+		std::cout << "could not attach create leaf...\n";
+	}
+	cl_my_instance.print();
 
 	//----------------------------------------------------------------
 	//	RETURN

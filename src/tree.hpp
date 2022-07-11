@@ -117,6 +117,8 @@ class Tree
 			static constexpr const char *CPS8_ERR = "ERR";
 			//Out Of Boundary
 			static constexpr const char *CPS8_ERR_OOB = "ERR:OOB";
+			//std::vector failed to do something
+			static constexpr const char *CPS8_ERR_STDVECTOR = "ERR:std::vector";
         } Error_code;
 
         /*********************************************************************************************************************************************************
@@ -161,12 +163,17 @@ class Tree
         *********************************************************************************************************************************************************/
 
 		//Create a new leaf with a given payload
-        bool create_leaf( Payload it_payload );
+        bool create_leaf( Payload it_payload, unsigned int iru32_index );
+        bool create_leaf( Payload it_payload )
+        {
+			unsigned int u32_dummy = 0;
+			return this->create_leaf( it_payload, u32_dummy );
+        }
 		//Destroy the leaf of given index, recursively destroy all leaves of that leaf
         bool destroy_leaf( unsigned int iu32_index );
-		//Swap the leaves of two different branches
+		//Swap the leaves of two different branches. Does not require branch pointer
         bool swap_leaves( unsigned int iu32_own_index, Tree<Payload> &ircl_branch, unsigned int iu32_branch_index );
-        //This swap requires knowing who the branch is
+        //Swap two leaves. Requires branch pointer
         //bool swap_leaves( Tree<Payload> &ircl_branch );
 
         /*********************************************************************************************************************************************************
@@ -429,6 +436,7 @@ Tree<Payload> &Tree<Payload>::operator []( unsigned int iu32_index )
 //! @brief Public Setter: create_leaf | Payload
 /***************************************************************************/
 //! @param it_payload | payload to be attached to this leaf
+//! @param iru32_index | return index of newly created leaf. can be accessed with safe [] operator
 //! @return bool | false = OK | true = FAIL |
 //! @details
 //! \n Create a new leaf with a given payload
@@ -436,7 +444,7 @@ Tree<Payload> &Tree<Payload>::operator []( unsigned int iu32_index )
 /***************************************************************************/
 
 template <class Payload>
-bool Tree<Payload>::create_leaf( Payload it_payload )
+bool Tree<Payload>::create_leaf( Payload it_payload, unsigned int iru32_index )
 {
     DENTER(); //Trace Enter
     //--------------------------------------------------------------------------
@@ -453,16 +461,29 @@ bool Tree<Payload>::create_leaf( Payload it_payload )
     //	BODY
     //--------------------------------------------------------------------------
 
+    //Get current number of leaves
+    unsigned int u32_num_leaves = this->gclat_leaves.size();
     //! @TODO a local Tree is created and destroyed just to allow vector to add an element. Rework to be more efficient.
     //Ask vector to allocate a new leaf with the given payload
     this->gclat_leaves.push_back( Tree( it_payload ) );
+    //if: std::vector has not increased in size by one
+    if ((Config::CU1_INTERNAL_CHECKS == true) && ((u32_num_leaves+1) != this->gclat_leaves.size()) )
+    {
+		this->report_error(Error_code::CPS8_ERR_STDVECTOR );
+		DRETURN_ARG("ERR:std::vector | Leaves: %d -> %d", u32_num_leaves, this->gclat_leaves.size() ); //Trace Return
+		return true;	//FAIL
+    }
+	//Return to caller the index of the added leaf
+	iru32_index = u32_num_leaves;
 
     //--------------------------------------------------------------------------
     //	RETURN
     //--------------------------------------------------------------------------
-    DRETURN_ARG("Leaves: %d", this->gclat_leaves.size() ); //Trace Return
+    DRETURN_ARG("Leaves: %d", u32_num_leaves+1 ); //Trace Return
     return false;	//OK
 }   //Public Setter: create_leaf | Payload
+
+
 
 /***************************************************************************/
 //! @brief Public Setter: destroy_leaf | unsigned int
