@@ -152,7 +152,7 @@ class Tree
         *********************************************************************************************************************************************************/
 
         //Operator Bracket. Access leaf of a given index
-        Tree<Payload> &operator []( unsigned int is32_index );
+        Tree<Payload> &operator []( unsigned int iu32_index );
 
         /*********************************************************************************************************************************************************
         **********************************************************************************************************************************************************
@@ -163,9 +163,11 @@ class Tree
 		//Create a new leaf with a given payload
         bool create_leaf( Payload it_payload );
 		//Destroy the leaf of given index, recursively destroy all leaves of that leaf
-        bool destroy_leaf( unsigned int is32_index );
+        bool destroy_leaf( unsigned int iu32_index );
 		//Swap the leaves of two different branches
-        bool swap_leaves( void );
+        bool swap_leaves( unsigned int iu32_own_index, Tree<Payload> &ircl_branch, unsigned int iu32_branch_index );
+        //This swap requires knowing who the branch is
+        //bool swap_leaves( Tree<Payload> &ircl_branch );
 
         /*********************************************************************************************************************************************************
         **********************************************************************************************************************************************************
@@ -507,6 +509,50 @@ bool Tree<Payload>::destroy_leaf( unsigned int iu32_index )
     //	RETURN
     //--------------------------------------------------------------------------
     DRETURN_ARG("Leaves: %d", this->gclat_leaves.size() ); //Trace Return
+    return false;	//OK
+}   //Public Setter: destroy_leaf | unsigned int
+
+/***************************************************************************/
+//! @brief Public Setter: destroy_leaf | unsigned int
+/***************************************************************************/
+//! @param iu32_index | index of the leaf
+//! @return bool | false = OK | true = FAIL |
+//! @details
+//! \n Swap the leaves of two different branches
+/***************************************************************************/
+
+template <class Payload>
+bool Tree<Payload>::swap_leaves( unsigned int iu32_own_index, Tree<Payload> &ircl_branch, unsigned int iu32_branch_index )
+{
+    DENTER_ARG("(%p,%d)<->(%p,%d)", this, iu32_own_index, &ircl_branch, iu32_branch_index); //Trace Enter
+    //--------------------------------------------------------------------------
+    //	CHECK
+    //--------------------------------------------------------------------------
+	//if class is in error
+    if (this->gps8_error_code != Error_code::CPS8_OK)
+    {
+		DRETURN_ARG("ERR: Tree is in error: %s | Cannot destroy leaf", this->gps8_error_code ); //Trace Return
+		return true;
+    }
+	//if: user asks for an element outside array range
+    if (iu32_own_index >= this->gclat_leaves.size())
+    {
+		//Out Of Boundary
+		this->report_error(Error_code::CPS8_ERR_OOB);
+		//Error
+		DRETURN_ARG("ERR:OOB | Index: %d | Size: %d", iu32_own_index, this->gclat_leaves.size() );
+		return true;
+    }
+
+    //--------------------------------------------------------------------------
+    //	BODY
+    //--------------------------------------------------------------------------
+
+
+    //--------------------------------------------------------------------------
+    //	RETURN
+    //--------------------------------------------------------------------------
+    DRETURN(); //Trace Return
     return false;	//OK
 }   //Public Setter: destroy_leaf | unsigned int
 
