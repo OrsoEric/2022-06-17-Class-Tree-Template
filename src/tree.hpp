@@ -163,7 +163,7 @@ class Tree
         *********************************************************************************************************************************************************/
 
 		//Create a new leaf with a given payload
-        bool create_leaf( Payload it_payload, unsigned int iru32_index );
+        bool create_leaf( Payload it_payload, unsigned int &oru32_index );
         bool create_leaf( Payload it_payload )
         {
 			unsigned int u32_dummy = 0;
@@ -436,7 +436,7 @@ Tree<Payload> &Tree<Payload>::operator []( unsigned int iu32_index )
 //! @brief Public Setter: create_leaf | Payload
 /***************************************************************************/
 //! @param it_payload | payload to be attached to this leaf
-//! @param iru32_index | return index of newly created leaf. can be accessed with safe [] operator
+//! @param oru32_index | return index of newly created leaf. can be accessed with safe [] operator
 //! @return bool | false = OK | true = FAIL |
 //! @details
 //! \n Create a new leaf with a given payload
@@ -444,7 +444,7 @@ Tree<Payload> &Tree<Payload>::operator []( unsigned int iu32_index )
 /***************************************************************************/
 
 template <class Payload>
-bool Tree<Payload>::create_leaf( Payload it_payload, unsigned int iru32_index )
+bool Tree<Payload>::create_leaf( Payload it_payload, unsigned int &oru32_index )
 {
     DENTER(); //Trace Enter
     //--------------------------------------------------------------------------
@@ -474,7 +474,7 @@ bool Tree<Payload>::create_leaf( Payload it_payload, unsigned int iru32_index )
 		return true;	//FAIL
     }
 	//Return to caller the index of the added leaf
-	iru32_index = u32_num_leaves;
+	oru32_index = u32_num_leaves;
 
     //--------------------------------------------------------------------------
     //	RETURN

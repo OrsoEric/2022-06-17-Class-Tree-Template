@@ -208,6 +208,7 @@ bool test_bench( void )
 	std::cout << "Create leaves using the branch index from creation\n";
     //Create a new leaf, and attach three leaves to it, knows the branch index
     u1_ret = cl_my_instance.create_leaf( 33, u32_index );
+    std::cout << "Index: " << u32_index << "\n";
     if (u1_ret == false)
     {
 		cl_my_instance[u32_index].create_leaf( 37 );
@@ -216,7 +217,7 @@ bool test_bench( void )
 	}
 	else
 	{
-		std::cout << "could not attach create leaf...\n";
+		std::cout << "could not attach create leaf... | index: " << u32_index << "\n";
 	}
 	cl_my_instance.print();
 
