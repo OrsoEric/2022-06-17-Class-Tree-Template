@@ -23,7 +23,7 @@ Start Debug!
 				-->> "bool User::Tree<Payload>::init_class_vars() [with Payload = int]" |
 				<<-- "bool User::Tree<Payload>::init_class_vars() [with Payload = int]" |
 			<<-- "User::Tree<Payload>::Tree(Payload) [with Payload = int]" |
-			-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 007aa970
+			-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 0079a9c0
 			<<-- "User::Tree<Payload>::~Tree() [with Payload = int]" |
 			-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 006cfe2c
 			<<-- "User::Tree<Payload>::~Tree() [with Payload = int]" |
@@ -45,7 +45,7 @@ Start Debug!
 				-->> "bool User::Tree<Payload>::init_class_vars() [with Payload = int]" |
 				<<-- "bool User::Tree<Payload>::init_class_vars() [with Payload = int]" |
 			<<-- "User::Tree<Payload>::Tree(Payload) [with Payload = int]" |
-			-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 007aa970
+			-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 0079a9c0
 			<<-- "User::Tree<Payload>::~Tree() [with Payload = int]" |
 			-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 006cfe2c
 			<<-- "User::Tree<Payload>::~Tree() [with Payload = int]" |
@@ -57,9 +57,9 @@ Start Debug!
 				-->> "bool User::Tree<Payload>::init_class_vars() [with Payload = int]" |
 				<<-- "bool User::Tree<Payload>::init_class_vars() [with Payload = int]" |
 			<<-- "User::Tree<Payload>::Tree(Payload) [with Payload = int]" |
-			-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 007aa9c0
+			-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 0079aa10
 			<<-- "User::Tree<Payload>::~Tree() [with Payload = int]" |
-			-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 007aa9d4
+			-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 0079aa24
 			<<-- "User::Tree<Payload>::~Tree() [with Payload = int]" |
 			-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 006cfe2c
 			<<-- "User::Tree<Payload>::~Tree() [with Payload = int]" |
@@ -75,7 +75,7 @@ Start Debug!
 			<<-- "User::Tree<Payload>::~Tree() [with Payload = int]" |
 		<<-- "bool User::Tree<Payload>::create_leaf(Payload, unsigned int&) [with Payload = int]" | Leaves: 1
 		-->> "User::Tree<Payload>& User::Tree<Payload>::operator[](unsigned int) [with Payload = int]" | Object: 006cfecc, Index: 2
-			-->> "bool User::Tree<Payload>::report_error(const char*) [with Payload = int]" | ERR: 004bd12d
+			-->> "bool User::Tree<Payload>::report_error(const char*) [with Payload = int]" | ERR: 004bd15c
 			<<-- "bool User::Tree<Payload>::report_error(const char*) [with Payload = int]" |
 		<<-- "User::Tree<Payload>& User::Tree<Payload>::operator[](unsigned int) [with Payload = int]" | ERR:OOB | Index: 2 | Size: 2
 		-->> "bool User::Tree<Payload>::create_leaf(Payload, unsigned int&) [with Payload = int]" |
@@ -99,13 +99,13 @@ Start Debug!
 			<<-- "bool User::Tree<Payload>::print(unsigned int) [with Payload = int]" |
 		<<-- "bool User::Tree<Payload>::print(unsigned int) [with Payload = int]" |
 		-->> "bool User::Tree<Payload>::destroy_leaf(unsigned int) [with Payload = int]" |
-			-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 007aaa04
+			-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 0079aa54
 			<<-- "User::Tree<Payload>::~Tree() [with Payload = int]" |
-			-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 007aaa18
+			-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 0079aa68
 			<<-- "User::Tree<Payload>::~Tree() [with Payload = int]" |
-			-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 007aa9a4
+			-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 0079a9f4
 			<<-- "User::Tree<Payload>::~Tree() [with Payload = int]" |
-			-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 007aa970
+			-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 0079a9c0
 			<<-- "User::Tree<Payload>::~Tree() [with Payload = int]" |
 		<<-- "bool User::Tree<Payload>::destroy_leaf(unsigned int) [with Payload = int]" | Leaves: 1
 		-->> "bool User::Tree<Payload>::print(unsigned int) [with Payload = int]" |
@@ -139,7 +139,7 @@ Start Debug!
 				-->> "bool User::Tree<Payload>::init_class_vars() [with Payload = int]" |
 				<<-- "bool User::Tree<Payload>::init_class_vars() [with Payload = int]" |
 			<<-- "User::Tree<Payload>::Tree(Payload) [with Payload = int]" |
-			-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 007aa970
+			-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 0079a9c0
 			<<-- "User::Tree<Payload>::~Tree() [with Payload = int]" |
 			-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 006cfe2c
 			<<-- "User::Tree<Payload>::~Tree() [with Payload = int]" |
@@ -151,9 +151,9 @@ Start Debug!
 				-->> "bool User::Tree<Payload>::init_class_vars() [with Payload = int]" |
 				<<-- "bool User::Tree<Payload>::init_class_vars() [with Payload = int]" |
 			<<-- "User::Tree<Payload>::Tree(Payload) [with Payload = int]" |
-			-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 007aa9c0
+			-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 0079aa10
 			<<-- "User::Tree<Payload>::~Tree() [with Payload = int]" |
-			-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 007aa9d4
+			-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 0079aa24
 			<<-- "User::Tree<Payload>::~Tree() [with Payload = int]" |
 			-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 006cfe2c
 			<<-- "User::Tree<Payload>::~Tree() [with Payload = int]" |
@@ -172,20 +172,24 @@ Start Debug!
 				<<-- "bool User::Tree<Payload>::print(unsigned int) [with Payload = int]" |
 			<<-- "bool User::Tree<Payload>::print(unsigned int) [with Payload = int]" |
 		<<-- "bool User::Tree<Payload>::print(unsigned int) [with Payload = int]" |
+		-->> "User::Tree<Payload>& User::Tree<Payload>::operator[](unsigned int) [with Payload = int]" | Object: 006cfecc, Index: 0
+		<<-- "User::Tree<Payload>& User::Tree<Payload>::operator[](unsigned int) [with Payload = int]" |
+		-->> "bool User::Tree<Payload>::swap_leaves(unsigned int, User::Tree<Payload>&, unsigned int) [with Payload = int]" | (006cfecc,1)<->(0079a9e0,0)
+		<<-- "bool User::Tree<Payload>::swap_leaves(unsigned int, User::Tree<Payload>&, unsigned int) [with Payload = int]" |
 	<<-- "bool test_bench()" |
 	-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 006cfecc
 	<<-- "User::Tree<Payload>::~Tree() [with Payload = int]" |
-	-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 007aa990
+	-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 0079a9e0
 	<<-- "User::Tree<Payload>::~Tree() [with Payload = int]" |
-	-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 007aa9f0
+	-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 0079aa40
 	<<-- "User::Tree<Payload>::~Tree() [with Payload = int]" |
-	-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 007aa9a4
+	-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 0079a9f4
 	<<-- "User::Tree<Payload>::~Tree() [with Payload = int]" |
-	-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 007abb38
+	-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 0079bb88
 	<<-- "User::Tree<Payload>::~Tree() [with Payload = int]" |
-	-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 007abb4c
+	-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 0079bb9c
 	<<-- "User::Tree<Payload>::~Tree() [with Payload = int]" |
-	-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 007abb60
+	-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 0079bbb0
 	<<-- "User::Tree<Payload>::~Tree() [with Payload = int]" |
 <<-- "int main()" |
 

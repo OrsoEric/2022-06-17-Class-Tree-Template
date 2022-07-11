@@ -83,9 +83,11 @@ namespace User
 //! @version    2022-06-17
 //! @brief      Generic tree template implementation
 //! @copyright  BSD 3-Clause License Copyright (c) 2022, Orso Eric
-//! @TODO Method to access leaves
+//! @bug Avoid push_back | add a move constructor C(C&& c) C(const &c) | use emplace-back | construct/destruct https://stackoverflow.com/questions/21798396/destructor-is-called-when-i-push-back-to-the-vector
+//! @bug swap can be done with std::swap std::vector::swap, the second is the fastest for vectors | https://stackoverflow.com/questions/41090557/c-swap-two-elements-of-two-different-vectors
 //! @details
 //! \n A basic tree class that stores a template payload
+//! \n
 /************************************************************************************/
 
 template <class Payload>
@@ -135,8 +137,10 @@ class Tree
 
         //Empty Constructor
         Tree( void );
-        //Initialized constructor to Payload
+        //Initialized COPY constructor to Payload
         Tree( Payload it_payload );
+        //Initialized MOVE constructor
+        //Tree( Tree&& ircl_source );
 
         /*********************************************************************************************************************************************************
         **********************************************************************************************************************************************************
@@ -466,6 +470,7 @@ bool Tree<Payload>::create_leaf( Payload it_payload, unsigned int &oru32_index )
     //! @TODO a local Tree is created and destroyed just to allow vector to add an element. Rework to be more efficient.
     //Ask vector to allocate a new leaf with the given payload
     this->gclat_leaves.push_back( Tree( it_payload ) );
+    //this->gclat_leaves.emplace_back( Tree( it_payload ) );
     //if: std::vector has not increased in size by one
     if ((Config::CU1_INTERNAL_CHECKS == true) && ((u32_num_leaves+1) != this->gclat_leaves.size()) )
     {
@@ -482,8 +487,6 @@ bool Tree<Payload>::create_leaf( Payload it_payload, unsigned int &oru32_index )
     DRETURN_ARG("Leaves: %d", u32_num_leaves+1 ); //Trace Return
     return false;	//OK
 }   //Public Setter: create_leaf | Payload
-
-
 
 /***************************************************************************/
 //! @brief Public Setter: destroy_leaf | unsigned int
@@ -550,13 +553,13 @@ bool Tree<Payload>::swap_leaves( unsigned int iu32_own_index, Tree<Payload> &irc
     //	CHECK
     //--------------------------------------------------------------------------
 	//if class is in error
-    if (this->gps8_error_code != Error_code::CPS8_OK)
+    if ((Config::CU1_INTERNAL_CHECKS == true) && (this->gps8_error_code != Error_code::CPS8_OK))
     {
 		DRETURN_ARG("ERR: Tree is in error: %s | Cannot destroy leaf", this->gps8_error_code ); //Trace Return
 		return true;
     }
 	//if: user asks for an element outside array range
-    if (iu32_own_index >= this->gclat_leaves.size())
+    if ((Config::CU1_EXTERNAL_CHECKS == true) && (iu32_own_index >= this->gclat_leaves.size()))
     {
 		//Out Of Boundary
 		this->report_error(Error_code::CPS8_ERR_OOB);

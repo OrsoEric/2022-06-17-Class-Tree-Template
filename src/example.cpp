@@ -221,6 +221,11 @@ bool test_bench( void )
 	}
 	cl_my_instance.print();
 
+	std::cout << "----------------------------------------\n";
+	std::cout << "Swap two leaves\n";
+	u1_ret = cl_my_instance.swap_leaves( 1, cl_my_instance[0], 0);
+
+
 	//----------------------------------------------------------------
 	//	RETURN
 	//----------------------------------------------------------------
