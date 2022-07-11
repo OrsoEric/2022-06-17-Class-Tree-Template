@@ -166,10 +166,6 @@ bool test_bench( void )
 	unsigned int u32_index = 0;
 
 	//----------------------------------------------------------------
-	//	INIT
-	//----------------------------------------------------------------
-
-	//----------------------------------------------------------------
 	//	BODY
 	//----------------------------------------------------------------
 	//! @details algorithm:
@@ -213,6 +209,8 @@ bool test_bench( void )
     {
 		cl_my_instance[u32_index].create_leaf( 37 );
 		cl_my_instance[u32_index].create_leaf( 38 );
+		//Show off the syntax of this tree! I access leaf 1 with bracket bracket operator!
+		cl_my_instance[u32_index][1].create_leaf( 338 );
 		cl_my_instance[u32_index].create_leaf( 39 );
 	}
 	else
@@ -224,6 +222,13 @@ bool test_bench( void )
 	std::cout << "----------------------------------------\n";
 	std::cout << "Swap two leaves\n";
 	u1_ret = cl_my_instance.swap_leaves( 1, cl_my_instance[0], 0);
+	cl_my_instance.print();
+
+	std::cout << "----------------------------------------\n";
+	std::cout << "Swap a parent with its child\n";
+	u1_ret = cl_my_instance.swap_leaves( 0, cl_my_instance[0], 0);
+	cl_my_instance.print();
+
 
 
 	//----------------------------------------------------------------

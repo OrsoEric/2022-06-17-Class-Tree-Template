@@ -572,6 +572,9 @@ bool Tree<Payload>::swap_leaves( unsigned int iu32_own_index, Tree<Payload> &irc
     //	BODY
     //--------------------------------------------------------------------------
 
+	//std::vector<Tree<Payload>>::swap( this->gclat_leaves[iu32_own_index], ircl_branch.gclat_leaves[iu32_branch_index] );
+	std::swap( this->gclat_leaves[iu32_own_index], ircl_branch.gclat_leaves[iu32_branch_index] );
+	//this->gclat_leaves[iu32_own_index].swap( ircl_branch.gclat_leaves[iu32_branch_index] );
 
     //--------------------------------------------------------------------------
     //	RETURN
