@@ -107,10 +107,13 @@ class Tree : public Tree_interface<Payload>
 			Payload t_payload;
 			//Index of the father. using father means that there is no variable number of children index to maintain. all nodes have exactly one father except the root. It also makes it impossible to make loops. Root is the only node that has itself as father.
 			typename std::vector<Node>::iterator pst_father;
-			//Priority, defines the order of siblings, 0 is the highest priority node under the given father.
-			unsigned int u32_priority;
+			//Priority, defines the order of this node compared to its siblings, 0 is the highest priority node under the given father.
+			unsigned int u32_own_priority;
 			//Max Priority, it's the number of siblings. A lone child has priority of 0 and a max_priority of 1. max_priority of 0 is error.
-			unsigned int u32_max_priority;
+			//Adding a children would require modifying the max priority of all children.
+			//Instead the max priority of a node is equivalent to the number of children. I already have father reference to access it.
+			//So it's single edit when adding/removing children. Would be multi edit on all children otherwise
+			unsigned int u32_children_max_priority;
         };
 
         /*********************************************************************************************************************************************************
@@ -441,15 +444,18 @@ bool Tree<Payload>::create_child( Payload it_payload )
     //Create the node to add metadata to the payload
 	Node st_node;
 	st_node.t_payload = it_payload;
-	st_node.u32_max_priority = 0;
-	st_node.u32_priority = 0;
+	//This node starts with no children
+	st_node.u32_children_max_priority = 0;
+	st_node.u32_own_priority = 0;
 	//Iterator to the root. This tree just uses father iterators for navigation and links
 	st_node.pst_father = this->gast_nodes.begin();
 	unsigned int u32_father_index = this->convert_node_iterator_to_index( st_node.pst_father );
 	DPRINT("Father: %d\n", u32_father_index );
 	//Number of children of the father
-	unsigned int u32_num_children = 0;
+	//Now counting children is cheap. father.u32_children_max_priority is the number of children already
+	unsigned int u32_num_children = st_node.pst_father->u32_children_max_priority;
 	//Count the current children of the father
+    /*
     bool u1_fail = this->count_children( st_node.pst_father, u32_num_children );
     if (u1_fail == true)
     {
@@ -457,12 +463,16 @@ bool Tree<Payload>::create_child( Payload it_payload )
 		DRETURN_ARG("ERR:%d | Could not count children for Node with index %d with %d total nodes", __LINE__, this->convert_node_iterator_to_index( st_node.pst_father ), this->gast_nodes.size() );
 		return true;
     }
+    */
+
+    //BUG: I would need to update the max priority of all children...
+    //IDEA: what if max priority is not duplicated and stored inside the father?
     //By the end, I will have added a children to the father
 	u32_num_children++;
-	//The number of children serves both to count the children and to compute priority, order in which children are to be resolved.
-    st_node.u32_max_priority = u32_num_children;
-    //Assign the lowest priority.
-    st_node.u32_priority = u32_num_children -1;
+	//I update the number of childre, thus the max priority of the father
+	st_node.pst_father->u32_children_max_priority = u32_num_children;
+    //The newly created node has the lowest priority
+    st_node.u32_own_priority = u32_num_children -1;
 
     //--------------------------------------------------------------------------
     //	BODY
@@ -471,6 +481,7 @@ bool Tree<Payload>::create_child( Payload it_payload )
 
 	//Add the node to the tree
 	this->gast_nodes.push_back( st_node );
+	/*
 	//TODO: add optional check to integrity of the operation
 	if (Config::CU1_PEDANTIC_COUNT_CHILDREN == true)
 	{
@@ -490,6 +501,7 @@ bool Tree<Payload>::create_child( Payload it_payload )
 			return true;
 		}
     }
+    */
 
     //--------------------------------------------------------------------------
     //	RETURN
@@ -619,9 +631,10 @@ bool Tree<Payload>::init_class_vars( Payload it_payload )
 
 	Node st_node;
     st_node.t_payload = it_payload;
-    //Initialize priority 1. Root is the highest priority lone root node
-	st_node.u32_max_priority = 1;
-	st_node.u32_priority = 0;
+    //Root starts with no children
+	st_node.u32_children_max_priority = 0;
+	//Root cannot have a priority
+	st_node.u32_own_priority = 0;
     //Allocate root and fill root with dummy payload
     this->gast_nodes.push_back( st_node );
 	//Register the father index. Root points to itself
@@ -690,6 +703,7 @@ unsigned int Tree<Payload>::convert_node_iterator_to_index( typename std::vector
 //! \n Count the number of nodes that have the iterator as father
 /***************************************************************************/
 
+/*
 template <class Payload>
 bool Tree<Payload>::count_children( typename std::vector<Node>::iterator ist_father, unsigned int &oru32_num_children )
 {
@@ -722,7 +736,7 @@ bool Tree<Payload>::count_children( typename std::vector<Node>::iterator ist_fat
 			//If I find a node whose father is the given node
 			if (st_iter->pst_father == ist_father)
 			{
-				u32_num_children = st_iter->u32_max_priority;
+				u32_num_children = st_iter->u32_;
 				u1_done = true;
 			}
 			//Next
@@ -806,6 +820,7 @@ bool Tree<Payload>::count_children( typename std::vector<Node>::iterator ist_fat
     oru32_num_children = u32_num_children;
     return false;
 } 	//Private Method | convert_node_iterator_to_index | std::vector<Node>::iterator
+*/
 
 /***************************************************************************/
 //! @brief Private Method | report_error | Error_code
