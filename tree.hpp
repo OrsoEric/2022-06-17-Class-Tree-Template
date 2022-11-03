@@ -234,7 +234,7 @@ class Tree : public Tree_interface<Payload>
         *********************************************************************************************************************************************************/
 
         //Convert an iterator to a node to an index, its position in the vector
-		unsigned int convert_node_iterator_to_index( typename std::vector<Node>::iterator st_father );
+		bool convert_node_iterator_to_index( typename std::vector<Node>::iterator ipst_father, unsigned int &iru32_index );
         //Count the children of a node
         bool count_children( typename std::vector<Node>::iterator st_father, unsigned int &oru32_num_children );
 		//Report an error. return false: OK | true: Unknown error code
@@ -449,7 +449,8 @@ bool Tree<Payload>::create_child( Payload it_payload )
 	st_node.u32_own_priority = 0;
 	//Iterator to the root. This tree just uses father iterators for navigation and links
 	st_node.pst_father = this->gast_nodes.begin();
-	unsigned int u32_father_index = this->convert_node_iterator_to_index( st_node.pst_father );
+	unsigned int u32_father_index;
+	this->convert_node_iterator_to_index( st_node.pst_father, u32_father_index );
 	DPRINT("Father: %d\n", u32_father_index );
 	//Number of children of the father
 	//Now counting children is cheap. father.u32_children_max_priority is the number of children already
@@ -577,9 +578,11 @@ bool Tree<Payload>::show( void )
     {
 
 		//std::ostream my_stream;
-		unsigned int u32_node_index = this->convert_node_iterator_to_index( pst_node );
+		unsigned int u32_node_index;
+		this->convert_node_iterator_to_index( pst_node, u32_node_index );
 		std::cout << "Index: " << u32_node_index;
-		unsigned int u32_father_index = this->convert_node_iterator_to_index( pst_node->pst_father );
+		unsigned int u32_father_index;
+		this->convert_node_iterator_to_index( pst_node->pst_father, u32_father_index );
 		std::cout << " | Payload: " << pst_node->t_payload;
 		//Root is the only node that has itself as father
 		if (pst_node == pst_node->pst_father)
@@ -637,10 +640,20 @@ bool Tree<Payload>::init_class_vars( Payload it_payload )
 	st_node.u32_own_priority = 0;
     //Allocate root and fill root with dummy payload
     this->gast_nodes.push_back( st_node );
+    if (this->gast_nodes.size() != 1)
+    {
+		//! @todo: Undo initialization
+		this->report_error( Error_code::CPS8_ERR );
+        DRETURN_ARG("ERR%d: There should be exactly one node (Root) after initialization, there are %d instead", __LINE__, this->gast_nodes.size() );
+        return true;
+    }
 	//Register the father index. Root points to itself
     this->gast_nodes[0].pst_father = this->gast_nodes.begin();
-    unsigned int u32_father_index = this->convert_node_iterator_to_index( this->gast_nodes[0].pst_father );
-    unsigned int u32_own_index = this->convert_node_iterator_to_index( this->gast_nodes.begin() );
+
+    unsigned int u32_father_index;
+	this->convert_node_iterator_to_index( this->gast_nodes[0].pst_father, u32_father_index );
+    unsigned int u32_own_index;
+    this->convert_node_iterator_to_index( this->gast_nodes.begin(), u32_own_index );
 	DPRINT("Index: %d | Father: %d\n", u32_own_index, u32_father_index  );
     this->gps8_error_code = Error_code::CPS8_OK;
 
@@ -667,30 +680,27 @@ bool Tree<Payload>::init_class_vars( Payload it_payload )
 /***************************************************************************/
 
 template <class Payload>
-unsigned int Tree<Payload>::convert_node_iterator_to_index( typename std::vector<Node>::iterator st_father )
+bool Tree<Payload>::convert_node_iterator_to_index( typename std::vector<Node>::iterator ipst_father, unsigned int &iru32_index )
 {
-    DENTER();
+    DENTER_ARG("This: %p, Father: %p", this, ipst_father );
     //--------------------------------------------------------------------------
     //	CHECK
     //--------------------------------------------------------------------------
 
-    if ( (Config::CU1_INTERNAL_CHECKS == true) && ((st_father < this->gast_nodes.begin()) || (st_father >= this->gast_nodes.end())) )
+    if ( (Config::CU1_INTERNAL_CHECKS == true) && ((ipst_father < this->gast_nodes.begin()) || (ipst_father >= this->gast_nodes.end())) )
     {
-		DRETURN_ARG("ERR:%d | Iterator points to an address outside vector range | Index %d | Size: %d", __LINE__, st_father -this->gast_nodes.begin(), this->gast_nodes.end() -this->gast_nodes.begin() );
-		return 0;
+		iru32_index = 0;
+		DRETURN_ARG("ERR:%d | Iterator points to an address outside vector range | Begin: %p | Index %d | Size: %d", __LINE__, this->gast_nodes.begin(), ipst_father -this->gast_nodes.begin(), this->gast_nodes.end() -this->gast_nodes.begin() );
+		return true;
     }
-
-    //--------------------------------------------------------------------------
-    //	BODY
-    //--------------------------------------------------------------------------
-
-    unsigned int u32_index = st_father -this->gast_nodes.begin();
 
     //--------------------------------------------------------------------------
     //	RETURN
     //--------------------------------------------------------------------------
+
+	unsigned int u32_index = ipst_father -this->gast_nodes.begin();
     DRETURN_ARG("Index: %d", u32_index );
-    return u32_index;
+    return false;
 } 	//Private Method | convert_node_iterator_to_index | std::vector<Node>::iterator
 
 /***************************************************************************/
