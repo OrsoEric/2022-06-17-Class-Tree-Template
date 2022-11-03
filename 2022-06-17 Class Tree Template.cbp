@@ -12,6 +12,8 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
+					<Add option="-Wall" />
+					<Add option="-std=c++11" />
 					<Add option="-g" />
 				</Compiler>
 			</Target>
@@ -34,11 +36,15 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="debug.cpp" />
+		<Unit filename="debug.h" />
 		<Unit filename="debug.log" />
-		<Unit filename="src/debug.cpp" />
-		<Unit filename="src/debug.h" />
-		<Unit filename="src/example.cpp" />
-		<Unit filename="src/tree.hpp" />
+		<Unit filename="example.cpp" />
+		<Unit filename="tree.hpp" />
+		<Unit filename="tree_interface.h" />
+		<Unit filename="tree_old.hpp">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
 		<Extensions>
 			<code_completion />
 			<envvars />

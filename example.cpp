@@ -170,6 +170,41 @@ bool test_bench( void )
 	//----------------------------------------------------------------
 	//! @details algorithm:
 
+	int s32_payload;
+
+	if (false)
+	{
+		User::Tree<int> cl_my_tree;
+		//Set the default payload in case of bad addressing
+		cl_my_tree.set_default_payload( 404 );
+		//Assign Root payload
+		cl_my_tree.root() = 117;
+
+		std::cout << "Root Payload: " << cl_my_tree.root() << "\n";
+	}
+
+	if (true)
+	{
+		//Construct a tree assigning the default payload and the root payload
+		User::Tree<int> cl_my_tree( 404, 117 );
+		//Special method to return the root
+		std::cout << "Root Payload: " << cl_my_tree.root() << "\n";
+		//Generic method to return the nth node
+		std::cout << "Root Payload: " << cl_my_tree[0] << "\n";
+		std::cout << "Root Payload: " << cl_my_tree[99] << "\n";
+
+
+		//Attach two child to the root
+		cl_my_tree.create_child( 100 );
+		cl_my_tree.create_child( 101 );
+		//Show content of the array
+		cl_my_tree.show();
+
+	}
+
+
+
+	/*
 	//Create a root with a payload
 	User::Tree<int> cl_my_instance = User::Tree<int>( 99 );
 	std::cout << cl_my_instance.get_error() << "\n";
@@ -228,7 +263,7 @@ bool test_bench( void )
 	std::cout << "Swap a parent with its child\n";
 	u1_ret = cl_my_instance.swap_leaves( 0, cl_my_instance[0], 0);
 	cl_my_instance.print();
-
+	*/
 
 
 	//----------------------------------------------------------------

@@ -24,3 +24,23 @@
 1657556824 c:\data\project\project programming\project classes\2022-06-17 class tree template\src\tree.hpp
 	<vector>
 
+1653285491 source:c:\data\project\project programming\project classes\2022-06-17 class tree template\debug.cpp
+	<cstdio>
+	"debug.h"
+
+1653285491 c:\data\project\project programming\project classes\2022-06-17 class tree template\debug.h
+	<cstdio>
+
+1667456358 source:c:\data\project\project programming\project classes\2022-06-17 class tree template\example.cpp
+	<cstdio>
+	<iostream>
+	"debug.h"
+	"tree.hpp"
+
+1667493095 c:\data\project\project programming\project classes\2022-06-17 class tree template\tree.hpp
+	<vector>
+	"Tree_interface.h"
+
+1667456994 c:\data\project\project programming\project classes\2022-06-17 class tree template\tree_interface.h
+	<vector>
+
