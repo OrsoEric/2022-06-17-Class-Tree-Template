@@ -250,8 +250,10 @@ class Tree : public Tree_interface<Payload>
 
 		//The nodes are stored inside a standard vector
         std::vector<Node> gast_nodes;
+        //Iterator of the root
+        typename std::vector<Node>::iterator gpst_root;
         //Stores the node that is target for tree operations
-        typename std::vector<Node>::iterator pst_working_node;
+        //typename std::vector<Node>::iterator pst_working_node;
 };	//End Class: Tree
 
 /*********************************************************************************************************************************************************
@@ -446,26 +448,15 @@ bool Tree<Payload>::create_child( Payload it_payload )
 	st_node.t_payload = it_payload;
 	//This node starts with no children
 	st_node.u32_children_max_priority = 0;
-	st_node.u32_own_priority = 0;
 	//Iterator to the root. This tree just uses father iterators for navigation and links
 	st_node.pst_father = this->gast_nodes.begin();
+	//RIght now the father of this node is the Root
 	unsigned int u32_father_index;
-	this->convert_node_iterator_to_index( st_node.pst_father, u32_father_index );
-	DPRINT("Father: %d\n", u32_father_index );
+	bool u1_fail = this->convert_node_iterator_to_index( st_node.pst_father, u32_father_index );
+	DPRINT("Fail: %d | Father: %d\n", u1_fail, u32_father_index );
 	//Number of children of the father
 	//Now counting children is cheap. father.u32_children_max_priority is the number of children already
 	unsigned int u32_num_children = st_node.pst_father->u32_children_max_priority;
-	//Count the current children of the father
-    /*
-    bool u1_fail = this->count_children( st_node.pst_father, u32_num_children );
-    if (u1_fail == true)
-    {
-		this->report_error( Error_code::CPS8_ERR );
-		DRETURN_ARG("ERR:%d | Could not count children for Node with index %d with %d total nodes", __LINE__, this->convert_node_iterator_to_index( st_node.pst_father ), this->gast_nodes.size() );
-		return true;
-    }
-    */
-
     //BUG: I would need to update the max priority of all children...
     //IDEA: what if max priority is not duplicated and stored inside the father?
     //By the end, I will have added a children to the father
@@ -479,9 +470,10 @@ bool Tree<Payload>::create_child( Payload it_payload )
     //	BODY
     //--------------------------------------------------------------------------
 	//I search the first free spot on the vector and allocate the child
-
+	DPRINT("Begin: %p | End: %p\n", this->gast_nodes.begin(), this->gast_nodes.end() );
 	//Add the node to the tree
 	this->gast_nodes.push_back( st_node );
+	DPRINT("Begin: %p | End: %p\n", this->gast_nodes.begin(), this->gast_nodes.end() );
 	/*
 	//TODO: add optional check to integrity of the operation
 	if (Config::CU1_PEDANTIC_COUNT_CHILDREN == true)
@@ -649,12 +641,17 @@ bool Tree<Payload>::init_class_vars( Payload it_payload )
     }
 	//Register the father index. Root points to itself
     this->gast_nodes[0].pst_father = this->gast_nodes.begin();
+    DPRINT("Begin: %p\n", this->gast_nodes[0].pst_father );
+    //this->gpst_root = this->gast_nodes.crbegin();
 
     unsigned int u32_father_index;
-	this->convert_node_iterator_to_index( this->gast_nodes[0].pst_father, u32_father_index );
+	bool u1_ret = this->convert_node_iterator_to_index( this->gast_nodes[0].pst_father, u32_father_index );
+	DPRINT("Fail: %d | Father: %d\n", u1_ret, u32_father_index  );
+
     unsigned int u32_own_index;
-    this->convert_node_iterator_to_index( this->gast_nodes.begin(), u32_own_index );
-	DPRINT("Index: %d | Father: %d\n", u32_own_index, u32_father_index  );
+    u1_ret = this->convert_node_iterator_to_index( this->gast_nodes.begin(), u32_own_index );
+	DPRINT("Fail: %d | Index: %d\n", u1_ret, u32_own_index  );
+
     this->gps8_error_code = Error_code::CPS8_OK;
 
     //--------------------------------------------------------------------------
@@ -687,10 +684,11 @@ bool Tree<Payload>::convert_node_iterator_to_index( typename std::vector<Node>::
     //	CHECK
     //--------------------------------------------------------------------------
 
+    DPRINT("Begin: %p | End: %p\n", this->gast_nodes.begin(), this->gast_nodes.end() );
     if ( (Config::CU1_INTERNAL_CHECKS == true) && ((ipst_father < this->gast_nodes.begin()) || (ipst_father >= this->gast_nodes.end())) )
     {
 		iru32_index = 0;
-		DRETURN_ARG("ERR:%d | Iterator points to an address outside vector range | Begin: %p | Index %d | Size: %d", __LINE__, this->gast_nodes.begin(), ipst_father -this->gast_nodes.begin(), this->gast_nodes.end() -this->gast_nodes.begin() );
+		DRETURN_ARG("ERR:%d | Iterator points to an address outside vector range | Index %d | Size: %d", __LINE__, ipst_father -this->gast_nodes.begin(), this->gast_nodes.end() -this->gast_nodes.begin() );
 		return true;
     }
 
@@ -699,138 +697,10 @@ bool Tree<Payload>::convert_node_iterator_to_index( typename std::vector<Node>::
     //--------------------------------------------------------------------------
 
 	unsigned int u32_index = ipst_father -this->gast_nodes.begin();
+	iru32_index = u32_index;
     DRETURN_ARG("Index: %d", u32_index );
     return false;
 } 	//Private Method | convert_node_iterator_to_index | std::vector<Node>::iterator
-
-/***************************************************************************/
-//! @brief Private Method | convert_node_iterator_to_index | std::vector<Node>::iterator | unsigned int & |
-/***************************************************************************/
-//! @param std::vector<Node>::iterator | iterator to the node
-//! @param oru32_num_children | number of children of the node
-//! @return bool | false = OK | true = FAIL |
-//! @details
-//! \n Count the number of nodes that have the iterator as father
-/***************************************************************************/
-
-/*
-template <class Payload>
-bool Tree<Payload>::count_children( typename std::vector<Node>::iterator ist_father, unsigned int &oru32_num_children )
-{
-    DENTER();
-    //--------------------------------------------------------------------------
-    //	CHECK
-    //--------------------------------------------------------------------------
-
-    if ( (Config::CU1_INTERNAL_CHECKS == true) && ((ist_father < this->gast_nodes.begin()) || (ist_father >= this->gast_nodes.end())) )
-    {
-		//DRETURN_ARG("ERR:%d | Iterator points to an address outside vector range | Node: %p | Begin: %p | End: %p", __LINE__, st_father, this->gast_nodes.begin(), this->gast_nodes.end());
-		DRETURN_ARG("ERR:%d | Iterator points to an address outside vector range | Begin: %d | End: %d", __LINE__, ist_father -this->gast_nodes.begin(), this->gast_nodes.end() -ist_father);
-		return 0;
-    }
-
-    //--------------------------------------------------------------------------
-    //	BODY
-    //--------------------------------------------------------------------------
-
-    //Initialize scan
-    unsigned int u32_num_children = 0;
-    typename std::vector<Node>::iterator st_iter = this->gast_nodes.begin();
-	//Fast count children
-	if (Config::CU1_PEDANTIC_COUNT_CHILDREN == false)
-	{
-		bool u1_done = false;
-		//while not done
-		while ((st_iter <= this->gast_nodes.end()) && (u1_done == false))
-		{
-			//If I find a node whose father is the given node
-			if (st_iter->pst_father == ist_father)
-			{
-				u32_num_children = st_iter->u32_;
-				u1_done = true;
-			}
-			//Next
-			st_iter++;
-		}
-	}
-	//Pedantic count children
-    else
-    {
-		//Remember the maximum priority
-		unsigned int u32_max_priority = 0;
-		//while not done
-		while (st_iter < this->gast_nodes.end())
-		{
-			//max priority exceed the vector size. Impossible
-			if ( (Config::CU1_INTERNAL_CHECKS == true) && (st_iter->u32_max_priority > this->gast_nodes.size()) )
-			{
-				//Error
-				this->report_error(Error_code::CPS8_ERR);
-				DRETURN_ARG("ERR:%d | Max priority is %d. There are only %d nodes.", __LINE__, st_iter->u32_max_priority, this->gast_nodes.size() );
-				oru32_num_children = 0;
-				return true;
-			}
-
-			//If I find a node whose father is the given node
-			if (st_iter->pst_father == ist_father)
-			{
-				//this is the first node I found
-				if (u32_max_priority == 0)
-				{
-					//Remember max priority.
-					u32_max_priority = st_iter->u32_max_priority;
-					//father has a children, max priority should at least be 1
-					if (u32_max_priority == 0)
-					{
-						//Error
-						this->report_error(Error_code::CPS8_ERR);
-						DRETURN_ARG("ERR:%d | Max priority is zero. There is at least one children...", __LINE__ );
-						oru32_num_children = 0;
-						return true;
-					}
-				}
-				//the max priority is inconsistent
-				else if (st_iter->u32_max_priority != u32_max_priority)
-				{
-					//Error
-					this->report_error(Error_code::CPS8_ERR);
-                    DRETURN_ARG("ERR:%d | Inconsistent max priority amongst children %d vs %d", __LINE__, u32_max_priority, st_iter->u32_max_priority );
-                    oru32_num_children = 0;
-                    return true;
-				}
-				//priority exceeds max priority
-				else if (st_iter->u32_priority >= u32_max_priority)
-				{
-					//Error
-					this->report_error(Error_code::CPS8_ERR);
-                    DRETURN_ARG("ERR:%d | Priority %d exceed max priority %d", __LINE__, st_iter->u32_priority, u32_max_priority );
-                    oru32_num_children = 0;
-                    return true;
-				}
-				else
-				{
-					//Child found
-					u32_num_children++;
-				}
-			} //If I find a node whose father is the given node
-			//Node has not the given node as father
-			else
-			{
-				//Do nothing
-			}
-			//Next
-			st_iter++;
-		}	//while not done
-    }	//Pedantic count children
-
-    //--------------------------------------------------------------------------
-    //	RETURN
-    //--------------------------------------------------------------------------
-    DRETURN_ARG("Children: %d", u32_num_children );
-    oru32_num_children = u32_num_children;
-    return false;
-} 	//Private Method | convert_node_iterator_to_index | std::vector<Node>::iterator
-*/
 
 /***************************************************************************/
 //! @brief Private Method | report_error | Error_code
