@@ -161,16 +161,16 @@ bool test_bench( void )
 	//----------------------------------------------------------------
 
 	//Temp return
-	bool u1_ret;
+	//bool u1_ret;
 	//Temp index
-	unsigned int u32_index = 0;
+	//unsigned int u32_index = 0;
 
 	//----------------------------------------------------------------
 	//	BODY
 	//----------------------------------------------------------------
 	//! @details algorithm:
 
-	int s32_payload;
+	//int s32_payload;
 
 	if (false)
 	{

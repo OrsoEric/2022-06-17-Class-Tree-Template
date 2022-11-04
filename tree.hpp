@@ -106,7 +106,7 @@ class Tree : public Tree_interface<Payload>
 			//Payload inside the node
 			Payload t_payload;
 			//Index of the father. using father means that there is no variable number of children index to maintain. all nodes have exactly one father except the root. It also makes it impossible to make loops. Root is the only node that has itself as father.
-			typename std::vector<Node>::iterator pst_father;
+			unsigned int u32_index_father;
 			//Priority, defines the order of this node compared to its siblings, 0 is the highest priority node under the given father.
 			unsigned int u32_own_priority;
 			//Max Priority, it's the number of siblings. A lone child has priority of 0 and a max_priority of 1. max_priority of 0 is error.
@@ -251,7 +251,7 @@ class Tree : public Tree_interface<Payload>
 		//The nodes are stored inside a standard vector
         std::vector<Node> gast_nodes;
         //Iterator of the root
-        typename std::vector<Node>::iterator gpst_root;
+        //typename std::vector<Node>::iterator gpst_root;
         //Stores the node that is target for tree operations
         //typename std::vector<Node>::iterator pst_working_node;
 };	//End Class: Tree
@@ -443,58 +443,27 @@ bool Tree<Payload>::create_child( Payload it_payload )
 		DRETURN_ARG("ERR:%d Tree is in error: %s | Cannot create leaf", __LINE__, this->gps8_error_code );
 		return true;
     }
-    //Create the node to add metadata to the payload
-	Node st_node;
-	st_node.t_payload = it_payload;
-	//This node starts with no children
-	st_node.u32_children_max_priority = 0;
-	//Iterator to the root. This tree just uses father iterators for navigation and links
-	st_node.pst_father = this->gast_nodes.begin();
-	//RIght now the father of this node is the Root
-	unsigned int u32_father_index;
-	bool u1_fail = this->convert_node_iterator_to_index( st_node.pst_father, u32_father_index );
-	DPRINT("Fail: %d | Father: %d\n", u1_fail, u32_father_index );
-	//Number of children of the father
-	//Now counting children is cheap. father.u32_children_max_priority is the number of children already
-	unsigned int u32_num_children = st_node.pst_father->u32_children_max_priority;
-    //BUG: I would need to update the max priority of all children...
-    //IDEA: what if max priority is not duplicated and stored inside the father?
-    //By the end, I will have added a children to the father
-	u32_num_children++;
-	//I update the number of childre, thus the max priority of the father
-	st_node.pst_father->u32_children_max_priority = u32_num_children;
-    //The newly created node has the lowest priority
-    st_node.u32_own_priority = u32_num_children -1;
 
     //--------------------------------------------------------------------------
     //	BODY
     //--------------------------------------------------------------------------
-	//I search the first free spot on the vector and allocate the child
-	DPRINT("Begin: %p | End: %p\n", this->gast_nodes.begin(), this->gast_nodes.end() );
+	//Create the node to add metadata to the payload
+	Node st_node;
+	st_node.t_payload = it_payload;
+	//This node starts with no children
+	st_node.u32_children_max_priority = 0;
+	//Index of the root
+	st_node.u32_index_father = 0;
+	//Number of children of the father
+	unsigned int u32_num_children = this->gast_nodes[ st_node.u32_index_father ].u32_children_max_priority;
+    //By the end, I will have added a children to the father
+	u32_num_children++;
+	//I update the number of children of the father, thus the max priority of the father
+	this->gast_nodes[ st_node.u32_index_father ].u32_children_max_priority = u32_num_children;
+    //The newly created node has the lowest priority
+    st_node.u32_own_priority = u32_num_children -1;
 	//Add the node to the tree
 	this->gast_nodes.push_back( st_node );
-	DPRINT("Begin: %p | End: %p\n", this->gast_nodes.begin(), this->gast_nodes.end() );
-	/*
-	//TODO: add optional check to integrity of the operation
-	if (Config::CU1_PEDANTIC_COUNT_CHILDREN == true)
-	{
-		unsigned int u32_check_num_children;
-		//Count the current children of the father
-		bool u1_fail = this->count_children( st_node.pst_father, u32_check_num_children );
-		if (u1_fail == true)
-		{
-			this->report_error( Error_code::CPS8_ERR );
-			DRETURN_ARG("ERR:%d | Could not count children for Node with index %d with %d total nodes", __LINE__, this->convert_node_iterator_to_index( st_node.pst_father ), this->gast_nodes.size() );
-			return true;
-		}
-		if (u32_check_num_children != u32_num_children)
-		{
-			this->report_error( Error_code::CPS8_ERR );
-			DRETURN_ARG("ERR:%d | Children were not actually added for Node with index %d with %d total nodes", __LINE__, this->convert_node_iterator_to_index( st_node.pst_father ), this->gast_nodes.size() );
-			return true;
-		}
-    }
-    */
 
     //--------------------------------------------------------------------------
     //	RETURN
@@ -572,12 +541,12 @@ bool Tree<Payload>::show( void )
 		//std::ostream my_stream;
 		unsigned int u32_node_index;
 		this->convert_node_iterator_to_index( pst_node, u32_node_index );
-		std::cout << "Index: " << u32_node_index;
-		unsigned int u32_father_index;
-		this->convert_node_iterator_to_index( pst_node->pst_father, u32_father_index );
+		std::cout << "Index: " << u32_node_index << " | ";
+		unsigned int u32_father_index = pst_node->u32_index_father;
+		std::cout << "Father: " << u32_father_index;
 		std::cout << " | Payload: " << pst_node->t_payload;
 		//Root is the only node that has itself as father
-		if (pst_node == pst_node->pst_father)
+		if (u32_node_index == u32_father_index)
 		{
 			std::cout << " | ROOT ";
 		}
@@ -640,17 +609,7 @@ bool Tree<Payload>::init_class_vars( Payload it_payload )
         return true;
     }
 	//Register the father index. Root points to itself
-    this->gast_nodes[0].pst_father = this->gast_nodes.begin();
-    DPRINT("Begin: %p\n", this->gast_nodes[0].pst_father );
-    //this->gpst_root = this->gast_nodes.crbegin();
-
-    unsigned int u32_father_index;
-	bool u1_ret = this->convert_node_iterator_to_index( this->gast_nodes[0].pst_father, u32_father_index );
-	DPRINT("Fail: %d | Father: %d\n", u1_ret, u32_father_index  );
-
-    unsigned int u32_own_index;
-    u1_ret = this->convert_node_iterator_to_index( this->gast_nodes.begin(), u32_own_index );
-	DPRINT("Fail: %d | Index: %d\n", u1_ret, u32_own_index  );
+    this->gast_nodes[0].u32_index_father = 0;
 
     this->gps8_error_code = Error_code::CPS8_OK;
 

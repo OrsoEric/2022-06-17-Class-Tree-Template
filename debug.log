@@ -2,62 +2,32 @@ Start Debug!
 -->> "int main()" |
 	OrangeBot Projects
 	-->> "bool test_bench()" |
-		-->> "User::Tree<Payload>::Tree(Payload, Payload) [with Payload = int]" | This: 006efe94
+		-->> "User::Tree<Payload>::Tree(Payload, Payload) [with Payload = int]" | This: 006efea0
 			-->> "bool User::Tree<Payload>::init_class_vars(Payload) [with Payload = int]" |
-				Begin: 0088ac00
-				-->> "bool User::Tree<Payload>::convert_node_iterator_to_index(typename std::vector<User::Tree<Payload>::Node>::iterator, unsigned int&) [with Payload = int; typename std::vector<User::Tree<Payload>::Node>::iterator = __gnu_cxx::__normal_iterator<User::Tree<int>::Node*, std::vector<User::Tree<int>::Node, std::allocator<User::Tree<int>::Node> > >]" | This: 006efe94, Father: 0088ac00
-					Begin: 0088ac00 | End: 0088ac10
-				<<-- "bool User::Tree<Payload>::convert_node_iterator_to_index(typename std::vector<User::Tree<Payload>::Node>::iterator, unsigned int&) [with Payload = int; typename std::vector<User::Tree<Payload>::Node>::iterator = __gnu_cxx::__normal_iterator<User::Tree<int>::Node*, std::vector<User::Tree<int>::Node, std::allocator<User::Tree<int>::Node> > >]" | Index: 0
-				Fail: 0 | Father: 0
-				-->> "bool User::Tree<Payload>::convert_node_iterator_to_index(typename std::vector<User::Tree<Payload>::Node>::iterator, unsigned int&) [with Payload = int; typename std::vector<User::Tree<Payload>::Node>::iterator = __gnu_cxx::__normal_iterator<User::Tree<int>::Node*, std::vector<User::Tree<int>::Node, std::allocator<User::Tree<int>::Node> > >]" | This: 006efe94, Father: 0088ac00
-					Begin: 0088ac00 | End: 0088ac10
-				<<-- "bool User::Tree<Payload>::convert_node_iterator_to_index(typename std::vector<User::Tree<Payload>::Node>::iterator, unsigned int&) [with Payload = int; typename std::vector<User::Tree<Payload>::Node>::iterator = __gnu_cxx::__normal_iterator<User::Tree<int>::Node*, std::vector<User::Tree<int>::Node, std::allocator<User::Tree<int>::Node> > >]" | Index: 0
-				Fail: 0 | Index: 0
 			<<-- "bool User::Tree<Payload>::init_class_vars(Payload) [with Payload = int]" |
 		<<-- "User::Tree<Payload>::Tree(Payload, Payload) [with Payload = int]" |
 		-->> "Payload& User::Tree<Payload>::root(bool&) [with Payload = int]" |
 		<<-- "Payload& User::Tree<Payload>::root(bool&) [with Payload = int]" |
-		-->> "Payload& User::Tree<Payload>::operator[](unsigned int) [with Payload = int]" | Object: 006efe94, Index: 0
+		-->> "Payload& User::Tree<Payload>::operator[](unsigned int) [with Payload = int]" | Object: 006efea0, Index: 0
 		<<-- "Payload& User::Tree<Payload>::operator[](unsigned int) [with Payload = int]" |
-		-->> "Payload& User::Tree<Payload>::operator[](unsigned int) [with Payload = int]" | Object: 006efe94, Index: 99
+		-->> "Payload& User::Tree<Payload>::operator[](unsigned int) [with Payload = int]" | Object: 006efea0, Index: 99
 		<<-- "Payload& User::Tree<Payload>::operator[](unsigned int) [with Payload = int]" | Index OOB: 99 of 1
 		-->> "bool User::Tree<Payload>::create_child(Payload) [with Payload = int]" |
-			-->> "bool User::Tree<Payload>::convert_node_iterator_to_index(typename std::vector<User::Tree<Payload>::Node>::iterator, unsigned int&) [with Payload = int; typename std::vector<User::Tree<Payload>::Node>::iterator = __gnu_cxx::__normal_iterator<User::Tree<int>::Node*, std::vector<User::Tree<int>::Node, std::allocator<User::Tree<int>::Node> > >]" | This: 006efe94, Father: 0088ac00
-				Begin: 0088ac00 | End: 0088ac10
-			<<-- "bool User::Tree<Payload>::convert_node_iterator_to_index(typename std::vector<User::Tree<Payload>::Node>::iterator, unsigned int&) [with Payload = int; typename std::vector<User::Tree<Payload>::Node>::iterator = __gnu_cxx::__normal_iterator<User::Tree<int>::Node*, std::vector<User::Tree<int>::Node, std::allocator<User::Tree<int>::Node> > >]" | Index: 0
-			Fail: 0 | Father: 0
-			Begin: 0088ac00 | End: 0088ac10
-			Begin: 0088ac18 | End: 0088ac38
 		<<-- "bool User::Tree<Payload>::create_child(Payload) [with Payload = int]" | Leaves: 2
 		-->> "bool User::Tree<Payload>::create_child(Payload) [with Payload = int]" |
-			-->> "bool User::Tree<Payload>::convert_node_iterator_to_index(typename std::vector<User::Tree<Payload>::Node>::iterator, unsigned int&) [with Payload = int; typename std::vector<User::Tree<Payload>::Node>::iterator = __gnu_cxx::__normal_iterator<User::Tree<int>::Node*, std::vector<User::Tree<int>::Node, std::allocator<User::Tree<int>::Node> > >]" | This: 006efe94, Father: 0088ac18
-				Begin: 0088ac18 | End: 0088ac38
-			<<-- "bool User::Tree<Payload>::convert_node_iterator_to_index(typename std::vector<User::Tree<Payload>::Node>::iterator, unsigned int&) [with Payload = int; typename std::vector<User::Tree<Payload>::Node>::iterator = __gnu_cxx::__normal_iterator<User::Tree<int>::Node*, std::vector<User::Tree<int>::Node, std::allocator<User::Tree<int>::Node> > >]" | Index: 0
-			Fail: 0 | Father: 0
-			Begin: 0088ac18 | End: 0088ac38
-			Begin: 0088ac40 | End: 0088ac70
 		<<-- "bool User::Tree<Payload>::create_child(Payload) [with Payload = int]" | Leaves: 3
 		-->> "bool User::Tree<Payload>::show() [with Payload = int]" | Nodes: 3
-			-->> "bool User::Tree<Payload>::convert_node_iterator_to_index(typename std::vector<User::Tree<Payload>::Node>::iterator, unsigned int&) [with Payload = int; typename std::vector<User::Tree<Payload>::Node>::iterator = __gnu_cxx::__normal_iterator<User::Tree<int>::Node*, std::vector<User::Tree<int>::Node, std::allocator<User::Tree<int>::Node> > >]" | This: 006efe94, Father: 0088ac40
-				Begin: 0088ac40 | End: 0088ac70
+			-->> "bool User::Tree<Payload>::convert_node_iterator_to_index(typename std::vector<User::Tree<Payload>::Node>::iterator, unsigned int&) [with Payload = int; typename std::vector<User::Tree<Payload>::Node>::iterator = __gnu_cxx::__normal_iterator<User::Tree<int>::Node*, std::vector<User::Tree<int>::Node, std::allocator<User::Tree<int>::Node> > >]" | This: 006efea0, Father: 00edac40
+				Begin: 00edac40 | End: 00edac70
 			<<-- "bool User::Tree<Payload>::convert_node_iterator_to_index(typename std::vector<User::Tree<Payload>::Node>::iterator, unsigned int&) [with Payload = int; typename std::vector<User::Tree<Payload>::Node>::iterator = __gnu_cxx::__normal_iterator<User::Tree<int>::Node*, std::vector<User::Tree<int>::Node, std::allocator<User::Tree<int>::Node> > >]" | Index: 0
-			-->> "bool User::Tree<Payload>::convert_node_iterator_to_index(typename std::vector<User::Tree<Payload>::Node>::iterator, unsigned int&) [with Payload = int; typename std::vector<User::Tree<Payload>::Node>::iterator = __gnu_cxx::__normal_iterator<User::Tree<int>::Node*, std::vector<User::Tree<int>::Node, std::allocator<User::Tree<int>::Node> > >]" | This: 006efe94, Father: 0088ac00
-				Begin: 0088ac40 | End: 0088ac70
-			<<-- "bool User::Tree<Payload>::convert_node_iterator_to_index(typename std::vector<User::Tree<Payload>::Node>::iterator, unsigned int&) [with Payload = int; typename std::vector<User::Tree<Payload>::Node>::iterator = __gnu_cxx::__normal_iterator<User::Tree<int>::Node*, std::vector<User::Tree<int>::Node, std::allocator<User::Tree<int>::Node> > >]" | ERR:691 | Iterator points to an address outside vector range | Index -4 | Size: 3
-			-->> "bool User::Tree<Payload>::convert_node_iterator_to_index(typename std::vector<User::Tree<Payload>::Node>::iterator, unsigned int&) [with Payload = int; typename std::vector<User::Tree<Payload>::Node>::iterator = __gnu_cxx::__normal_iterator<User::Tree<int>::Node*, std::vector<User::Tree<int>::Node, std::allocator<User::Tree<int>::Node> > >]" | This: 006efe94, Father: 0088ac50
-				Begin: 0088ac40 | End: 0088ac70
+			-->> "bool User::Tree<Payload>::convert_node_iterator_to_index(typename std::vector<User::Tree<Payload>::Node>::iterator, unsigned int&) [with Payload = int; typename std::vector<User::Tree<Payload>::Node>::iterator = __gnu_cxx::__normal_iterator<User::Tree<int>::Node*, std::vector<User::Tree<int>::Node, std::allocator<User::Tree<int>::Node> > >]" | This: 006efea0, Father: 00edac50
+				Begin: 00edac40 | End: 00edac70
 			<<-- "bool User::Tree<Payload>::convert_node_iterator_to_index(typename std::vector<User::Tree<Payload>::Node>::iterator, unsigned int&) [with Payload = int; typename std::vector<User::Tree<Payload>::Node>::iterator = __gnu_cxx::__normal_iterator<User::Tree<int>::Node*, std::vector<User::Tree<int>::Node, std::allocator<User::Tree<int>::Node> > >]" | Index: 1
-			-->> "bool User::Tree<Payload>::convert_node_iterator_to_index(typename std::vector<User::Tree<Payload>::Node>::iterator, unsigned int&) [with Payload = int; typename std::vector<User::Tree<Payload>::Node>::iterator = __gnu_cxx::__normal_iterator<User::Tree<int>::Node*, std::vector<User::Tree<int>::Node, std::allocator<User::Tree<int>::Node> > >]" | This: 006efe94, Father: 0088ac00
-				Begin: 0088ac40 | End: 0088ac70
-			<<-- "bool User::Tree<Payload>::convert_node_iterator_to_index(typename std::vector<User::Tree<Payload>::Node>::iterator, unsigned int&) [with Payload = int; typename std::vector<User::Tree<Payload>::Node>::iterator = __gnu_cxx::__normal_iterator<User::Tree<int>::Node*, std::vector<User::Tree<int>::Node, std::allocator<User::Tree<int>::Node> > >]" | ERR:691 | Iterator points to an address outside vector range | Index -4 | Size: 3
-			-->> "bool User::Tree<Payload>::convert_node_iterator_to_index(typename std::vector<User::Tree<Payload>::Node>::iterator, unsigned int&) [with Payload = int; typename std::vector<User::Tree<Payload>::Node>::iterator = __gnu_cxx::__normal_iterator<User::Tree<int>::Node*, std::vector<User::Tree<int>::Node, std::allocator<User::Tree<int>::Node> > >]" | This: 006efe94, Father: 0088ac60
-				Begin: 0088ac40 | End: 0088ac70
+			-->> "bool User::Tree<Payload>::convert_node_iterator_to_index(typename std::vector<User::Tree<Payload>::Node>::iterator, unsigned int&) [with Payload = int; typename std::vector<User::Tree<Payload>::Node>::iterator = __gnu_cxx::__normal_iterator<User::Tree<int>::Node*, std::vector<User::Tree<int>::Node, std::allocator<User::Tree<int>::Node> > >]" | This: 006efea0, Father: 00edac60
+				Begin: 00edac40 | End: 00edac70
 			<<-- "bool User::Tree<Payload>::convert_node_iterator_to_index(typename std::vector<User::Tree<Payload>::Node>::iterator, unsigned int&) [with Payload = int; typename std::vector<User::Tree<Payload>::Node>::iterator = __gnu_cxx::__normal_iterator<User::Tree<int>::Node*, std::vector<User::Tree<int>::Node, std::allocator<User::Tree<int>::Node> > >]" | Index: 2
-			-->> "bool User::Tree<Payload>::convert_node_iterator_to_index(typename std::vector<User::Tree<Payload>::Node>::iterator, unsigned int&) [with Payload = int; typename std::vector<User::Tree<Payload>::Node>::iterator = __gnu_cxx::__normal_iterator<User::Tree<int>::Node*, std::vector<User::Tree<int>::Node, std::allocator<User::Tree<int>::Node> > >]" | This: 006efe94, Father: 0088ac18
-				Begin: 0088ac40 | End: 0088ac70
-			<<-- "bool User::Tree<Payload>::convert_node_iterator_to_index(typename std::vector<User::Tree<Payload>::Node>::iterator, unsigned int&) [with Payload = int; typename std::vector<User::Tree<Payload>::Node>::iterator = __gnu_cxx::__normal_iterator<User::Tree<int>::Node*, std::vector<User::Tree<int>::Node, std::allocator<User::Tree<int>::Node> > >]" | ERR:691 | Iterator points to an address outside vector range | Index -3 | Size: 3
 		<<-- "bool User::Tree<Payload>::show() [with Payload = int]" |
-		-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 006efe94
+		-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 006efea0
 		<<-- "User::Tree<Payload>::~Tree() [with Payload = int]" |
 	<<-- "bool test_bench()" |
 <<-- "int main()" |
