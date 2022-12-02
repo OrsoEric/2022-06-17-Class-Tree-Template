@@ -189,7 +189,7 @@ bool test_bench( void )
 		User::Tree<int> cl_my_tree( 404, 117 );
 		//Special method to return the root
 		std::cout << "Root Payload: " << cl_my_tree.root() << "\n";
-		//Generic method to return the nth node
+		//Generic method to return the nth node.
 		std::cout << "Root Payload: " << cl_my_tree[0] << "\n";
 		std::cout << "Root Payload: " << cl_my_tree[99] << "\n";
 
@@ -199,9 +199,13 @@ bool test_bench( void )
 		cl_my_tree.create_child( 101 );
 		//Show content of the array
 		cl_my_tree.show();
+		//Create a child of node 1 (ROOT) uses the generig create child method
+		cl_my_tree.create_child( 1, 100 );
+		cl_my_tree.show();
+
+		//cl_my_tree[100].create_child( 102 );
 
 	}
-
 
 
 	/*

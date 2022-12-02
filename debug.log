@@ -13,19 +13,14 @@ Start Debug!
 		-->> "Payload& User::Tree<Payload>::operator[](unsigned int) [with Payload = int]" | Object: 006efea0, Index: 99
 		<<-- "Payload& User::Tree<Payload>::operator[](unsigned int) [with Payload = int]" | Index OOB: 99 of 1
 		-->> "bool User::Tree<Payload>::create_child(Payload) [with Payload = int]" |
-		<<-- "bool User::Tree<Payload>::create_child(Payload) [with Payload = int]" | Leaves: 2
+		<<-- "bool User::Tree<Payload>::create_child(Payload) [with Payload = int]" | Father Index: 0 | Own Index: 1 | Nodes under Father: 2
 		-->> "bool User::Tree<Payload>::create_child(Payload) [with Payload = int]" |
-		<<-- "bool User::Tree<Payload>::create_child(Payload) [with Payload = int]" | Leaves: 3
+		<<-- "bool User::Tree<Payload>::create_child(Payload) [with Payload = int]" | Father Index: 0 | Own Index: 2 | Nodes under Father: 3
 		-->> "bool User::Tree<Payload>::show() [with Payload = int]" | Nodes: 3
-			-->> "bool User::Tree<Payload>::convert_node_iterator_to_index(typename std::vector<User::Tree<Payload>::Node>::iterator, unsigned int&) [with Payload = int; typename std::vector<User::Tree<Payload>::Node>::iterator = __gnu_cxx::__normal_iterator<User::Tree<int>::Node*, std::vector<User::Tree<int>::Node, std::allocator<User::Tree<int>::Node> > >]" | This: 006efea0, Father: 00edac40
-				Begin: 00edac40 | End: 00edac70
-			<<-- "bool User::Tree<Payload>::convert_node_iterator_to_index(typename std::vector<User::Tree<Payload>::Node>::iterator, unsigned int&) [with Payload = int; typename std::vector<User::Tree<Payload>::Node>::iterator = __gnu_cxx::__normal_iterator<User::Tree<int>::Node*, std::vector<User::Tree<int>::Node, std::allocator<User::Tree<int>::Node> > >]" | Index: 0
-			-->> "bool User::Tree<Payload>::convert_node_iterator_to_index(typename std::vector<User::Tree<Payload>::Node>::iterator, unsigned int&) [with Payload = int; typename std::vector<User::Tree<Payload>::Node>::iterator = __gnu_cxx::__normal_iterator<User::Tree<int>::Node*, std::vector<User::Tree<int>::Node, std::allocator<User::Tree<int>::Node> > >]" | This: 006efea0, Father: 00edac50
-				Begin: 00edac40 | End: 00edac70
-			<<-- "bool User::Tree<Payload>::convert_node_iterator_to_index(typename std::vector<User::Tree<Payload>::Node>::iterator, unsigned int&) [with Payload = int; typename std::vector<User::Tree<Payload>::Node>::iterator = __gnu_cxx::__normal_iterator<User::Tree<int>::Node*, std::vector<User::Tree<int>::Node, std::allocator<User::Tree<int>::Node> > >]" | Index: 1
-			-->> "bool User::Tree<Payload>::convert_node_iterator_to_index(typename std::vector<User::Tree<Payload>::Node>::iterator, unsigned int&) [with Payload = int; typename std::vector<User::Tree<Payload>::Node>::iterator = __gnu_cxx::__normal_iterator<User::Tree<int>::Node*, std::vector<User::Tree<int>::Node, std::allocator<User::Tree<int>::Node> > >]" | This: 006efea0, Father: 00edac60
-				Begin: 00edac40 | End: 00edac70
-			<<-- "bool User::Tree<Payload>::convert_node_iterator_to_index(typename std::vector<User::Tree<Payload>::Node>::iterator, unsigned int&) [with Payload = int; typename std::vector<User::Tree<Payload>::Node>::iterator = __gnu_cxx::__normal_iterator<User::Tree<int>::Node*, std::vector<User::Tree<int>::Node, std::allocator<User::Tree<int>::Node> > >]" | Index: 2
+		<<-- "bool User::Tree<Payload>::show() [with Payload = int]" |
+		-->> "unsigned int User::Tree<Payload>::create_child(unsigned int, Payload) [with Payload = int]" |
+		<<-- "unsigned int User::Tree<Payload>::create_child(unsigned int, Payload) [with Payload = int]" | Father Index: 1 | Own Index: 3 | Nodes under Father: 2
+		-->> "bool User::Tree<Payload>::show() [with Payload = int]" | Nodes: 4
 		<<-- "bool User::Tree<Payload>::show() [with Payload = int]" |
 		-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 006efea0
 		<<-- "User::Tree<Payload>::~Tree() [with Payload = int]" |

@@ -58,6 +58,8 @@ namespace User
 //! @details
 //! \n	A basic tree class that stores a template payload
 //! \n	Implements the generic Tree_interface
+//! \n	I want to be able to:
+//! \n	Search a node by payload and return a callable version of it so I can add move nodes
 /************************************************************************************/
 
 template <class Payload>
@@ -78,8 +80,6 @@ class Tree : public Tree_interface<Payload>
 			static const bool CU1_EXTERNAL_CHECKS = true;
 			//Checks to be performed on input dependent on internal algorithms
 			static const bool CU1_INTERNAL_CHECKS = true;
-
-
 			//true = pedantic count children. check all nodes, and make sure all nodes have coherent priority
 			//false = fast count children. will return the max priority of the first children with the correct father, if any
 			static const bool CU1_PEDANTIC_COUNT_CHILDREN = true;
@@ -88,10 +88,9 @@ class Tree : public Tree_interface<Payload>
         //! @brief Error codes of the class
         union Error_code
         {
-			//No error
 			static constexpr const char *CPS8_OK = "OK";
-			//Generic error
 			static constexpr const char *CPS8_ERR = "ERR";
+			static constexpr const char *CPS8_ERR_OOB = "ERR Out Of Boundary: Tried to access an index that doesn't exist";
         };
 
         /*********************************************************************************************************************************************************
@@ -144,7 +143,9 @@ class Tree : public Tree_interface<Payload>
         **********************************************************************************************************************************************************
         *********************************************************************************************************************************************************/
 
+		//Overload the square bracket operator to do an index search and return a RRHS/LHS reference to the payload
         Payload& operator []( unsigned int iu32_index );
+
 
         /*********************************************************************************************************************************************************
         **********************************************************************************************************************************************************
@@ -155,6 +156,8 @@ class Tree : public Tree_interface<Payload>
 		//Create a child of the root
 		//std::vector<Node>::iterator create_child( Payload it_payload );
 		bool create_child( Payload it_payload );
+		//Create a child of the node with a given index. Returns the index of the node created
+		unsigned int create_child( unsigned int iu32_father_index, Payload it_payload );
 
         /*********************************************************************************************************************************************************
         **********************************************************************************************************************************************************
@@ -233,8 +236,6 @@ class Tree : public Tree_interface<Payload>
         **********************************************************************************************************************************************************
         *********************************************************************************************************************************************************/
 
-        //Convert an iterator to a node to an index, its position in the vector
-		bool convert_node_iterator_to_index( typename std::vector<Node>::iterator ipst_father, unsigned int &iru32_index );
         //Count the children of a node
         bool count_children( typename std::vector<Node>::iterator st_father, unsigned int &oru32_num_children );
 		//Report an error. return false: OK | true: Unknown error code
@@ -454,7 +455,7 @@ bool Tree<Payload>::create_child( Payload it_payload )
 	st_node.u32_children_max_priority = 0;
 	//Index of the root
 	st_node.u32_index_father = 0;
-	//Number of children of the father
+	//Number of children of the father, number of siblings of the node being created. Also the priority, resolution order of those children.
 	unsigned int u32_num_children = this->gast_nodes[ st_node.u32_index_father ].u32_children_max_priority;
     //By the end, I will have added a children to the father
 	u32_num_children++;
@@ -465,10 +466,83 @@ bool Tree<Payload>::create_child( Payload it_payload )
 	//Add the node to the tree
 	this->gast_nodes.push_back( st_node );
 
+
+
     //--------------------------------------------------------------------------
     //	RETURN
     //--------------------------------------------------------------------------
-    DRETURN_ARG("Leaves: %d", u32_num_children +1 ); //Trace Return
+    DRETURN_ARG("Father Index: %d | Own Index: %d | Nodes under Father: %d", st_node.u32_index_father, this->gast_nodes.size() -1,u32_num_children +1 ); //Trace Return
+    return false;	//OK
+}   //Public Setter: create_leaf | Payload
+
+/***************************************************************************/
+//! @brief Public Setter: create_leaf | Payload
+/***************************************************************************/
+//! @param iu32_father_index | Numeric index of the node that is to be the father of the new node. The father may have nodes already
+//! @param it_payload | payload to be attached to this leaf
+//! @return unsigned int | 0 = FAIL. 0 is the index of the root, it can never be created by create_child | >0 index of the node in the array
+//! @details
+//! \n Create a child of the root
+/***************************************************************************/
+
+template <class Payload>
+unsigned int Tree<Payload>::create_child( unsigned int iu32_father_index, Payload it_payload )
+{
+    DENTER(); //Trace Enter
+    //--------------------------------------------------------------------------
+    //	CHECK&INIT
+    //--------------------------------------------------------------------------
+	//if class is in error, leaf cannot be created
+    if (this->gps8_error_code != Error_code::CPS8_OK)
+    {
+		DRETURN_ARG("ERR:%d | Tree is in error: %s | Cannot create leaf", __LINE__, this->gps8_error_code );
+		return true;
+    }
+	//If I'm searching for a node OOB
+    if (iu32_father_index >= this->gast_nodes.size())
+    {
+		DRETURN_ARG("ERR:%d | OOB %d of %d | %s", __LINE__, iu32_father_index, this->gast_nodes.size(),this->gps8_error_code );
+		this->report_error( Error_code::CPS8_ERR_OOB );
+		return true;
+    }
+
+    //--------------------------------------------------------------------------
+    //	BODY
+    //--------------------------------------------------------------------------
+
+	//Create the node to add metadata to the payload
+	Node st_node;
+	st_node.t_payload = it_payload;
+	//This node starts with no children
+	st_node.u32_children_max_priority = 0;
+	//Index of the root
+	st_node.u32_index_father = iu32_father_index;
+	//Number of children of the father
+	//Also number of siblings of the node being created.
+	//Also the priority, resolution order of those children.
+	unsigned int u32_num_children = this->gast_nodes[ st_node.u32_index_father ].u32_children_max_priority;
+    //By the end, I will have added a children to the father
+	u32_num_children++;
+	//I update the number of children of the father, thus the max priority of the father
+	this->gast_nodes[ st_node.u32_index_father ].u32_children_max_priority = u32_num_children;
+    //The newly created node has the lowest priority
+    st_node.u32_own_priority = u32_num_children -1;
+	//This is what the index of this node should be after the creation operation is complete
+    unsigned int u32_own_index = this->gast_nodes.size();
+	//Add the node to the tree
+	this->gast_nodes.push_back( st_node );
+	//!@todo check that the node has been created with the right content
+	if (u32_own_index != this->gast_nodes.size() -1)
+	{
+		this->report_error( Error_code::CPS8_ERR );
+		DRETURN_ARG("ERR%d: push_back seemingly did not create a new node | %d of %d", __LINE__, u32_own_index, this->gast_nodes.size() );
+		return true;
+	}
+
+    //--------------------------------------------------------------------------
+    //	RETURN
+    //--------------------------------------------------------------------------
+    DRETURN_ARG("Father Index: %d | Own Index: %d | Nodes under Father: %d", st_node.u32_index_father, u32_own_index,u32_num_children +1 ); //Trace Return
     return false;	//OK
 }   //Public Setter: create_leaf | Payload
 
@@ -539,8 +613,7 @@ bool Tree<Payload>::show( void )
     {
 
 		//std::ostream my_stream;
-		unsigned int u32_node_index;
-		this->convert_node_iterator_to_index( pst_node, u32_node_index );
+		unsigned int u32_node_index = pst_node- this->gast_nodes.begin();
 		std::cout << "Index: " << u32_node_index << " | ";
 		unsigned int u32_father_index = pst_node->u32_index_father;
 		std::cout << "Father: " << u32_father_index;
@@ -625,41 +698,6 @@ bool Tree<Payload>::init_class_vars( Payload it_payload )
 **	PRIVATE METHODS
 **********************************************************************************************************************************************************
 *********************************************************************************************************************************************************/
-
-/***************************************************************************/
-//! @brief Private Method | convert_node_iterator_to_index | std::vector<Node>::iterator
-/***************************************************************************/
-//! @param std::vector<Node>::iterator | iterator to the node
-//! @return bool | false = OK | true = FAIL |
-//! @details
-//! \n Convert an iterator to a node to an index, its position in the vector
-/***************************************************************************/
-
-template <class Payload>
-bool Tree<Payload>::convert_node_iterator_to_index( typename std::vector<Node>::iterator ipst_father, unsigned int &iru32_index )
-{
-    DENTER_ARG("This: %p, Father: %p", this, ipst_father );
-    //--------------------------------------------------------------------------
-    //	CHECK
-    //--------------------------------------------------------------------------
-
-    DPRINT("Begin: %p | End: %p\n", this->gast_nodes.begin(), this->gast_nodes.end() );
-    if ( (Config::CU1_INTERNAL_CHECKS == true) && ((ipst_father < this->gast_nodes.begin()) || (ipst_father >= this->gast_nodes.end())) )
-    {
-		iru32_index = 0;
-		DRETURN_ARG("ERR:%d | Iterator points to an address outside vector range | Index %d | Size: %d", __LINE__, ipst_father -this->gast_nodes.begin(), this->gast_nodes.end() -this->gast_nodes.begin() );
-		return true;
-    }
-
-    //--------------------------------------------------------------------------
-    //	RETURN
-    //--------------------------------------------------------------------------
-
-	unsigned int u32_index = ipst_father -this->gast_nodes.begin();
-	iru32_index = u32_index;
-    DRETURN_ARG("Index: %d", u32_index );
-    return false;
-} 	//Private Method | convert_node_iterator_to_index | std::vector<Node>::iterator
 
 /***************************************************************************/
 //! @brief Private Method | report_error | Error_code

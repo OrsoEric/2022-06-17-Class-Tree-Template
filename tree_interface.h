@@ -53,7 +53,7 @@ namespace User
 //! @copyright  BSD 3-Clause License Copyright (c) 2022, Orso Eric
 //! @details
 //! \n	Interface to a generic Tree implementation
-//! \n
+//! \n	constructor creates an empty tree
 /************************************************************************************/
 
 template <class Payload>
