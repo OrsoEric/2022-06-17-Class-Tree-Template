@@ -146,7 +146,6 @@ class Tree : public Tree_interface<Payload>
 		//Overload the square bracket operator to do an index search and return a RRHS/LHS reference to the payload
         Payload& operator []( unsigned int iu32_index );
 
-
         /*********************************************************************************************************************************************************
         **********************************************************************************************************************************************************
         **  PUBLIC SETTERS
@@ -174,6 +173,7 @@ class Tree : public Tree_interface<Payload>
         }
         //Show the nodes stored inside the vector and their links
 		bool show( void );
+		bool show( unsigned int iu32_index, unsigned int iu32_depth );
 
         /*********************************************************************************************************************************************************
         **********************************************************************************************************************************************************
@@ -635,6 +635,110 @@ bool Tree<Payload>::show( void )
     return this->gast_nodes[0].t_payload;
 }   //Public getter: show | void |
 
+/***************************************************************************/
+//! @brief Public getter: show | void |
+/***************************************************************************/
+//! @param iu32_index | index of the node. Will traverse and print every node down from this node
+//! @param iu32_depth | recursive depth counter, used to represent as tabs the depth of the node
+//! @return bool | false = OK | true = FAIL |
+//! @details
+//! \n Show the nodes stored inside the vector and their links
+//! \n Recursive tree travel function
+/***************************************************************************/
+
+template <class Payload>
+bool Tree<Payload>::show( unsigned int iu32_index, unsigned int iu32_depth )
+{
+    DENTER_ARG("Index: %d | Depth: %d", iu32_index, iu32_depth ); //Trace Enter
+    //--------------------------------------------------------------------------
+    //	CHECK
+    //--------------------------------------------------------------------------
+
+    if (this->gast_nodes.size() <= 0)
+    {
+		DRETURN_ARG("ERR:%d | Vector should contain at least the root...", __LINE__ );
+		return true;
+    }
+
+    //--------------------------------------------------------------------------
+    //	SHOW
+    //--------------------------------------------------------------------------
+
+	//Print a spacer for each level of descent into the tree
+    for (unsigned int u32_cnt = 0;u32_cnt < iu32_depth;u32_cnt++)
+	{
+		if (u32_cnt != iu32_depth-1 )
+		{
+			std::cout << "    ";
+		}
+		else
+		{
+			std::cout << "|-- ";
+		}
+	}
+	//Print the content of the node
+	std::cout << "Node: " << iu32_index << " | Priority " << this->gast_nodes[iu32_index].u32_own_priority << " / " << this->gast_nodes[ this->gast_nodes[iu32_index].u32_index_father ].u32_children_max_priority << " | Payload: " << this->gast_nodes[iu32_index].t_payload << "\n";
+	//Put in the stack the children
+	//The node being worked on has (u32_children_max_priority) that tells the number of children
+	//
+	//If there is only the root inside the tree
+	if (this->gast_nodes.size() <= 1)
+	{
+		//Stop the search early
+        DRETURN();
+        return false;
+	}
+	//unsigned int u32_father_index = iu32_index
+	//Search index for the next children, skip the root from the search
+	unsigned int u32_children_index = 1;
+	//Number of children found
+	unsigned int u32_num_children = 0;
+	//Only activate recursive search under this node if this node has at least one child
+	bool u1_search_children = (this->gast_nodes[iu32_index].u32_children_max_priority > 0);
+	//while authorized to scan for children
+    while (u1_search_children == true)
+    {
+		//If I find a node whose father is the index I just printed
+		if (iu32_index == this->gast_nodes[u32_children_index].u32_index_father)
+		{
+			//Pedantic check that the priority of the node is consistent with the number of children of the father
+			if ( (Config::CU1_INTERNAL_CHECKS == true) && (this->gast_nodes[u32_children_index].u32_own_priority >= this->gast_nodes[iu32_index].u32_children_max_priority))
+			{
+				DRETURN_ARG("ERR%d: Found a child whose priority exceed the number of children of the father...", __LINE__ );
+				return true;
+			}
+			//Launch the recursive search under this node as well
+			//!@TODO: This code doesn't take into account the priority. I should explore high priority node first
+			bool u1_fail = this->show( u32_children_index, iu32_depth +1);
+			if (u1_fail == true)
+			{
+				DRETURN_ARG("ERR%d: Exploration failed at node %d, depth %d, end the search early...", __LINE__, u32_children_index, iu32_depth );
+				return true;
+			}
+			//I just found a child
+			u32_num_children++;
+			//If I found ALL the children of this node
+			if (u32_num_children >= this->gast_nodes[iu32_index].u32_children_max_priority)
+			{
+				u1_search_children = false;
+			}
+		}	//If I find a node whose father is the index I just printed
+		//Scan next child
+		u32_children_index++;
+		//Scanned all nodes
+		if (u32_children_index > this->gast_nodes.size())
+		{
+			DRETURN_ARG("ERR%d: Search for child reached the end of the array without finding one...", __LINE__ );
+			return true;
+		}
+    }	//while authorized to scan for children
+
+    //--------------------------------------------------------------------------
+    //	RETURN
+    //--------------------------------------------------------------------------
+    DRETURN_ARG("Children: %d", u32_num_children); //Trace Return
+    return false;
+}   //Public getter: show | void |
 
 /*********************************************************************************************************************************************************
 **********************************************************************************************************************************************************

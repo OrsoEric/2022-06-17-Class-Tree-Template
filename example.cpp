@@ -194,7 +194,7 @@ bool test_bench( void )
 		std::cout << "Root Payload: " << cl_my_tree[99] << "\n";
 
 
-		//Attach two child to the root
+		//Attach two children to the root
 		cl_my_tree.create_child( 100 );
 		cl_my_tree.create_child( 101 );
 		//Show content of the array
@@ -203,7 +203,11 @@ bool test_bench( void )
 		cl_my_tree.create_child( 1, 100 );
 		cl_my_tree.show();
 
-		//cl_my_tree[100].create_child( 102 );
+		std::cout << "-------------------------------------\n";
+
+		unsigned int u32_child_index = cl_my_tree.create_child( 0, 333 );
+		cl_my_tree.create_child( u32_child_index, 334 );
+		cl_my_tree.show( 0, 0 );
 
 	}
 
