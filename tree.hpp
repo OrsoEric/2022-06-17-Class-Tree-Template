@@ -60,6 +60,7 @@ namespace User
 //! \n	Implements the generic Tree_interface
 //! \n	I want to be able to:
 //! \n	Search a node by payload and return a callable version of it so I can add move nodes
+//! \n	IDEA: add a field dedicated to the scan. an index inside each node that is maintained when a node is created/destroyed
 /************************************************************************************/
 
 template <class Payload>
@@ -206,56 +207,73 @@ class Tree : public Tree_interface<Payload>
         *********************************************************************************************************************************************************/
 
 		template <typename T>
-		class custom_iterator
+		class iterator
 		{
 			public:
-				custom_iterator(std::vector<T>& vec, size_t index = 0) : gra_vector(vec), gu32_index(index) {}
+				//! @brief constructor for the custom iterator
+				iterator(std::vector<T>& ira_parent_vector, size_t in_starting_index = 0) :
+					gra_vector(ira_parent_vector),
+					gu32_index(in_starting_index)
+				{
+					//Do nothing
+					return;
+				}
 
 				// Prefix ++ operator (increments the iterator and returns the new value)
-				custom_iterator<T>& operator++()
+				iterator<T>& operator++()
 				{
-					++gu32_index;
+					gu32_index++;
 					return *this;
 				}
 
 				// Postfix ++ operator (increments the iterator and returns the old value)
-				custom_iterator<T> operator++(int)
+				iterator<T> operator++(int)
 				{
-					custom_iterator<T> tmp(*this);
-					++gu32_index;
+					iterator<T> tmp(*this);
+					gu32_index++;
 					return tmp;
 				}
 
 				// Dereference operator (*) (returns a reference to the element at the current position)
-				T& operator*(void)
+
+				Payload get_payload()
+				{
+					DENTER_ARG("Index: %d", gu32_index);
+					Payload t_payload = gra_vector[gu32_index].t_payload;
+
+					DRETURN_ARG("Payload: %d", t_payload );
+					return t_payload;
+				}
+
+				Node get_node()
 				{
 					return gra_vector[gu32_index];
 				}
 
-				// Comparison operators (compare the iterator's position with another iterator)
-				bool operator==(const custom_iterator<T>& other) const
+				//!@brief comparison operators (compare the iterator's position with another iterator)
+				bool operator==(const iterator<T>& icl_rhs_iterator) const
 				{
-					return gu32_index == other.gu32_index;
+					return gu32_index == icl_rhs_iterator.gu32_index;
 				}
-				bool operator!=(const custom_iterator<T>& other) const
+				bool operator!=(const iterator<T>& icl_rhs_iterator) const
 				{
-					return gu32_index != other.gu32_index;
+					return gu32_index != icl_rhs_iterator.gu32_index;
 				}
 
 			private:
 				std::vector<T>& gra_vector;
 				size_t gu32_index;
-			};
+		};
 
-			// Iterator methods
-			custom_iterator<Node> begin()
-			{
-				return custom_iterator<Node>(gast_nodes, 0);
-			}
-			custom_iterator<Node> end()
-			{
-				return custom_iterator<Node>(gast_nodes, gast_nodes.size());
-			}
+		// Iterator methods
+		iterator<Node> begin()
+		{
+			return iterator<Node>(gast_nodes, 0);
+		}
+		iterator<Node> end()
+		{
+			return iterator<Node>(gast_nodes, gast_nodes.size());
+		}
 
     //Visible to derived classes
     protected:

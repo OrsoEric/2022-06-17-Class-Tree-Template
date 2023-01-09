@@ -211,9 +211,12 @@ bool test_bench( void )
 		cl_my_tree.create_child( u32_child_index, 334 );
 		cl_my_tree.show( 0, 0 );
 
-		for (User::Tree<int>::custom_iterator<User::Tree<int>::Node> it=cl_my_tree.begin();it!=cl_my_tree.end();it++)
+		for (User::Tree<int>::iterator<User::Tree<int>::Node> cl_custom_iterator=cl_my_tree.begin();cl_custom_iterator!=cl_my_tree.end();cl_custom_iterator++)
 		{
-			printf("%p %p\n", it, *it);
+			int n_payload = cl_custom_iterator.get_payload();
+
+			auto st_node = cl_custom_iterator.get_node();
+			printf("%p | payload: %d | node: %d\n", cl_custom_iterator, n_payload, st_node.t_payload);
 			//std::cout << it.t_payload;
 		}
 
