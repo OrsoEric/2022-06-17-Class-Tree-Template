@@ -235,7 +235,13 @@ class Tree : public Tree_interface<Payload>
 				}
 
 				// Dereference operator (*) (returns a reference to the element at the current position)
+				T &operator &(void)
+				{
+					return &gra_vector[gu32_index];
+				}
 
+				//! @bug t_payload shows correctly inside but returns the wrong number outside?
+				/*
 				Payload get_payload()
 				{
 					DENTER_ARG("Index: %d", gu32_index);
@@ -244,8 +250,14 @@ class Tree : public Tree_interface<Payload>
 					DRETURN_ARG("Payload: %d", t_payload );
 					return t_payload;
 				}
+				*/
+				Payload get_payload( void )
+				{
+					return gra_vector[gu32_index].t_payload;
+				}
 
-				Node get_node()
+
+				T &get_node( void )
 				{
 					return gra_vector[gu32_index];
 				}
