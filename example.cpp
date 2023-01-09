@@ -205,9 +205,17 @@ bool test_bench( void )
 
 		std::cout << "-------------------------------------\n";
 
+		//Create a child of the root and get its node index
 		unsigned int u32_child_index = cl_my_tree.create_child( 0, 333 );
+		//Of that node, create a child
 		cl_my_tree.create_child( u32_child_index, 334 );
 		cl_my_tree.show( 0, 0 );
+
+		for (User::Tree<int>::custom_iterator<User::Tree<int>::Node> it=cl_my_tree.begin();it!=cl_my_tree.end();it++)
+		{
+			printf("%p %p\n", it, *it);
+			//std::cout << it.t_payload;
+		}
 
 	}
 
@@ -272,7 +280,6 @@ bool test_bench( void )
 	u1_ret = cl_my_instance.swap_leaves( 0, cl_my_instance[0], 0);
 	cl_my_instance.print();
 	*/
-
 
 	//----------------------------------------------------------------
 	//	RETURN
