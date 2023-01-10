@@ -2,15 +2,15 @@ Start Debug!
 -->> "int main()" |
 	OrangeBot Projects
 	-->> "bool test_bench()" |
-		-->> "User::Tree<Payload>::Tree(Payload, Payload) [with Payload = int]" | This: 006efe90
+		-->> "User::Tree<Payload>::Tree(Payload, Payload) [with Payload = int]" | This: 006efe94
 			-->> "bool User::Tree<Payload>::init_class_vars(Payload) [with Payload = int]" |
 			<<-- "bool User::Tree<Payload>::init_class_vars(Payload) [with Payload = int]" |
 		<<-- "User::Tree<Payload>::Tree(Payload, Payload) [with Payload = int]" |
 		-->> "Payload& User::Tree<Payload>::root(bool&) [with Payload = int]" |
 		<<-- "Payload& User::Tree<Payload>::root(bool&) [with Payload = int]" |
-		-->> "Payload& User::Tree<Payload>::operator[](unsigned int) [with Payload = int]" | Object: 006efe90, Index: 0
+		-->> "Payload& User::Tree<Payload>::operator[](unsigned int) [with Payload = int]" | Object: 006efe94, Index: 0
 		<<-- "Payload& User::Tree<Payload>::operator[](unsigned int) [with Payload = int]" |
-		-->> "Payload& User::Tree<Payload>::operator[](unsigned int) [with Payload = int]" | Object: 006efe90, Index: 99
+		-->> "Payload& User::Tree<Payload>::operator[](unsigned int) [with Payload = int]" | Object: 006efe94, Index: 99
 		<<-- "Payload& User::Tree<Payload>::operator[](unsigned int) [with Payload = int]" | Index OOB: 99 of 1
 		-->> "bool User::Tree<Payload>::create_child(Payload) [with Payload = int]" |
 		<<-- "bool User::Tree<Payload>::create_child(Payload) [with Payload = int]" | Father Index: 0 | Own Index: 1 | Nodes under Father: 2
@@ -38,7 +38,7 @@ Start Debug!
 			-->> "bool User::Tree<Payload>::show(unsigned int, unsigned int) [with Payload = int]" | Index: 5 | Depth: 1
 			<<-- "bool User::Tree<Payload>::show(unsigned int, unsigned int) [with Payload = int]" | Children: 0
 		<<-- "bool User::Tree<Payload>::show(unsigned int, unsigned int) [with Payload = int]" | Children: 4
-		-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 006efe90
+		-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 006efe94
 		<<-- "User::Tree<Payload>::~Tree() [with Payload = int]" |
 	<<-- "bool test_bench()" |
 <<-- "int main()" |

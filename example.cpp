@@ -213,10 +213,17 @@ bool test_bench( void )
 
 		for (User::Tree<int>::iterator<User::Tree<int>::Node> cl_custom_iterator=cl_my_tree.begin();cl_custom_iterator!=cl_my_tree.end();cl_custom_iterator++)
 		{
-			int n_payload = cl_custom_iterator.get_payload();
-			User::Tree<int>::Node st_node = cl_custom_iterator.get_node();
-			std::cout << "Payload: " << n_payload << " | node.payload: " << st_node.t_payload << "\n";
-			printf("%p | payload: %d | node: %d\n", cl_custom_iterator, n_payload, st_node.t_payload);
+			//works
+			//User::Tree<int>::Node st_node = *cl_custom_iterator;
+			//std::cout << "Node: " << st_node.t_payload << "\n";
+
+			//Works
+			std::cout << "Node: " << (*cl_custom_iterator).t_payload << "\n";
+
+			//User::Tree<int>::Node st_node = cl_custom_iterator.get_node();
+			//std::cout << "Node: " << *cl_custom_iterator.t_payload << "\n";
+
+			//printf("%p | payload: %d | node: %d\n", cl_custom_iterator, n_payload, st_node.t_payload);
 		}
 
 	}

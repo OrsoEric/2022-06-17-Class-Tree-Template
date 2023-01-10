@@ -46,8 +46,6 @@ class My_class
 					gu32_index++;
 					return tmp;
 				}
-
-				// Dereference operator (*) (returns a reference to the element at the current position)
 				T &operator &(void)
 				{
 					return &gra_vector[gu32_index];
@@ -96,7 +94,7 @@ int main(void)
 		My_class::Node st_node = cl_custom_iterator.get_node();
 		//std::cout << "get_payload: " << cl_custom_iterator.get_payload();
 		std::cout << "get_payload: " << n_payload << "\n";
-		printf("%p | get_payload: %d | get_node n_payload: %d\n", cl_custom_iterator, n_payload, st_node.n_payload);
+		printf("%p | get_payload: %d | get_node.n_payload: %d\n", cl_custom_iterator, n_payload, st_node.n_payload);
 	}
 
 	return 0;
