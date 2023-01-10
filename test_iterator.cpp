@@ -1,18 +1,16 @@
-//Standard C Libraries
+//Question: https://stackoverflow.com/questions/75066517/printf-and-stdcout-behave-differently-trying-to-print-out-a-structure-member-i
 #include <iostream>
-#include <cstdio>
 #include <vector>
 
 class My_class
 {
 	public:
-		//Troublemaker?
 		struct Node
 		{
 			int n_payload;
 		};
-		//Constructor
-		My_class(void)
+		//Constructor with example
+		My_class()
 		{
 			Node st_node;
 			for (int cnt = 0; cnt < 5; cnt++)
@@ -22,7 +20,7 @@ class My_class
 				std::cout << "Push " << cnt << " | Payload: " << gast_my_array[cnt].n_payload << "\n";
 			}
 		}
-
+		//iterator
 		template <typename T>
 		class iterator
 		{
@@ -46,18 +44,11 @@ class My_class
 					gu32_index++;
 					return tmp;
 				}
-				T &operator &(void)
-				{
-					return &gra_vector[gu32_index];
-				}
-				int get_payload( void )
-				{
-					return gra_vector[gu32_index].n_payload;
-				}
-				T get_node( void )
-				{
-					return gra_vector[gu32_index];
-				}
+				//FIX: I overload the * operator to get a reference to the element of std::vector of which I can easily get the address and content
+				T &operator *()
+                {
+                    return gra_vector[gu32_index];
+                }
 				bool operator==(const iterator<T>& icl_rhs_iterator) const
 				{
 					return gu32_index == icl_rhs_iterator.gu32_index;
@@ -71,7 +62,6 @@ class My_class
 				std::vector<T>& gra_vector;
 				size_t gu32_index;
 		};
-
 		iterator<Node> begin()
 		{
 			return iterator<Node>(gast_my_array, 0);
@@ -90,11 +80,8 @@ int main(void)
 
 	for (My_class::iterator<My_class::Node> cl_custom_iterator=my_class_instance.begin();cl_custom_iterator!=my_class_instance.end();cl_custom_iterator++)
 	{
-		int n_payload = cl_custom_iterator.get_payload();
-		My_class::Node st_node = cl_custom_iterator.get_node();
-		//std::cout << "get_payload: " << cl_custom_iterator.get_payload();
-		std::cout << "get_payload: " << n_payload << "\n";
-		printf("%p | get_payload: %d | get_node.n_payload: %d\n", cl_custom_iterator, n_payload, st_node.n_payload);
+		//FIX: printf has undefined behaviour with %p of an object. std::cout of the address of a reference will print out the address
+		std::cout << "iterator address: " << &*cl_custom_iterator << " | payload: " << (*cl_custom_iterator).n_payload << "\n";
 	}
 
 	return 0;

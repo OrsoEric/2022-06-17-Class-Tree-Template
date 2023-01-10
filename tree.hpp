@@ -11,6 +11,7 @@
 
 //Used to store leaves
 #include <vector>
+#include <string>
 
 #include "Tree_interface.h"
 
@@ -194,7 +195,10 @@ class Tree : public Tree_interface<Payload>
         **********************************************************************************************************************************************************
         *********************************************************************************************************************************************************/
 
-        friend std::ostream& operator<<( std::ostream& icl_stream, Node ist_node );
+        friend std::ostream& operator<<( std::ostream& icl_stream, Tree<Payload>::Node &ist_node )
+        {
+			return icl_stream << Tree<Payload>::stringfy_node( ist_node );
+        }
 
         /*********************************************************************************************************************************************************
         **********************************************************************************************************************************************************
@@ -240,12 +244,8 @@ class Tree : public Tree_interface<Payload>
 					return tmp;
 				}
 
-				// Dereference operator (*) (returns a reference to the element at the current position)
-				T &operator *(void)
-				{
-					return gra_vector[gn_index];
-				}
-				T &get_node( void )
+				//!@ brief Dereference the iterator into a Node
+				T &operator*(void)
 				{
 					return gra_vector[gn_index];
 				}
@@ -265,11 +265,12 @@ class Tree : public Tree_interface<Payload>
 				size_t gn_index;
 		};
 
-		// Iterator methods
+		//! @brief iterator that start from the first element of the tree
 		iterator<Node> begin()
 		{
 			return iterator<Node>(gast_nodes, 0);
 		}
+		//! @brief iterator that marks the end of the tree
 		iterator<Node> end()
 		{
 			return iterator<Node>(gast_nodes, gast_nodes.size());
@@ -312,6 +313,23 @@ class Tree : public Tree_interface<Payload>
         **********************************************************************************************************************************************************
         *********************************************************************************************************************************************************/
 
+		//! @brief turns a Node into a string
+        static std::string stringfy_node( Node &ist_node )
+        {
+			std::string s_ret;
+
+			//std::string
+
+			s_ret += "Payload: ";
+			s_ret += std::string( ist_node.t_payload) ;
+			//std::stringstream my_stream;
+			//my_stream << "Payload: " << ist_node.t_payload;
+			//my_stream << " | ";
+			//my_stream << "Payload: " << ist_node.t_payload;
+
+
+			return s_ret;
+        }
         //Count the children of a node
         bool count_children( typename std::vector<Node>::iterator st_father, unsigned int &oru32_num_children );
 		//Report an error. return false: OK | true: Unknown error code
@@ -833,7 +851,7 @@ bool Tree<Payload>::show( unsigned int ign_index, unsigned int iu32_depth )
 /***************************************************************************/
 /*
 template <class Payload>
-std::ostream& operator<<( std::ostream& icl_stream, Tree<Payload>::Node ist_node )
+std::ostream& operator<<( std::ostream& icl_stream, Tree<Payload>::Node &ist_node )
 {
 	DENTER(); //Trace Enter
 	//--------------------------------------------------------------------------
@@ -841,7 +859,7 @@ std::ostream& operator<<( std::ostream& icl_stream, Tree<Payload>::Node ist_node
 	//--------------------------------------------------------------------------
 	//Translate error code into a string
 
-	//icl_stream << ips8_error_code << "\n";
+	icl_stream << ist_node.t_payload << "\n";
 
 	//--------------------------------------------------------------------------
 	//	RETURN
@@ -849,10 +867,7 @@ std::ostream& operator<<( std::ostream& icl_stream, Tree<Payload>::Node ist_node
 	DRETURN(); //Trace Return
 	return icl_stream;	//OK
 }   //End: Public Operator |  operator<< | const Lesson_operator_overloading::Error_code ie_error_code
-
 */
-
-
 /*********************************************************************************************************************************************************
 **********************************************************************************************************************************************************
 **	PRIVATE INIT
