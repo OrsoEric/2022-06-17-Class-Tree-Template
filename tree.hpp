@@ -195,8 +195,10 @@ class Tree : public Tree_interface<Payload>
         **********************************************************************************************************************************************************
         *********************************************************************************************************************************************************/
 
+        //! @brief overload (extend) the output stream operator to cover the Node structure
         friend std::ostream& operator<<( std::ostream& icl_stream, Tree<Payload>::Node &ist_node )
         {
+			//Dedicated static method to stringfy a node
 			return icl_stream << Tree<Payload>::stringfy_node( ist_node );
         }
 
@@ -316,19 +318,11 @@ class Tree : public Tree_interface<Payload>
 		//! @brief turns a Node into a string
         static std::string stringfy_node( Node &ist_node )
         {
-			std::string s_ret;
-
-			//std::string
-
-			s_ret += "Payload: ";
-			s_ret += std::string( ist_node.t_payload) ;
-			//std::stringstream my_stream;
-			//my_stream << "Payload: " << ist_node.t_payload;
-			//my_stream << " | ";
-			//my_stream << "Payload: " << ist_node.t_payload;
-
-
-			return s_ret;
+			//! @todo find out how to construct a string directly instead of using sprintf
+			char s_tmp[256];
+			sprintf( s_tmp, "Payload: %d | Father Index: %d | Own Priority %d | Children: %d", ist_node.t_payload, ist_node.gn_index_father, ist_node.u32_own_priority, ist_node.u32_children_max_priority );
+			//construct string from array of char
+			return std::string(s_tmp);
         }
         //Count the children of a node
         bool count_children( typename std::vector<Node>::iterator st_father, unsigned int &oru32_num_children );
