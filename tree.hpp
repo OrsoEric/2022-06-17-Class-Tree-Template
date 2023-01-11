@@ -107,7 +107,7 @@ class Tree : public Tree_interface<Payload>
 			//Payload inside the node
 			Payload t_payload;
 			//Index of the father. using father means that there is no variable number of children index to maintain. all nodes have exactly one father except the root. It also makes it impossible to make loops. Root is the only node that has itself as father.
-			unsigned int gn_index_father;
+			unsigned int n_index_father;
 			//Priority, defines the order of this node compared to its siblings, 0 is the highest priority node under the given father.
 			unsigned int u32_own_priority;
 			//Max Priority, it's the number of siblings. A lone child has priority of 0 and a max_priority of 1. max_priority of 0 is error.
@@ -115,6 +115,30 @@ class Tree : public Tree_interface<Payload>
 			//Instead the max priority of a node is equivalent to the number of children. I already have father reference to access it.
 			//So it's single edit when adding/removing children. Would be multi edit on all children otherwise
 			unsigned int u32_children_max_priority;
+			//Tree exploration index. A common operation is to explore the tree.
+			//Tree exploration changes only when the tree is modified.
+			//I add explicit fields that the iterator will travel through, updated when the tree is edited, hopefully with local rules
+			//Two explorations:
+			//>WIDE: explore the children first
+			//>DEEP: explore the children of children first
+			//E.G:
+			//	A
+			//		B
+			//			E
+			//		C
+			//		D
+			//			F
+			//				G
+			//	DEEP:
+			//unsigned int n_index_explore_wide;
+			unsigned int n_index_explore_deep;
+
+        };
+		//!@brief structure dedicated to tree exploration
+        struct Explore
+        {
+			unsigned int n_index_explore;
+			unsigned int n_distance_from_root;
         };
 
         /*********************************************************************************************************************************************************
@@ -199,7 +223,7 @@ class Tree : public Tree_interface<Payload>
         friend std::ostream& operator<<( std::ostream& icl_stream, Tree<Payload>::Node &ist_node )
         {
 			//Dedicated static method to stringfy a node
-			return icl_stream << Tree<Payload>::stringfy_node( ist_node );
+			return icl_stream << Tree<Payload>::to_string( ist_node );
         }
 
         /*********************************************************************************************************************************************************
@@ -220,25 +244,49 @@ class Tree : public Tree_interface<Payload>
         **********************************************************************************************************************************************************
         *********************************************************************************************************************************************************/
 
+		/**
+		* @class iterator
+		* @tparam T the type of elements in the vector
+		*
+		* @brief A custom iterator class for a vector of type T.
+		* This class overloads the preincrement operator (operator++) and postincrement operator (operator++(int))
+		* to allow for movement through the vector using the increment operator (++). It also define
+		* Dereference operator (operator*) to access the element of current index of the vector.
+		* It also define comparison operator (operator== and operator!=) to compare the position of the iterator
+		* with another iterator.
+		*/
 		template <typename T>
 		class iterator
 		{
 			public:
-				//! @brief constructor for the custom iterator
+				/**
+				* @brief constructor for the custom iterator
+				*
+				* @param ira_parent_vector a reference to the parent vector of type T
+				* @param in_starting_index the starting index of the iterator
+				*/
 				iterator(std::vector<T>& ira_parent_vector, size_t in_starting_index = 0) : gra_vector(ira_parent_vector)
 				{
 					gn_index = in_starting_index;
 					return;
 				}
 
-				// Prefix ++ operator (increments the iterator and returns the new value)
+				/**
+				* @brief overloads preincrement operator
+				*
+				* @return iterator<T>& reference to the iterator
+				*/
 				iterator<T>& operator++()
 				{
 					gn_index++;
 					return *this;
 				}
 
-				// Postfix ++ operator (increments the iterator and returns the old value)
+				/**
+				* @brief overloads postincrement operator
+				*
+				* @return iterator<T> copy of the iterator before it was incremented
+				*/
 				iterator<T> operator++(int)
 				{
 					iterator<T> tmp(*this);
@@ -246,26 +294,47 @@ class Tree : public Tree_interface<Payload>
 					return tmp;
 				}
 
-				//!@ brief Dereference the iterator into a Node
+				/**
+				* @brief Dereference the iterator into a Node
+				*
+				* @return T& reference to the element of current index of the vector
+				*/
 				T &operator*(void)
 				{
 					return gra_vector[gn_index];
 				}
 
-				//!@brief comparison operators (compare the iterator's position with another iterator)
+				/**
+				* @brief comparison operator
+				*
+				* @param icl_rhs_iterator Iterator to compare with
+				*
+				* @return true if the gn_index of this iterator is equal to the gn_index of rhs iterator
+				* @return false if the gn_index of this iterator is not equal to the gn_index of rhs iterator
+				*/
 				bool operator==(const iterator<T>& icl_rhs_iterator) const
 				{
 					return gn_index == icl_rhs_iterator.gn_index;
 				}
+
+				/**
+				* @brief comparison operator
+				*
+				* @param icl_rhs_iterator Iterator to compare with
+				*
+				* @return true if the gn_index of this iterator is not equal to the gn_index of rhs iterator
+				* @return false if the gn_index of this iterator is equal to the gn_index of rhs iterator
+				*/
 				bool operator!=(const iterator<T>& icl_rhs_iterator) const
 				{
 					return gn_index != icl_rhs_iterator.gn_index;
 				}
-
 			private:
+				//! The reference to the parent vector
 				std::vector<T>& gra_vector;
+				//! current index of the iterator
 				size_t gn_index;
-		};
+		};	//Class: iterator
 
 		//! @brief iterator that start from the first element of the tree
 		iterator<Node> begin()
@@ -316,16 +385,23 @@ class Tree : public Tree_interface<Payload>
         *********************************************************************************************************************************************************/
 
 		//! @brief turns a Node into a string
-        static std::string stringfy_node( Node &ist_node )
-        {
-			//! @todo find out how to construct a string directly instead of using sprintf
-			char s_tmp[256];
-			sprintf( s_tmp, "Payload: %d | Father Index: %d | Own Priority %d | Children: %d", ist_node.t_payload, ist_node.gn_index_father, ist_node.u32_own_priority, ist_node.u32_children_max_priority );
+        static std::string to_string( User::Tree<Payload>::Node &ist_node )
+		{
+			std::string s_ret = "Payload: ";
+			s_ret += std::to_string(ist_node.t_payload);
+			s_ret += " | Father Index: ";
+			s_ret += std::to_string(ist_node.n_index_father);
+			s_ret += " | Own Priority ";
+			s_ret += std::to_string(ist_node.u32_own_priority);
+			s_ret += " | Children: ";
+			s_ret += std::to_string(ist_node.u32_children_max_priority);
 			//construct string from array of char
-			return std::string(s_tmp);
-        }
+			return s_ret;
+		}
         //Count the children of a node
         bool count_children( typename std::vector<Node>::iterator st_father, unsigned int &oru32_num_children );
+		//! @brief updates the indexes used by the iterator to make a deep expolration of the tree
+        bool compute_deep_exploration_indexes( unsigned int ign_index, unsigned int iu32_depth );
 		//Report an error. return false: OK | true: Unknown error code
         bool report_error( const char *ips8_error_code );
         //Tries to recover from an error. Automatically called by get_error. return false = OK | true = fail
@@ -339,10 +415,8 @@ class Tree : public Tree_interface<Payload>
 
 		//The nodes are stored inside a standard vector
         std::vector<Node> gast_nodes;
-        //Iterator of the root
-        //typename std::vector<Node>::iterator gpst_root;
-        //Stores the node that is target for tree operations
-        //typename std::vector<Node>::iterator pst_working_node;
+		//Stores the sequence in which Nodes are explored
+        std::vector<Explore> gast_explorer;
 };	//End Class: Tree
 
 /*********************************************************************************************************************************************************
@@ -542,13 +616,13 @@ bool Tree<Payload>::create_child( Payload it_payload )
 	//This node starts with no children
 	st_node.u32_children_max_priority = 0;
 	//Index of the root
-	st_node.gn_index_father = 0;
+	st_node.n_index_father = 0;
 	//Number of children of the father, number of siblings of the node being created. Also the priority, resolution order of those children.
-	unsigned int u32_num_children = this->gast_nodes[ st_node.gn_index_father ].u32_children_max_priority;
+	unsigned int u32_num_children = this->gast_nodes[ st_node.n_index_father ].u32_children_max_priority;
     //By the end, I will have added a children to the father
 	u32_num_children++;
 	//I update the number of children of the father, thus the max priority of the father
-	this->gast_nodes[ st_node.gn_index_father ].u32_children_max_priority = u32_num_children;
+	this->gast_nodes[ st_node.n_index_father ].u32_children_max_priority = u32_num_children;
     //The newly created node has the lowest priority
     st_node.u32_own_priority = u32_num_children -1;
 	//Add the node to the tree
@@ -559,7 +633,7 @@ bool Tree<Payload>::create_child( Payload it_payload )
     //--------------------------------------------------------------------------
     //	RETURN
     //--------------------------------------------------------------------------
-    DRETURN_ARG("Father Index: %d | Own Index: %d | Nodes under Father: %d", st_node.gn_index_father, this->gast_nodes.size() -1,u32_num_children +1 ); //Trace Return
+    DRETURN_ARG("Father Index: %d | Own Index: %d | Nodes under Father: %d", st_node.n_index_father, this->gast_nodes.size() -1,u32_num_children +1 ); //Trace Return
     return false;	//OK
 }   //Public Setter: create_leaf | Payload
 
@@ -604,15 +678,15 @@ unsigned int Tree<Payload>::create_child( unsigned int iu32_father_index, Payloa
 	//This node starts with no children
 	st_node.u32_children_max_priority = 0;
 	//Index of the root
-	st_node.gn_index_father = iu32_father_index;
+	st_node.n_index_father = iu32_father_index;
 	//Number of children of the father
 	//Also number of siblings of the node being created.
 	//Also the priority, resolution order of those children.
-	unsigned int u32_num_children = this->gast_nodes[ st_node.gn_index_father ].u32_children_max_priority;
+	unsigned int u32_num_children = this->gast_nodes[ st_node.n_index_father ].u32_children_max_priority;
     //By the end, I will have added a children to the father
 	u32_num_children++;
 	//I update the number of children of the father, thus the max priority of the father
-	this->gast_nodes[ st_node.gn_index_father ].u32_children_max_priority = u32_num_children;
+	this->gast_nodes[ st_node.n_index_father ].u32_children_max_priority = u32_num_children;
     //The newly created node has the lowest priority
     st_node.u32_own_priority = u32_num_children -1;
 	//This is what the index of this node should be after the creation operation is complete
@@ -630,7 +704,7 @@ unsigned int Tree<Payload>::create_child( unsigned int iu32_father_index, Payloa
     //--------------------------------------------------------------------------
     //	RETURN
     //--------------------------------------------------------------------------
-    DRETURN_ARG("Father Index: %d | Own Index: %d | Nodes under Father: %d", st_node.gn_index_father, u32_own_index,u32_num_children +1 ); //Trace Return
+    DRETURN_ARG("Father Index: %d | Own Index: %d | Nodes under Father: %d", st_node.n_index_father, u32_own_index,u32_num_children +1 ); //Trace Return
     return false;	//OK
 }   //Public Setter: create_leaf | Payload
 
@@ -703,7 +777,7 @@ bool Tree<Payload>::show( void )
 		//std::ostream my_stream;
 		unsigned int u32_node_index = pst_node- this->gast_nodes.begin();
 		std::cout << "Index: " << u32_node_index << " | ";
-		unsigned int u32_father_index = pst_node->gn_index_father;
+		unsigned int u32_father_index = pst_node->n_index_father;
 		std::cout << "Father: " << u32_father_index;
 		std::cout << " | Payload: " << pst_node->t_payload;
 		//Root is the only node that has itself as father
@@ -744,6 +818,7 @@ bool Tree<Payload>::show( unsigned int ign_index, unsigned int iu32_depth )
 
     if (this->gast_nodes.size() <= 0)
     {
+		this->report_error(Error_code::CPS8_ERR);
 		DRETURN_ARG("ERR:%d | Vector should contain at least the root...", __LINE__ );
 		return true;
     }
@@ -751,80 +826,35 @@ bool Tree<Payload>::show( unsigned int ign_index, unsigned int iu32_depth )
     //--------------------------------------------------------------------------
     //	SHOW
     //--------------------------------------------------------------------------
-
-	//Print a spacer for each level of descent into the tree
-    for (unsigned int u32_cnt = 0;u32_cnt < iu32_depth;u32_cnt++)
-	{
-		if (u32_cnt != iu32_depth-1 )
-		{
-			std::cout << "    ";
-		}
-		else
-		{
-			std::cout << "|-- ";
-		}
-	}
-	//Print the content of the node
-	std::cout << "Node: " << ign_index << " | Priority " << this->gast_nodes[ign_index].u32_own_priority << " / " << this->gast_nodes[ this->gast_nodes[ign_index].gn_index_father ].u32_children_max_priority << " | Payload: " << this->gast_nodes[ign_index].t_payload << "\n";
-	//Put in the stack the children
-	//The node being worked on has (u32_children_max_priority) that tells the number of children
-	//
-	//If there is only the root inside the tree
-	if (this->gast_nodes.size() <= 1)
-	{
-		//Stop the search early
-        DRETURN();
-        return false;
-	}
-	//unsigned int u32_father_index = ign_index
-	//Search index for the next children, skip the root from the search
-	unsigned int u32_children_index = 1;
-	//Number of children found
-	unsigned int u32_num_children = 0;
-	//Only activate recursive search under this node if this node has at least one child
-	bool u1_search_children = (this->gast_nodes[ign_index].u32_children_max_priority > 0);
-	//while authorized to scan for children
-    while (u1_search_children == true)
+	//Compute the exploration tree
+    this->compute_deep_exploration_indexes( ign_index, iu32_depth );
+	//! @todo handle pedantic checks on array sizes and failure
+	Explore st_explore;
+    for (auto cl_explore_iterator = this->gast_explorer.begin();cl_explore_iterator!=this->gast_explorer.end();cl_explore_iterator++)
     {
-		//If I find a node whose father is the index I just printed
-		if (ign_index == this->gast_nodes[u32_children_index].gn_index_father)
+		st_explore = *cl_explore_iterator;
+
+			//Print a spacer for each level of descent into the tree
+		for (unsigned int u32_cnt = 0;u32_cnt < st_explore.n_distance_from_root;u32_cnt++)
 		{
-			//Pedantic check that the priority of the node is consistent with the number of children of the father
-			if ( (Config::CU1_INTERNAL_CHECKS == true) && (this->gast_nodes[u32_children_index].u32_own_priority >= this->gast_nodes[ign_index].u32_children_max_priority))
+			if (u32_cnt != iu32_depth-1 )
 			{
-				DRETURN_ARG("ERR%d: Found a child whose priority exceed the number of children of the father...", __LINE__ );
-				return true;
+				std::cout << "    ";
 			}
-			//Launch the recursive search under this node as well
-			//!@TODO: This code doesn't take into account the priority. I should explore high priority node first
-			bool u1_fail = this->show( u32_children_index, iu32_depth +1);
-			if (u1_fail == true)
+			else
 			{
-				DRETURN_ARG("ERR%d: Exploration failed at node %d, depth %d, end the search early...", __LINE__, u32_children_index, iu32_depth );
-				return true;
+				std::cout << "|-- ";
 			}
-			//I just found a child
-			u32_num_children++;
-			//If I found ALL the children of this node
-			if (u32_num_children >= this->gast_nodes[ign_index].u32_children_max_priority)
-			{
-				u1_search_children = false;
-			}
-		}	//If I find a node whose father is the index I just printed
-		//Scan next child
-		u32_children_index++;
-		//Scanned all nodes
-		if (u32_children_index > this->gast_nodes.size())
-		{
-			DRETURN_ARG("ERR%d: Search for child reached the end of the array without finding one...", __LINE__ );
-			return true;
 		}
-    }	//while authorized to scan for children
+		std::cout << this->to_string(this->gast_nodes[st_explore.n_index_explore]) << "\n";
+		//Print the content of the node
+		//std::cout << "Node: " << ign_index << " | Priority " << this->gast_nodes[ign_index].u32_own_priority << " / " << this->gast_nodes[ this->gast_nodes[ign_index].n_index_father ].u32_children_max_priority << " | Payload: " << this->gast_nodes[ign_index].t_payload << "\n";
+    }
 
     //--------------------------------------------------------------------------
     //	RETURN
     //--------------------------------------------------------------------------
-    DRETURN_ARG("Children: %d", u32_num_children); //Trace Return
+    DRETURN();
     return false;
 }   //Public getter: show | void |
 
@@ -901,7 +931,7 @@ bool Tree<Payload>::init_class_vars( Payload it_payload )
         return true;
     }
 	//Register the father index. Root points to itself
-    this->gast_nodes[0].gn_index_father = 0;
+    this->gast_nodes[0].n_index_father = 0;
 
     this->gps8_error_code = Error_code::CPS8_OK;
 
@@ -917,6 +947,102 @@ bool Tree<Payload>::init_class_vars( Payload it_payload )
 **	PRIVATE METHODS
 **********************************************************************************************************************************************************
 *********************************************************************************************************************************************************/
+
+/***************************************************************************/
+//! @brief Private Method | report_error | Error_code
+/***************************************************************************/
+//! @return bool | false = OK | true = FAIL |
+//! @details
+//! \n updates the indexes used by the iterator to make a deep expolration of the tree
+//! \n creates/updates the explore array of the class used by the iterator
+//! \n
+/***************************************************************************/
+
+template <class Payload>
+bool Tree<Payload>::compute_deep_exploration_indexes( unsigned int ign_index, unsigned int iu32_depth )
+{
+	DENTER_ARG("Index: %d | Depth: %d", ign_index, iu32_depth );
+    //--------------------------------------------------------------------------
+    //	CHECK
+    //--------------------------------------------------------------------------
+
+    if (this->gast_nodes.size() <= 0)
+    {
+		this->report_error(Error_code::CPS8_ERR);
+		DRETURN_ARG("ERR:%d | Vector should contain at least the root...", __LINE__ );
+		return true;
+    }
+	//Explore structure
+    Explore st_explore;
+    st_explore.n_index_explore = ign_index;
+	st_explore.n_distance_from_root = iu32_depth;
+    //Push the node to be explored with its depth
+    this->gast_explorer.push_back( st_explore );
+	//If there is only the root inside the tree
+	if (this->gast_nodes.size() <= 1)
+	{
+		//Stop the search early
+        DRETURN();
+        return false;
+	}
+
+	//--------------------------------------------------------------------------
+    //	Scan
+    //--------------------------------------------------------------------------
+
+	//Put in the stack the children
+	//The node being worked on has (u32_children_max_priority) that tells the number of children
+
+	//Search index for the next children, skip the root from the search
+	unsigned int u32_children_index = 1;
+	//Number of children found
+	unsigned int u32_num_children = 0;
+	//Only activate recursive search under this node if this node has at least one child
+	bool u1_search_children = (this->gast_nodes[ign_index].u32_children_max_priority > 0);
+	//while authorized to scan for children
+    while (u1_search_children == true)
+    {
+		//If I find a node whose father is the index I just printed
+		if (ign_index == this->gast_nodes[u32_children_index].n_index_father)
+		{
+			//Pedantic check that the priority of the node is consistent with the number of children of the father
+			if ( (Config::CU1_INTERNAL_CHECKS == true) && (this->gast_nodes[u32_children_index].u32_own_priority >= this->gast_nodes[ign_index].u32_children_max_priority))
+			{
+				DRETURN_ARG("ERR%d: Found a child whose priority exceed the number of children of the father...", __LINE__ );
+				return true;
+			}
+			//Launch the recursive search under this node as well
+			//!@TODO: This code doesn't take into account the priority. I should explore high priority node first
+			bool u1_fail = this->compute_deep_exploration_indexes( u32_children_index, iu32_depth +1);
+			if (u1_fail == true)
+			{
+				DRETURN_ARG("ERR%d: Exploration failed at node %d, depth %d, end the search early...", __LINE__, u32_children_index, iu32_depth );
+				return true;
+			}
+			//I just found a child
+			u32_num_children++;
+			//If I found ALL the children of this node
+			if (u32_num_children >= this->gast_nodes[ign_index].u32_children_max_priority)
+			{
+				u1_search_children = false;
+			}
+		}	//If I find a node whose father is the index I just printed
+		//Scan next child
+		u32_children_index++;
+		//Scanned all nodes
+		if (u32_children_index > this->gast_nodes.size())
+		{
+			DRETURN_ARG("ERR%d: Search for child reached the end of the array without finding one...", __LINE__ );
+			return true;
+		}
+    }	//while authorized to scan for children
+
+    //--------------------------------------------------------------------------
+    //	RETURN
+    //--------------------------------------------------------------------------
+    DRETURN_ARG("Children: %d", u32_num_children); //Trace Return
+    return false;
+} 	//Private Method: report_error | Error_code
 
 /***************************************************************************/
 //! @brief Private Method | report_error | Error_code
