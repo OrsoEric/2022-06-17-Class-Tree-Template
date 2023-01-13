@@ -9,10 +9,15 @@
 **  GLOBAL INCLUDES
 **********************************************************************************/
 
-//Used to store leaves
-#include <vector>
 #include <string>
+//Used to store nodes of the tree
+#include <vector>
+//Used to explore the tree with pseudorecursion
 #include <stack>
+//Used to sort the nodes of the tree based on priority
+#include <algorithm>
+
+//Interface of the class
 #include "Tree_interface.h"
 
 /**********************************************************************************
@@ -328,11 +333,16 @@ class Tree : public Tree_interface<Payload>
 						this->gcl_pseudorecursive_stack.pop();
 						//This is the tree exploration. I find all the children of the node I just popped, and push them
 						std::vector<size_t> an_children_indexes;
-						grcl_tree.find_children( n_current_index, an_children_indexes );
+						bool x_fail = this->grcl_tree.find_children( n_current_index, an_children_indexes );
+						if (x_fail == true)
+						{
+							DRETURN_ARG("ERR%d: find children failed", __LINE__);
+							return true;
+						}
 						for (auto cl_children_iterator = an_children_indexes.begin();cl_children_iterator != an_children_indexes.end();cl_children_iterator++)
 						{
 							//Push the index of the child of the popped item in the pseudorecursive stack
-							gcl_pseudorecursive_stack.push( *cl_children_iterator );
+							this->gcl_pseudorecursive_stack.push( *cl_children_iterator );
 						}
 						n_ret = n_current_index;
 					}
@@ -374,6 +384,7 @@ class Tree : public Tree_interface<Payload>
 
         //Find the children of a node of a given index, and push their indexes inside a vector
         bool find_children( size_t in_father_index,std::vector<size_t> &ira_children_indexes );
+
     //Visible only inside the class
     private:
         /*********************************************************************************************************************************************************
@@ -902,7 +913,7 @@ bool Tree<Payload>::find_children( size_t in_father_index,std::vector<size_t> &i
 			}
 			//Launch the recursive search under this node as well
 			//!@TODO: This code doesn't take into account the priority. I should explore high priority node first
-			DPRINT("Found children : %s\n", this->to_string( this->gast_nodes[n_children_index]).c_str());
+			DPRINT("Found children : %s\n", this->to_string(this->gast_nodes[n_children_index]).c_str() );
 			iran_children_indexes.push_back( n_children_index );
 			//I just found a child
 			n_num_found_children++;
@@ -922,6 +933,26 @@ bool Tree<Payload>::find_children( size_t in_father_index,std::vector<size_t> &i
 			return true;
 		}
     }	//while authorized to scan for children
+
+	//--------------------------------------------------------------------------
+	//	SORT
+	//--------------------------------------------------------------------------
+	//Sort the nodes by priority
+	//! @bug the array of indexes doesn't have the prioritywhich is inside this->gast_nodes[lhs]
+	/*
+	std::sort
+    (
+		//Vector of word
+		iran_children_indexes.begin(),
+		iran_children_indexes.end(),
+		//Sorting according to word
+		[](size_t &lhs, size_t &rhs)
+		{
+			//Use the number of digit as key
+			return (this->gast_nodes[lhs].n_own_priority > this->gast_nodes[lhs].n_own_priority);
+		}
+	);
+	*/
 
 	//--------------------------------------------------------------------------
 	//	RETURN
