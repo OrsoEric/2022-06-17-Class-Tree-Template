@@ -117,7 +117,7 @@ class Tree : public Tree_interface<Payload>
 			size_t n_own_priority;
 			//Max Priority, it's the number of children of this node. It also serves as maximum priority.
 			size_t n_children_max_priority;
-			//Distance from root of this node, computed by create_child and by the iterator
+			//Distance from root of this node, computed by create_child
 			size_t n_distance_from_root;
         };
 
@@ -159,10 +159,11 @@ class Tree : public Tree_interface<Payload>
         *********************************************************************************************************************************************************/
 
 		//Create a child of the root
-		//std::vector<Node>::iterator create_child( Payload it_payload );
 		size_t create_child( Payload it_payload );
 		//Create a child of the node with a given index. Returns the index of the node created
 		size_t create_child( size_t in_father_index, Payload it_payload );
+		//Swap two nodes of the tree
+		bool swap( size_t in_lhs, size_t in_rhs );
 
         /*********************************************************************************************************************************************************
         **********************************************************************************************************************************************************
@@ -305,7 +306,6 @@ class Tree : public Tree_interface<Payload>
 				}
 
 			private:
-				//Used by begin to initialize the stack
 				bool flush_stack()
 				{
 					//Flush the stack
@@ -360,7 +360,6 @@ class Tree : public Tree_interface<Payload>
 				size_t gn_cnt_nodes;
 			//End Private
 		};	//Class: iterator
-
 		//! @brief iterator that start from the first element of the tree
 		iterator<Node> begin()
 		{
@@ -636,7 +635,7 @@ size_t Tree<Payload>::create_child( Payload it_payload )
 }   //Public Setter: create_leaf | Payload
 
 /***************************************************************************/
-//! @brief Public Setter: create_leaf | Payload
+//! @brief Public Setter: create_child | size_t | Payload
 /***************************************************************************/
 //! @param in_father_index | Numeric index of the node that is to be the father of the new node. The father may have nodes already
 //! @param it_payload | payload to be attached to this leaf
@@ -706,7 +705,66 @@ size_t Tree<Payload>::create_child( size_t in_father_index, Payload it_payload )
     //--------------------------------------------------------------------------
     DRETURN_ARG("Father Index: %d | Own Index: %d | Nodes under Father: %d", st_node.n_index_father, n_own_index, n_num_children +1 ); //Trace Return
     return n_own_index;	//OK
-}   //Public Setter: create_leaf | Payload
+}   //Public Setter: create_child | size_t | Payload
+
+/***************************************************************************/
+//! @brief Public Setter: swap | size_t | size_t
+/***************************************************************************/
+//! @param in_lhs | Node to be swapped
+//! @param in_rhs | Node to be swapped
+//! @return bool | false = OK | true = FAIL
+//! @details
+//! \n	Swap two nodes of the tree
+//! \n	I have two possible swaps:
+//! \n	1) swap the nodes only
+//! \n	2) swap the nodes and the subtree below the nodes
+//! \n	swap with subtree is forbidden if the one node is part of the subtree of the other node?
+//! \n	------------------------------
+//! \n	EXAMPLE: Payload Swap (101, 102)
+//! \n	100				100
+//! \n	|-101			|-102
+//! \n		|-201			|-201
+//! \n	|-102			|-101
+//! \n		|-202			|-202
+//! \n		|-203			|-203
+//! \n	------------------------------
+
+/***************************************************************************/
+
+template <class Payload>
+bool Tree<Payload>::swap( size_t in_lhs, size_t in_rhs )
+{
+    DENTER(); //Trace Enter
+    //--------------------------------------------------------------------------
+    //	CHECK
+    //--------------------------------------------------------------------------
+
+	//If OOB indexes
+    if ((in_lhs >= this->gast_nodes.size()) || (in_rhs >= this->gast_nodes.size()))
+    {
+		this->report_error(Error_code::CPS8_ERR_OOB);
+		DRETURN_ARG("ERR%d: Node indexes (%d %d) out of range %d...", in_lhs, in_rhs, this->gast_nodes.size() );
+		return true;
+    }
+    //if nothing to do
+    if (in_lhs == in_rhs)
+    {
+		DRETURN();
+		return false;
+    }
+
+    //--------------------------------------------------------------------------
+    //	BODY
+    //--------------------------------------------------------------------------
+	//I want to swap node LHS with node RHS
+
+
+    //--------------------------------------------------------------------------
+    //	RETURN
+    //--------------------------------------------------------------------------
+    DRETURN(); //Trace Return
+    return false;
+}
 
 /*********************************************************************************************************************************************************
 **********************************************************************************************************************************************************
