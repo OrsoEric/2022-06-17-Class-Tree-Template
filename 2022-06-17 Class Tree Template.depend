@@ -37,9 +37,10 @@
 	"debug.h"
 	"tree.hpp"
 
-1673455638 c:\data\project\project programming\project classes\2022-06-17 class tree template\tree.hpp
+1673588931 c:\data\project\project programming\project classes\2022-06-17 class tree template\tree.hpp
 	<vector>
 	<string>
+	<stack>
 	"Tree_interface.h"
 
 1673243415 c:\data\project\project programming\project classes\2022-06-17 class tree template\tree_interface.h

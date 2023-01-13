@@ -12,7 +12,7 @@
 //Used to store leaves
 #include <vector>
 #include <string>
-
+#include <stack>
 #include "Tree_interface.h"
 
 /**********************************************************************************
@@ -197,6 +197,7 @@ class Tree : public Tree_interface<Payload>
 			bool u1_fail;
 			return this->root( u1_fail );
         }
+
         //Show the nodes stored inside the vector and their links
 		bool show( void );
 		bool show( unsigned int ign_index, unsigned int iu32_depth );
@@ -259,108 +260,131 @@ class Tree : public Tree_interface<Payload>
 		class iterator
 		{
 			public:
-				/**
-				* @brief constructor for the custom iterator
-				*
-				* @param ira_parent_vector a reference to the parent vector of type T
-				* @param in_starting_index the starting index of the iterator
-				*/
-				iterator(std::vector<T>& ira_parent_vector, size_t in_starting_index = 0) : gra_vector(ira_parent_vector)
+				iterator(std::vector<T>& ira_parent_vector, bool ix_begin ) : gra_vector(ira_parent_vector)
 				{
-					gn_index = in_starting_index;
+					//Constructing a begin iterator
+					if (ix_begin == true)
+					{
+						//Push the root inside the stack
+						cl_pseudorecursive_stack.push( 0 );
+						//Start from first node
+						gn_cnt_nodes = 0;
+					}
+					else //if (ix_begin == false)
+					{
+						//No need to initialize the stack of the end iterator
+						//I need to scan a number of nodes equal to the array size, so I just set the number of scanned nodes
+						gn_cnt_nodes = ira_parent_vector.size();
+					}
 					return;
 				}
-
-				/**
-				* @brief overloads preincrement operator
-				*
-				* @return iterator<T>& reference to the iterator
-				*/
 				iterator<T>& operator++()
 				{
-					gn_index++;
+					//Advance to the next element of the tree
+					this->next();
 					return *this;
 				}
 
-				/**
-				* @brief overloads postincrement operator
-				*
-				* @return iterator<T> copy of the iterator before it was incremented
-				*/
 				iterator<T> operator++(int)
 				{
 					iterator<T> tmp(*this);
-					gn_index++;
+					//Advance to the next element of the tree
+					this->next();
 					return tmp;
 				}
 
-				/**
-				* @brief Dereference the iterator into a Node
-				*
-				* @return T& reference to the element of current index of the vector
-				*/
 				T &operator*(void)
 				{
-					return gra_vector[gn_index];
+					//If the stack is empty
+					if (this->cl_pseudorecursive_stack.empty() == true)
+					{
+						//ERROR. Return the root, but this is wrong
+						return gra_vector[0];
+					}
+					//Fetch the index that is at the top of the stack
+					size_t n_current_index = this->cl_pseudorecursive_stack.top();
+					return gra_vector[n_current_index];
 				}
 
-				/**
-				* @brief comparison operator
-				*
-				* @param icl_rhs_iterator Iterator to compare with
-				*
-				* @return true if the gn_index of this iterator is equal to the gn_index of rhs iterator
-				* @return false if the gn_index of this iterator is not equal to the gn_index of rhs iterator
-				*/
 				bool operator==(const iterator<T>& icl_rhs_iterator) const
 				{
-					return gn_index == icl_rhs_iterator.gn_index;
+					return false;
 				}
 
-				/**
-				* @brief comparison operator
-				*
-				* @param icl_rhs_iterator Iterator to compare with
-				*
-				* @return true if the gn_index of this iterator is not equal to the gn_index of rhs iterator
-				* @return false if the gn_index of this iterator is equal to the gn_index of rhs iterator
-				*/
 				bool operator!=(const iterator<T>& icl_rhs_iterator) const
 				{
-					return gn_index != icl_rhs_iterator.gn_index;
+					return false;
 				}
+
+
 			private:
+				//Used by begin to initialize the stack
+				bool flush_stack()
+				{
+					//Flush the stack
+					while(this->cl_pseudorecursive_stack.empty() == false)
+					{
+						this->cl_pseudorecursive_stack.pop();
+					}
+					return false;
+				}
+				//Advance the iterator to the next element
+				size_t next()
+				{
+					size_t n_ret;
+					//If there are no more elements in the stack
+					if (this->cl_pseudorecursive_stack.empty() == true)
+					{
+						//Return index that points to the element after the last element
+						return this->gra_vector.size();
+					}
+					else
+					{
+						//Take the top index out of the array
+						size_t n_current_index = this->cl_pseudorecursive_stack.top();
+						this->cl_pseudorecursive_stack.pop();
+						//This is the tree exploration. I find all the children of the node I just popped, and push them
+
+
+						n_ret = n_current_index;
+					}
+					//I have scanned a node
+					this->gn_cnt_nodes++;
+					return n_ret;
+				}
+
 				//! The reference to the parent vector
 				std::vector<T>& gra_vector;
-				//! current index of the iterator
-				size_t gn_index;
+				//!	Stack to handle the pseudorecursion
+				std::stack<size_t> cl_pseudorecursive_stack;
+				//!	Count the nodes that have been scanned
+				size_t gn_cnt_nodes;
+			//End Private
 		};	//Class: iterator
 
 		//! @brief iterator that start from the first element of the tree
 		iterator<Node> begin()
 		{
-			return iterator<Node>(gast_nodes, 0);
+			//Construct a Begin iterator with a root inside the pseudorecursive stack
+			return iterator<Node>(gast_nodes, true);
 		}
 		//! @brief iterator that marks the end of the tree
 		iterator<Node> end()
 		{
-			return iterator<Node>(gast_nodes, gast_nodes.size());
+			//Construct a End iterator
+			return iterator<Node>(gast_nodes, false);
 		}
 
     //Visible to derived classes
     protected:
         /*********************************************************************************************************************************************************
         **********************************************************************************************************************************************************
-        **  PROTECTED TYPES
+        **  PROTECTED METHODS
         **********************************************************************************************************************************************************
         *********************************************************************************************************************************************************/
 
-        /*********************************************************************************************************************************************************
-        **********************************************************************************************************************************************************
-        **  PROTECTED VARS
-        **********************************************************************************************************************************************************
-        *********************************************************************************************************************************************************/
-
+        //Find the children of a node of a given index, and push their indexes inside a vector
+        std::vector<size_t> find_children( size_t in_father_index );
     //Visible only inside the class
     private:
         /*********************************************************************************************************************************************************
@@ -822,6 +846,8 @@ bool Tree<Payload>::show( unsigned int ign_index, unsigned int iu32_depth )
 		DRETURN_ARG("ERR:%d | Vector should contain at least the root...", __LINE__ );
 		return true;
     }
+	std::stack<unsigned int> cl_pseudorecursion_stack;
+
 
     //--------------------------------------------------------------------------
     //	SHOW
@@ -865,33 +891,87 @@ bool Tree<Payload>::show( unsigned int ign_index, unsigned int iu32_depth )
 *********************************************************************************************************************************************************/
 
 /***************************************************************************/
-//! @brief Public Operator | operator<< | const Lesson_operator_overloading::Error_code ie_error_code
+//! @brief Protected Getter | find_children | size_t
 /***************************************************************************/
-//! @param icl_stream | reference to stream
-//! @param ie_error_code | error code to be translated and streamed
-//! @return std::ostream&
+//! @param in_father_index | index of the father of which I want to find children
+//! @return std::vector<size_t> | array containing the indexes of the children, from the highest priority to the lowest priority
 //! @details
-//! \n Decode an error into a readable streamable string
+//! \n Find the children of a node of a given index, return those indexes inside a vector. If father has no children, vector will be empty
 /***************************************************************************/
-/*
+
 template <class Payload>
-std::ostream& operator<<( std::ostream& icl_stream, Tree<Payload>::Node &ist_node )
+std::vector<size_t> Tree<Payload>::find_children( size_t in_father_index )
 {
-	DENTER(); //Trace Enter
+	DENTER_ARG("Father: %d", in_father_index); //Trace Enter
+	//--------------------------------------------------------------------------
+	//	CHECK
+	//--------------------------------------------------------------------------
+
+	//If bad father index
+	if (in_father_index > this->gast_nodes.size())
+	{
+		//Return empty vector
+		return std::vector<size_t>();
+	}
+
 	//--------------------------------------------------------------------------
 	//	BODY
 	//--------------------------------------------------------------------------
-	//Translate error code into a string
+	//Array with indexes of the children
+	std::vector<size_t> an_children_index;
 
-	icl_stream << ist_node.t_payload << "\n";
+	//Search index for the next children, skip the root from the search
+	unsigned int u32_children_index = 1;
+	//Number of children found
+	unsigned int u32_num_children = 0;
+	//Only activate recursive search under this node if this node has at least one child
+	bool u1_search_children = (this->gast_nodes[ign_index].u32_children_max_priority > 0);
+	//while authorized to scan for children
+    while (u1_search_children == true)
+    {
+		//If I find a node whose father is the index I just printed
+		if (ign_index == this->gast_nodes[u32_children_index].n_index_father)
+		{
+			//Pedantic check that the priority of the node is consistent with the number of children of the father
+			if ( (Config::CU1_INTERNAL_CHECKS == true) && (this->gast_nodes[u32_children_index].u32_own_priority >= this->gast_nodes[ign_index].u32_children_max_priority))
+			{
+				DRETURN_ARG("ERR%d: Found a child whose priority exceed the number of children of the father...", __LINE__ );
+				return true;
+			}
+			//Launch the recursive search under this node as well
+			//!@TODO: This code doesn't take into account the priority. I should explore high priority node first
+			bool u1_fail = this->compute_deep_exploration_indexes( u32_children_index, iu32_depth +1);
+			if (u1_fail == true)
+			{
+				DRETURN_ARG("ERR%d: Exploration failed at node %d, depth %d, end the search early...", __LINE__, u32_children_index, iu32_depth );
+				return true;
+			}
+			//I just found a child
+			u32_num_children++;
+			//If I found ALL the children of this node
+			if (u32_num_children >= this->gast_nodes[ign_index].u32_children_max_priority)
+			{
+				u1_search_children = false;
+			}
+		}	//If I find a node whose father is the index I just printed
+		//Scan next child
+		u32_children_index++;
+		//Scanned all nodes
+		if (u32_children_index > this->gast_nodes.size())
+		{
+			DRETURN_ARG("ERR%d: Search for child reached the end of the array without finding one...", __LINE__ );
+			return true;
+		}
+    }	//while authorized to scan for children
+
 
 	//--------------------------------------------------------------------------
 	//	RETURN
 	//--------------------------------------------------------------------------
 	DRETURN(); //Trace Return
-	return icl_stream;	//OK
-}   //End: Public Operator |  operator<< | const Lesson_operator_overloading::Error_code ie_error_code
-*/
+	return;
+}	//Protected Getter | find_children | size_t
+
 /*********************************************************************************************************************************************************
 **********************************************************************************************************************************************************
 **	PRIVATE INIT
