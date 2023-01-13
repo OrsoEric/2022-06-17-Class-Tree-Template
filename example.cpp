@@ -205,11 +205,17 @@ bool test_bench( void )
 
 		std::cout << "-------------------------------------\n";
 
-		//Create a child of the root and get its node index
-		unsigned int u32_child_index = cl_my_tree.create_child( 0, 333 );
+		//Create a deep ladder of nodes
+		size_t n_child_index = 0;
+		n_child_index = cl_my_tree.create_child( n_child_index, 333+n_child_index );
+		n_child_index = cl_my_tree.create_child( n_child_index, 333+n_child_index );
+		n_child_index = cl_my_tree.create_child( n_child_index, 333+n_child_index );
+		n_child_index = cl_my_tree.create_child( n_child_index, 333+n_child_index );
 		//Of that node, create a child
-		cl_my_tree.create_child( u32_child_index, 334 );
-		cl_my_tree.show( 0, 0 );
+		cl_my_tree.show( 0 );
+
+		std::cout << "-------------------------------------\n";
+		std::cout << "Test tree iterator\n";
 		//Scan the tree class using the iterator
 		for (User::Tree<int>::iterator<User::Tree<int>::Node> cl_custom_iterator=cl_my_tree.begin();cl_custom_iterator!=cl_my_tree.end();cl_custom_iterator++)
 		{

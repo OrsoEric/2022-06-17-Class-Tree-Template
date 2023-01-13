@@ -129,7 +129,7 @@ class Tree_interface
 			return false;
         }
         //! @brief Create a child of the Root
-		virtual bool create_child( Payload it_payload )
+		virtual size_t create_child( Payload it_payload )
 		{
 			return true;
 		}
