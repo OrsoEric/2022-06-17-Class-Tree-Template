@@ -2,16 +2,6 @@
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
 	<ActiveTarget name="Release" />
-	<File name="example.cpp" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="5750" topLine="188" />
-		</Cursor>
-	</File>
-	<File name="debug.h" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="4358" topLine="38" />
-		</Cursor>
-	</File>
 	<File name="test_iterator.cpp" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="1021" topLine="10" />
@@ -22,19 +12,29 @@
 			<Cursor1 position="16781" topLine="183" />
 		</Cursor>
 	</File>
+	<File name="example.cpp" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="5945" topLine="188" />
+		</Cursor>
+	</File>
 	<File name="tree_old.hpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="21661" topLine="281" />
 		</Cursor>
 	</File>
-	<File name="tree.hpp" open="1" top="1" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="39372" topLine="709" />
-		</Cursor>
-	</File>
 	<File name="debug.log" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="13165" topLine="56" />
+			<Cursor1 position="13165" topLine="37" />
+		</Cursor>
+	</File>
+	<File name="debug.h" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="4358" topLine="38" />
+		</Cursor>
+	</File>
+	<File name="tree.hpp" open="1" top="1" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="47070" topLine="742" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>

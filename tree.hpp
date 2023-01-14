@@ -99,6 +99,20 @@ class Tree : public Tree_interface<Payload>
             static constexpr const char *CPS8_ERR = "ERR";
             static constexpr const char *CPS8_ERR_OOB = "ERR Out Of Boundary: Tried to access an index that doesn't exist";
         };
+        //! @brief Swapping nodes can be done in fundamentally different ways, see swap method documentation for details
+        enum Swap_mode
+        {
+            //Payload swap will swap the payload field of two nodes
+            PAYLOAD,
+            //Priority swap will swap the priority of two children of the same father, changing the order in which they are resolved
+            PRIORITY,
+            //>>>DEFAULT<<<
+            //Subtree swap will swap two nodes along with all their subtrees. Safe means that swap of a father with a children will fail
+            SUBTREE_SAFE,
+            //Subtree swap will swap two nodes along with all their subtrees. The operation is extended to take care of what happens with the subtrees
+            //it will change the father/children father/children hierarchy and have many ambiguous choice to make about priority
+            SUBTREE
+        };
 
         /*********************************************************************************************************************************************************
         **********************************************************************************************************************************************************
@@ -163,7 +177,7 @@ class Tree : public Tree_interface<Payload>
         //Create a child of the node with a given index. Returns the index of the node created
         size_t create_child( size_t in_father_index, Payload it_payload );
         //Swap two nodes of the tree
-        bool swap( size_t in_lhs, size_t in_rhs );
+        bool swap( size_t in_lhs, size_t in_rhs, Swap_mode ie_swap_mode = Swap_mode::SUBTREE );
 
         /*********************************************************************************************************************************************************
         **********************************************************************************************************************************************************
@@ -188,6 +202,13 @@ class Tree : public Tree_interface<Payload>
         **  PUBLIC TESTERS
         **********************************************************************************************************************************************************
         *********************************************************************************************************************************************************/
+
+        //! @brief check if two nodes are direct relatives
+        bool is_descendant(size_t in_lhs, size_t in_rhs)
+        {
+
+            return false;
+        }
 
         /*********************************************************************************************************************************************************
         **********************************************************************************************************************************************************
@@ -720,6 +741,7 @@ size_t Tree<Payload>::create_child( size_t in_father_index, Payload it_payload )
 //! \n	2) swap the nodes and the subtree below the nodes
 //! \n	swap with subtree is forbidden if the one node is part of the subtree of the other node?
 //! \n	------------------------------
+//! \n  "Payload Swap" will swap the content of two nodes
 //! \n	EXAMPLE: Payload Swap (101, 102)
 //! \n	100				100
 //! \n	|-101			|-102
@@ -728,11 +750,56 @@ size_t Tree<Payload>::create_child( size_t in_father_index, Payload it_payload )
 //! \n		|-202			|-202
 //! \n		|-203			|-203
 //! \n	------------------------------
-
+//! \n  "Priority Swap" will swap the priority of two children of the same father, changing the order in which they are resolved
+//! \n	EXAMPLE: Priority Swap (101, 102)
+//! \n	100				100
+//! \n	|-101			|-102
+//! \n		|-201			|-202
+//! \n	|-102			    |-203
+//! \n		|-202		|-101
+//! \n		|-203			|-201
+//! \n	------------------------------
+//! \n  "Swap" will swap two nodes along with all their subtrees
+//! \n	EXAMPLE: Priority Swap (201, 202)
+//! \n	100				100
+//! \n	|-101			|-101
+//! \n		|-201			|-202
+//! \n	|-102		            |-204
+//! \n	    |-202       |-102
+//! \n		     |-204      |-201
+//! \n		|-203			|-203
+//! \n	------------------------------
+//! \n  "Swap" executed on two nodes that belong to the same subtree is a more complicated operation
+//! \n  swap between father and child, will make child->father, father->child, father.children->children.children and children.children->father.chidlren
+//! \n  subtrees if those node are not impacted
+//! \n  I am not sure if this complex operation makes sense, maybe it should be a configuration toggle of the tree to allow such a swap to take place
+//! \n	EXAMPLE: Priority Swap (102, 202)
+//! \n	100				100
+//! \n	|-101			|-101
+//! \n		|-201			|-201
+//! \n	|-102		    |-202
+//! \n	    |-202           |-102
+//! \n		     |-204      |-204
+//! \n              |-301       |-301
+//! \n		|-203			|-203
+//! \n	------------------------------
+//! \n
+//! \n
+//! \n
+//! \n
+//! \n
+//! \n
+//! \n
+//! \n
+//! \n
+//! \n
+//! \n
+//! \n
+//! \n
 /***************************************************************************/
 
 template <class Payload>
-bool Tree<Payload>::swap( size_t in_lhs, size_t in_rhs )
+bool Tree<Payload>::swap( size_t in_lhs, size_t in_rhs, Swap_mode ie_swap_mode )
 {
     DENTER(); //Trace Enter
     //--------------------------------------------------------------------------
@@ -758,6 +825,53 @@ bool Tree<Payload>::swap( size_t in_lhs, size_t in_rhs )
     //--------------------------------------------------------------------------
     //I want to swap node LHS with node RHS
 
+    switch(ie_swap_mode)
+    {
+        //Swap the payload of two nodes, it's always possible
+        case Swap_mode::PAYLOAD:
+        {
+            std::swap( this->gast_nodes[in_lhs].t_payload, this->gast_nodes[in_rhs].t_payload );
+            break;
+        }
+        //Swap the priority of two nodes that are children to the same father
+        case Swap_mode::PRIORITY:
+        {
+            if (this->gast_nodes[in_lhs].n_index_father != this->gast_nodes[in_rhs].n_index_father)
+            {
+                DRETURN_ARG("ERR%d | Priority Swap is only defined for siblings. LHS%d.father is %d | RHS%d.father is %d", __LINE__, in_lhs, this->gast_nodes[in_lhs].n_index_father, in_rhs, this->gast_nodes[in_rhs].n_index_father );
+                return true;
+            }
+            std::swap( this->gast_nodes[in_lhs].n_own_priority, this->gast_nodes[in_lhs].n_own_priority );
+            break;
+        }
+        //Swap the payload of two nodes, it's always possible
+        case Swap_mode::SUBTREE_SAFE:
+        {
+            //If the nodes belong to the same subtree
+            if (this->is_descendant(in_lhs, in_rhs) == true)
+            {
+                DRETURN_ARG("ERR%d | SUBTREE_SAFE swap is not allowed when two nodes belong to the same subtree and they are relatives.",__LINE__);
+                return true;
+            }
+        }
+        //Swap the payload of two nodes, it's always possible
+        case Swap_mode::SUBTREE:
+        {
+            //If the nodes belong to the same subtree
+            if (this->is_descendant(in_lhs, in_rhs) == true)
+            {
+
+
+            }
+
+
+            std::swap( this->gast_nodes[in_lhs].t_payload, this->gast_nodes[in_rhs].t_payload );
+            break;
+        }
+        default:
+            break;
+
+    }
 
     //--------------------------------------------------------------------------
     //	RETURN
