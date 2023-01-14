@@ -52,3 +52,26 @@
 	<cstdio>
 	<vector>
 
+1653281891 source:d:\data\project\project programming\project classes\2022-06-17 class tree template\debug.cpp
+	<cstdio>
+	"debug.h"
+
+1673680776 d:\data\project\project programming\project classes\2022-06-17 class tree template\debug.h
+	<cstdio>
+
+1673680752 source:d:\data\project\project programming\project classes\2022-06-17 class tree template\example.cpp
+	<cstdio>
+	<iostream>
+	"debug.h"
+	"tree.hpp"
+
+1673682002 d:\data\project\project programming\project classes\2022-06-17 class tree template\tree.hpp
+	<string>
+	<vector>
+	<stack>
+	<algorithm>
+	"Tree_interface.h"
+
+1673680787 d:\data\project\project programming\project classes\2022-06-17 class tree template\tree_interface.h
+	<vector>
+

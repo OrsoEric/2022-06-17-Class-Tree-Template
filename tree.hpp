@@ -570,7 +570,7 @@ template <class Payload>
 Payload& Tree<Payload>::operator []( size_t in_index )
 {
     //Trace Enter
-    DENTER_ARG("Object: %p, Index: %d", (void *)this, in_index );
+    DENTER_ARG("Object: %p, Index: %d", &(*this), (int)in_index );
     //--------------------------------------------------------------------------
     //	CHECK
     //--------------------------------------------------------------------------
@@ -920,7 +920,9 @@ bool Tree<Payload>::show( size_t in_index )
 //! @param in_father_index | index of the father of which I want to find children
 //! @return std::vector<size_t> | array containing the indexes of the children, from the highest priority to the lowest priority
 //! @details
-//! \n Find the children of a node of a given index, return those indexes inside a vector. If father has no children, vector will be empty
+//! \n  Find the children of a node of a given index, return those indexes inside a vector. If father has no children, vector will be empty
+//! \n  I can't sort easily the priority because std::sort of iran_children_indexes needs the key n_own_priority inside gast_node
+//! \n  There is a better way. I can preallocate the vector, and use the priority as index during the search, and put them in the right spot for free! O(n)
 /***************************************************************************/
 
 template <class Payload>
@@ -957,22 +959,30 @@ bool Tree<Payload>::find_children( size_t in_father_index,std::vector<size_t> &i
     size_t n_num_expected_children = this->gast_nodes[in_father_index].n_children_max_priority;
     //Only activate recursive search under this node if this node has at least one child
     bool x_search_children = (n_num_expected_children > 0);
+    //Preallocate the expected number of children
+    iran_children_indexes.resize( n_num_expected_children );
+    if ((Config::CU1_INTERNAL_CHECKS == true) && (iran_children_indexes.size() != n_num_expected_children))
+    {
+        DRETURN_ARG("ERR%d: Failed to resize array expected %d | actual %d", n_num_expected_children, iran_children_indexes.size() );
+        return true;
+    }
     //while authorized to scan for children
     while (x_search_children == true)
     {
         //If I find a node whose father is the index I just printed
         if (in_father_index == this->gast_nodes[n_children_index].n_index_father)
         {
+            //Fetch the priority of the node. The priority decides the order in which children are resolved and depends on the number of children the father has
+            size_t n_priority = this->gast_nodes[n_children_index].n_own_priority;
             //Pedantic check that the priority of the node is consistent with the number of children of the father
-            if ( (Config::CU1_INTERNAL_CHECKS == true) && (this->gast_nodes[n_children_index].n_own_priority >= n_num_expected_children))
+            if ( (Config::CU1_INTERNAL_CHECKS == true) && (n_priority >= n_num_expected_children))
             {
-                DRETURN_ARG("ERR%d: Priority %d of %d | Found a child whose priority exceed the number of children of the father...", __LINE__, this->gast_nodes[n_children_index].n_own_priority, n_num_expected_children );
+                DRETURN_ARG("ERR%d: Priority %d of %d | Found a child whose priority exceed the number of children of the father...", __LINE__, n_priority, n_num_expected_children );
                 return true;
             }
-            //Launch the recursive search under this node as well
-            //!@TODO: This code doesn't take into account the priority. I should explore high priority node first
+            //I can presort the array by using the priority as index to the preallocated chidlren array, saving lots of work
+            iran_children_indexes[n_num_expected_children -1 -n_priority] = n_children_index;
             DPRINT("Found children : %s\n", this->to_string(this->gast_nodes[n_children_index]).c_str() );
-            iran_children_indexes.push_back( n_children_index );
             //I just found a child
             n_num_found_children++;
             //If I found ALL the children of this node
@@ -991,26 +1001,6 @@ bool Tree<Payload>::find_children( size_t in_father_index,std::vector<size_t> &i
             return true;
         }
     }	//while authorized to scan for children
-
-    //--------------------------------------------------------------------------
-    //	SORT
-    //--------------------------------------------------------------------------
-    //Sort the nodes by priority
-    //! @bug the array of indexes doesn't have the prioritywhich is inside this->gast_nodes[lhs]
-    /*
-    std::sort
-    (
-        //Vector of word
-        iran_children_indexes.begin(),
-        iran_children_indexes.end(),
-        //Sorting according to word
-        [](size_t &lhs, size_t &rhs)
-        {
-            //Use the number of digit as key
-            return (this->gast_nodes[lhs].n_own_priority > this->gast_nodes[lhs].n_own_priority);
-        }
-    );
-    */
 
     //--------------------------------------------------------------------------
     //	RETURN
