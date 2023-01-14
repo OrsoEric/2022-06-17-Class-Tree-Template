@@ -95,7 +95,7 @@ class Tree
 {
     //Visible to all
     public:
-		/*********************************************************************************************************************************************************
+        /*********************************************************************************************************************************************************
         **********************************************************************************************************************************************************
         **  PUBLIC ENUMS
         **********************************************************************************************************************************************************
@@ -105,22 +105,22 @@ class Tree
         typedef union _Config
         {
             //Checks to be performed on user dependent data
-			static const bool CU1_EXTERNAL_CHECKS = true;
-			//Checks to be performed on input dependent on internal algorithms
-			static const bool CU1_INTERNAL_CHECKS = true;
+            static const bool CU1_EXTERNAL_CHECKS = true;
+            //Checks to be performed on input dependent on internal algorithms
+            static const bool CU1_INTERNAL_CHECKS = true;
         } Config;
 
         //! @brief Error codes of the class
         typedef union _Error_code
         {
-			//No error
-			static constexpr const char *CPS8_OK = "OK";
-			//Generic error
-			static constexpr const char *CPS8_ERR = "ERR";
-			//Out Of Boundary
-			static constexpr const char *CPS8_ERR_OOB = "ERR:OOB";
-			//std::vector failed to do something
-			static constexpr const char *CPS8_ERR_STDVECTOR = "ERR:std::vector";
+            //No error
+            static constexpr const char *CPS8_OK = "OK";
+            //Generic error
+            static constexpr const char *CPS8_ERR = "ERR";
+            //Out Of Boundary
+            static constexpr const char *CPS8_ERR_OOB = "ERR:OOB";
+            //std::vector failed to do something
+            static constexpr const char *CPS8_ERR_STDVECTOR = "ERR:std::vector";
         } Error_code;
 
         /*********************************************************************************************************************************************************
@@ -166,16 +166,16 @@ class Tree
         **********************************************************************************************************************************************************
         *********************************************************************************************************************************************************/
 
-		//Create a new leaf with a given payload
+        //Create a new leaf with a given payload
         bool create_leaf( Payload it_payload, unsigned int &oru32_index );
         bool create_leaf( Payload it_payload )
         {
-			unsigned int u32_dummy = 0;
-			return this->create_leaf( it_payload, u32_dummy );
+            unsigned int u32_dummy = 0;
+            return this->create_leaf( it_payload, u32_dummy );
         }
-		//Destroy the leaf of given index, recursively destroy all leaves of that leaf
+        //Destroy the leaf of given index, recursively destroy all leaves of that leaf
         bool destroy_leaf( unsigned int iu32_index );
-		//Swap the leaves of two different branches. Does not require branch pointer
+        //Swap the leaves of two different branches. Does not require branch pointer
         bool swap_leaves( unsigned int iu32_own_index, Tree<Payload> &ircl_branch, unsigned int iu32_branch_index );
         //Swap two leaves. Requires branch pointer
         //bool swap_leaves( Tree<Payload> &ircl_branch );
@@ -195,10 +195,10 @@ class Tree
         **********************************************************************************************************************************************************
         *********************************************************************************************************************************************************/
 
-		//! @brief return true if class is in error. Errors needs to be acknoweldged by get_error to recover
+        //! @brief return true if class is in error. Errors needs to be acknoweldged by get_error to recover
         bool is_error( void )
         {
-			return (this->gps8_error_code != Error_code::CPS8_OK);	//true = ERR | false == OK
+            return (this->gps8_error_code != Error_code::CPS8_OK);	//true = ERR | false == OK
         }
 
         /*********************************************************************************************************************************************************
@@ -207,13 +207,13 @@ class Tree
         **********************************************************************************************************************************************************
         *********************************************************************************************************************************************************/
 
-		//Tree public method
+        //Tree public method
         bool my_public_method( void );
-		//Print the content of the tree in tree form
+        //Print the content of the tree in tree form
         bool print( unsigned int iu32_depth );
         bool print( void )
         {
-			return this->print( 0 ); //Print everything from root down
+            return this->print( 0 ); //Print everything from root down
         }
 
         /*********************************************************************************************************************************************************
@@ -289,9 +289,9 @@ class Tree
         static const Payload gccl_dummy;
         //! @brief Error code of the class
         const char *gps8_error_code;
-		//! @brief Payload stored inside a node
+        //! @brief Payload stored inside a node
         Payload gt_payload;
-		//! @brief Individual leaves to this leaf are stored inside a vector
+        //! @brief Individual leaves to this leaf are stored inside a vector
         std::vector<Tree> gclat_leaves;
 };	//End Class: Tree
 
@@ -346,7 +346,7 @@ Tree<Payload>::Tree( Payload it_payload )
 
     //Initialize class vars
     this->init_class_vars();
-	//Initialize payload
+    //Initialize payload
     this->gt_payload = it_payload;
 
     //--------------------------------------------------------------------------
@@ -409,25 +409,25 @@ Tree<Payload>::~Tree( void )
 template <class Payload>
 Tree<Payload> &Tree<Payload>::operator []( unsigned int iu32_index )
 {
-	DENTER_ARG("Object: %p, Index: %d", (void *)this, iu32_index );
-	//--------------------------------------------------------------------------
+    DENTER_ARG("Object: %p, Index: %d", (void *)this, iu32_index );
+    //--------------------------------------------------------------------------
     //  BODY
     //--------------------------------------------------------------------------
-	//if: user asks for an element outside array range
+    //if: user asks for an element outside array range
     if (iu32_index >= this->gclat_leaves.size())
     {
-		//Out Of Boundary
-		this->report_error(Error_code::CPS8_ERR_OOB);
-		//Error. Return reference to self
-		DRETURN_ARG("ERR:OOB | Index: %d | Size: %d", iu32_index, this->gclat_leaves.size() );
-		return (*this);
+        //Out Of Boundary
+        this->report_error(Error_code::CPS8_ERR_OOB);
+        //Error. Return reference to self
+        DRETURN_ARG("ERR:OOB | Index: %d | Size: %d", iu32_index, this->gclat_leaves.size() );
+        return (*this);
     }
 
     //--------------------------------------------------------------------------
     //	RETURN
     //--------------------------------------------------------------------------
-	DRETURN();
-	return this->gclat_leaves[iu32_index];
+    DRETURN();
+    return this->gclat_leaves[iu32_index];
 }	//end method: Bracket operator | operator [] | int
 
 /*********************************************************************************************************************************************************
@@ -454,11 +454,11 @@ bool Tree<Payload>::create_leaf( Payload it_payload, unsigned int &oru32_index )
     //--------------------------------------------------------------------------
     //	CHECK
     //--------------------------------------------------------------------------
-	//if class is in error, leaf cannot be created
+    //if class is in error, leaf cannot be created
     if (this->gps8_error_code != Error_code::CPS8_OK)
     {
-		DRETURN_ARG("ERR: Tree is in error: %s | Cannot create leaf", this->gps8_error_code ); //Trace Return
-		return true;
+        DRETURN_ARG("ERR: Tree is in error: %s | Cannot create leaf", this->gps8_error_code ); //Trace Return
+        return true;
     }
 
     //--------------------------------------------------------------------------
@@ -474,12 +474,12 @@ bool Tree<Payload>::create_leaf( Payload it_payload, unsigned int &oru32_index )
     //if: std::vector has not increased in size by one
     if ((Config::CU1_INTERNAL_CHECKS == true) && ((u32_num_leaves+1) != this->gclat_leaves.size()) )
     {
-		this->report_error(Error_code::CPS8_ERR_STDVECTOR );
-		DRETURN_ARG("ERR:std::vector | Leaves: %d -> %d", u32_num_leaves, this->gclat_leaves.size() ); //Trace Return
-		return true;	//FAIL
+        this->report_error(Error_code::CPS8_ERR_STDVECTOR );
+        DRETURN_ARG("ERR:std::vector | Leaves: %d -> %d", u32_num_leaves, this->gclat_leaves.size() ); //Trace Return
+        return true;	//FAIL
     }
-	//Return to caller the index of the added leaf
-	oru32_index = u32_num_leaves;
+    //Return to caller the index of the added leaf
+    oru32_index = u32_num_leaves;
 
     //--------------------------------------------------------------------------
     //	RETURN
@@ -504,20 +504,20 @@ bool Tree<Payload>::destroy_leaf( unsigned int iu32_index )
     //--------------------------------------------------------------------------
     //	CHECK
     //--------------------------------------------------------------------------
-	//if class is in error, leaf cannot be created
+    //if class is in error, leaf cannot be created
     if (this->gps8_error_code != Error_code::CPS8_OK)
     {
-		DRETURN_ARG("ERR: Tree is in error: %s | Cannot destroy leaf", this->gps8_error_code ); //Trace Return
-		return true;
+        DRETURN_ARG("ERR: Tree is in error: %s | Cannot destroy leaf", this->gps8_error_code ); //Trace Return
+        return true;
     }
-	//if: user asks for an element outside array range
+    //if: user asks for an element outside array range
     if (iu32_index >= this->gclat_leaves.size())
     {
-		//Out Of Boundary
-		this->report_error(Error_code::CPS8_ERR_OOB);
-		//Error
-		DRETURN_ARG("ERR:OOB | Index: %d | Size: %d", iu32_index, this->gclat_leaves.size() );
-		return true;
+        //Out Of Boundary
+        this->report_error(Error_code::CPS8_ERR_OOB);
+        //Error
+        DRETURN_ARG("ERR:OOB | Index: %d | Size: %d", iu32_index, this->gclat_leaves.size() );
+        return true;
     }
 
     //--------------------------------------------------------------------------
@@ -552,20 +552,20 @@ bool Tree<Payload>::swap_leaves( unsigned int iu32_own_index, Tree<Payload> &irc
     //--------------------------------------------------------------------------
     //	CHECK
     //--------------------------------------------------------------------------
-	//if class is in error
+    //if class is in error
     if ((Config::CU1_INTERNAL_CHECKS == true) && (this->gps8_error_code != Error_code::CPS8_OK))
     {
-		DRETURN_ARG("ERR: Tree is in error: %s | Cannot destroy leaf", this->gps8_error_code ); //Trace Return
-		return true;
+        DRETURN_ARG("ERR: Tree is in error: %s | Cannot destroy leaf", this->gps8_error_code ); //Trace Return
+        return true;
     }
-	//if: user asks for an element outside array range
+    //if: user asks for an element outside array range
     if ((Config::CU1_EXTERNAL_CHECKS == true) && (iu32_own_index >= this->gclat_leaves.size()))
     {
-		//Out Of Boundary
-		this->report_error(Error_code::CPS8_ERR_OOB);
-		//Error
-		DRETURN_ARG("ERR:OOB | Index: %d | Size: %d", iu32_own_index, this->gclat_leaves.size() );
-		return true;
+        //Out Of Boundary
+        this->report_error(Error_code::CPS8_ERR_OOB);
+        //Error
+        DRETURN_ARG("ERR:OOB | Index: %d | Size: %d", iu32_own_index, this->gclat_leaves.size() );
+        return true;
     }
 
     //--------------------------------------------------------------------------
@@ -575,9 +575,9 @@ bool Tree<Payload>::swap_leaves( unsigned int iu32_own_index, Tree<Payload> &irc
     //swap two elements of Vector
     std::swap( this->gclat_leaves[iu32_own_index], ircl_branch.gclat_leaves[iu32_branch_index] );
 
-	//std::vector<Tree<Payload>>::swap( this->gclat_leaves[iu32_own_index], ircl_branch.gclat_leaves[iu32_branch_index] );
+    //std::vector<Tree<Payload>>::swap( this->gclat_leaves[iu32_own_index], ircl_branch.gclat_leaves[iu32_branch_index] );
 
-	//this->gclat_leaves[iu32_own_index].swap( ircl_branch.gclat_leaves[iu32_branch_index] );
+    //this->gclat_leaves[iu32_own_index].swap( ircl_branch.gclat_leaves[iu32_branch_index] );
 
     //--------------------------------------------------------------------------
     //	RETURN
@@ -680,24 +680,24 @@ bool Tree<Payload>::print( unsigned int iu32_depth )
     //	BODY
     //--------------------------------------------------------------------------
 
-	//Print a spacer for each level of descent into the tree
+    //Print a spacer for each level of descent into the tree
     for (unsigned int i = 0;i < iu32_depth;i++)
-	{
-		if ( i != iu32_depth-1 )
-		{
-			std::cout << "    ";
-		}
-		else
-		{
-			std::cout << "|-- ";
-		}
-	}
-	std::cout << this->gt_payload << "\n";
-	//Recursively explore the tree at the next level of depth for each leaf
-	for (unsigned int i = 0;i < this->gclat_leaves.size();i++)
-	{
-		this->gclat_leaves.at(i).print( iu32_depth+1 );
-	}
+    {
+        if ( i != iu32_depth-1 )
+        {
+            std::cout << "    ";
+        }
+        else
+        {
+            std::cout << "|-- ";
+        }
+    }
+    std::cout << this->gt_payload << "\n";
+    //Recursively explore the tree at the next level of depth for each leaf
+    for (unsigned int i = 0;i < this->gclat_leaves.size();i++)
+    {
+        this->gclat_leaves.at(i).print( iu32_depth+1 );
+    }
 
     //--------------------------------------------------------------------------
     //	RETURN
@@ -764,14 +764,14 @@ bool Tree<Payload>::report_error( const char *ips8_error_code )
     //If class is OK
     if (ips8_error_code != Error_code::CPS8_OK)
     {
-		//Report current error
-		this->gps8_error_code = ips8_error_code;
+        //Report current error
+        this->gps8_error_code = ips8_error_code;
     }
     else
     {
-		//Class was already in error. Could not
-		DRETURN_ARG("ERR: Class is already in error: %p | culd not report error: %p", this->gps8_error_code, ips8_error_code );
-		return true;
+        //Class was already in error. Could not
+        DRETURN_ARG("ERR: Class is already in error: %p | culd not report error: %p", this->gps8_error_code, ips8_error_code );
+        return true;
     }
 
     //--------------------------------------------------------------------------
@@ -797,11 +797,11 @@ bool Tree<Payload>::error_recovery( void )
     //--------------------------------------------------------------------------
     //	BODY
     //--------------------------------------------------------------------------
-	//If class is not OK
+    //If class is not OK
     if (this->gps8_error_code != Error_code::CPS8_OK)
     {
-		//Class is OK
-		this->gps8_error_code = Error_code::CPS8_OK;
+        //Class is OK
+        this->gps8_error_code = Error_code::CPS8_OK;
     }
 
     //--------------------------------------------------------------------------
@@ -830,7 +830,7 @@ bool Tree<Payload>::my_private_method( void )
 
     if (Config::CU1_EXTERNAL_CHECKS == true)
     {
-		return true;
+        return true;
     }
 
     //--------------------------------------------------------------------------

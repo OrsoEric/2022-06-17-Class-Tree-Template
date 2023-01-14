@@ -61,7 +61,7 @@ class Tree_interface
 {
     //Visible to all
     public:
-		/*********************************************************************************************************************************************************
+        /*********************************************************************************************************************************************************
         **********************************************************************************************************************************************************
         **  PUBLIC ENUMS
         **********************************************************************************************************************************************************
@@ -82,20 +82,20 @@ class Tree_interface
         //! @brief Empty Constructor
         Tree_interface( void )
         {
-			return;
+            return;
         }
         //! @brief Default payload Constructor
         Tree_interface( Payload it_default_payload )
         {
-			this->set_default_payload( it_default_payload );
-			return;
+            this->set_default_payload( it_default_payload );
+            return;
         }
         //! @brief Default payload and root Constructor
         Tree_interface( Payload it_default_payload,Payload it_root_payload )
         {
-			this->set_default_payload( it_default_payload );
-			this->root() = it_root_payload;
-			return;
+            this->set_default_payload( it_default_payload );
+            this->root() = it_root_payload;
+            return;
         }
 
         /*********************************************************************************************************************************************************
@@ -107,7 +107,7 @@ class Tree_interface
         //Empty destructor
         ~Tree_interface( void )
         {
-			return;
+            return;
         }
 
         /*********************************************************************************************************************************************************
@@ -122,17 +122,17 @@ class Tree_interface
         **********************************************************************************************************************************************************
         *********************************************************************************************************************************************************/
 
-		//! @brief Set the default payload to be used when something goes wrong
+        //! @brief Set the default payload to be used when something goes wrong
         virtual bool set_default_payload( Payload it_payload )
         {
-			this->gt_dummy = it_payload;
-			return false;
+            this->gt_dummy = it_payload;
+            return false;
         }
         //! @brief Create a child of the Root
-		virtual size_t create_child( Payload it_payload )
-		{
-			return true;
-		}
+        virtual size_t create_child( Payload it_payload )
+        {
+            return true;
+        }
 
         /*********************************************************************************************************************************************************
         **********************************************************************************************************************************************************
@@ -140,22 +140,22 @@ class Tree_interface
         **********************************************************************************************************************************************************
         *********************************************************************************************************************************************************/
 
-		//! @brief Return the payload of the Root of the Tree
+        //! @brief Return the payload of the Root of the Tree
         virtual Payload &root( bool &oru1_fail )
         {
-			oru1_fail = false;
-			return this->gt_dummy;
+            oru1_fail = false;
+            return this->gt_dummy;
         }
         virtual Payload &root( void )
         {
-			return this->gt_dummy;
+            return this->gt_dummy;
         }
-		//! @brief show the nodes stored inside the vector and their links
-		virtual bool show( void )
-		{
-			std::cout << "Vector content:\n";
-			return true;
-		}
+        //! @brief show the nodes stored inside the vector and their links
+        virtual bool show( void )
+        {
+            std::cout << "Vector content:\n";
+            return true;
+        }
 
         /*********************************************************************************************************************************************************
         **********************************************************************************************************************************************************
@@ -197,7 +197,7 @@ class Tree_interface
 
         //! @brief Error code of the class
         const char *gps8_error_code;
-		//Dummy payload
+        //Dummy payload
         Payload gt_dummy;
 
     //Visible only inside the class
