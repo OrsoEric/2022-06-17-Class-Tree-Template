@@ -838,26 +838,32 @@ bool Tree<Payload>::swap( size_t in_lhs, size_t in_rhs, Swap_mode ie_swap_mode )
     //--------------------------------------------------------------------------
     //I want to swap node LHS with node RHS
 
+    DPRINT("Payload Swap | LHS: %s | RHS %s\n", this->to_string( in_lhs ).c_str(), this->to_string( in_rhs ).c_str() );
     switch(ie_swap_mode)
     {
         //Swap the payload of two nodes, it's always possible
         case Swap_mode::PAYLOAD:
         {
-			DPRINT("Payload Swap | LHS: %s | RHS %s\n", this->to_string( in_lhs ).c_str(), this->to_string( in_rhs ).c_str() );
+
             std::swap( this->gast_nodes[in_lhs].t_payload, this->gast_nodes[in_rhs].t_payload );
-            DPRINT("After        | LHS: %s | RHS %s\n", this->to_string( in_lhs ).c_str(), this->to_string( in_rhs ).c_str() );
             break;
         }
         //Swap the priority of two nodes that are children to the same father
         case Swap_mode::PRIORITY:
         {
-			DPRINT("Priorty Swap | \n");
+			//Root cannot be target of a priority swap
+			if ((in_lhs == 0) || (in_rhs == 0))
+			{
+				DRETURN_ARG("ERR%d | Priority Swap is only defined for siblings. Root has no sibling.", __LINE__, in_lhs, this->gast_nodes[in_lhs].n_index_father, in_rhs, this->gast_nodes[in_rhs].n_index_father );
+				return true;
+			}
+			//if not siblings
             if (this->gast_nodes[in_lhs].n_index_father != this->gast_nodes[in_rhs].n_index_father)
             {
                 DRETURN_ARG("ERR%d | Priority Swap is only defined for siblings. LHS%d.father is %d | RHS%d.father is %d", __LINE__, in_lhs, this->gast_nodes[in_lhs].n_index_father, in_rhs, this->gast_nodes[in_rhs].n_index_father );
                 return true;
             }
-            std::swap( this->gast_nodes[in_lhs].n_own_priority, this->gast_nodes[in_lhs].n_own_priority );
+            std::swap( this->gast_nodes[in_lhs].n_own_priority, this->gast_nodes[in_rhs].n_own_priority );
             break;
         }
         //Swap the payload of two nodes, it's always possible
@@ -882,17 +888,18 @@ bool Tree<Payload>::swap( size_t in_lhs, size_t in_rhs, Swap_mode ie_swap_mode )
 
             }
 
-
             std::swap( this->gast_nodes[in_lhs].t_payload, this->gast_nodes[in_rhs].t_payload );
             break;
         }
         default:
 		{
-			DRETURN_ARG("ERR: Unknow swap mode!!!");
+			DRETURN_ARG("ERR: Unknown swap mode!!!");
 			return true;
             break;
 		}
     }
+
+    DPRINT("After        | LHS: %s | RHS %s\n", this->to_string( in_lhs ).c_str(), this->to_string( in_rhs ).c_str() );
 
     //--------------------------------------------------------------------------
     //	RETURN
@@ -973,12 +980,8 @@ bool Tree<Payload>::show( void )
         size_t n_father_index = pst_node->n_index_father;
         std::cout << "Father: " << n_father_index;
         std::cout << " | Payload: " << pst_node->t_payload;
-        //Root is the only node that has itself as father
-        if (n_node_index == n_father_index)
-        {
-            std::cout << " | ROOT ";
-        }
-        std::cout << "\n";
+		std::cout << " | Node: " << this->to_string( *pst_node ).c_str();
+		std::cout << "\n";
     }
 
     //--------------------------------------------------------------------------

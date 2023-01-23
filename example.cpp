@@ -223,7 +223,7 @@ bool test_bench( void )
         }
 
 		std::cout << "-------------------------------------\n";
-        std::cout << "Test swap - payload\n";
+        std::cout << "Test swap - payload - swap payload (cheap)\n";
 
 		bool x_fail;
 		size_t n_index_a = 0;
@@ -231,9 +231,25 @@ bool test_bench( void )
         x_fail = cl_my_tree.swap( n_index_a, n_index_b, User::Tree<int>::Swap_mode::PAYLOAD );
         std::cout << "Swap " << n_index_a << " <-> " << n_index_b << " | Result: " << (x_fail?"FAIL":"OK") << "\n";
 
+        n_index_a = 0;
         n_index_b = 1;
         x_fail = cl_my_tree.swap( n_index_a, n_index_b, User::Tree<int>::Swap_mode::PAYLOAD );
         std::cout << "Swap " << n_index_a << " <-> " << n_index_b << " | Result: " << (x_fail?"FAIL":"OK") << "\n";
+		cl_my_tree.show();
+
+		std::cout << "-------------------------------------\n";
+        std::cout << "Test swap - Priority - swap order in which children are resolved (cheap)\n";
+
+        n_index_a = 0;
+        n_index_b = 1;
+        x_fail = cl_my_tree.swap( n_index_a, n_index_b, User::Tree<int>::Swap_mode::PRIORITY );
+        std::cout << "Swap " << n_index_a << " <-> " << n_index_b << " | Result: " << (x_fail?"FAIL":"OK") << "\n";
+
+		n_index_a = 1;
+        n_index_b = 4;
+        x_fail = cl_my_tree.swap( n_index_a, n_index_b, User::Tree<int>::Swap_mode::PRIORITY );
+        std::cout << "Swap " << n_index_a << " <-> " << n_index_b << " | Result: " << (x_fail?"FAIL":"OK") << "\n";
+		cl_my_tree.show();
 		cl_my_tree.show(0);
 
     }
