@@ -215,7 +215,7 @@ bool test_bench( void )
         cl_my_tree.show( 0 );
 
         std::cout << "-------------------------------------\n";
-        std::cout << "Test tree iterator\n";
+        std::cout << "Test tree iterator - deep exploration\n";
         //Scan the tree class using the iterator
         for (User::Tree<int>::iterator<User::Tree<int>::Node> cl_custom_iterator=cl_my_tree.begin();cl_custom_iterator!=cl_my_tree.end();cl_custom_iterator++)
         {
@@ -252,8 +252,21 @@ bool test_bench( void )
 		cl_my_tree.show();
 		cl_my_tree.show(0);
 
-    }
+		std::cout << "\nI ask for a vector with the children of a node, and I swap two of those children\n";
+		auto an_children = cl_my_tree.get_children( 0 );
+        n_index_a = an_children[0];
+        n_index_b = an_children[1];
+        x_fail = cl_my_tree.swap( n_index_a, n_index_b, User::Tree<int>::Swap_mode::PRIORITY );
+        std::cout << "Swap " << n_index_a << " <-> " << n_index_b << " | Result: " << (x_fail?"FAIL":"OK") << "\n";
+		cl_my_tree.show();
+		cl_my_tree.show(0);
 
+
+
+
+
+
+    }
 
     /*
     //Create a root with a payload

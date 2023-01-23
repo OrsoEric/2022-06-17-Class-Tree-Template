@@ -61,6 +61,7 @@ namespace User
 //! @copyright  BSD 3-Clause License Copyright (c) 2022, Orso Eric
 //! @bug swap can be done with std::swap std::vector::swap, the second is the fastest for vectors | https://stackoverflow.com/questions/41090557/c-swap-two-elements-of-two-different-vectors
 //! @todo add rbegin and rend iterators that do the shallow tree exploration. begin and end do the depth exploration
+//! @todo deletion of nodes require an overload of begin that start from a given index. It' common to want to explore from a certain node all its descendence.
 //! @details
 //! \n	A basic tree class that stores a template payload
 //! \n	Implements the generic Tree_interface
@@ -191,6 +192,15 @@ class Tree : public Tree_interface<Payload>
         {
             bool x_fail;
             return this->root( x_fail );
+        }
+        //Find the children of a node of a given index, and push their indexes inside a vector
+        bool find_children( size_t in_father_index, std::vector<size_t> &ira_children_indexes );
+        //Overloads used when a ector has to be created.
+        std::vector<size_t> get_children( size_t in_father_index )
+        {
+			std::vector<size_t> an_children;
+			find_children( in_father_index, an_children );
+			return an_children;
         }
 
         //Show the nodes stored inside the vector and their links
@@ -409,8 +419,7 @@ class Tree : public Tree_interface<Payload>
         **********************************************************************************************************************************************************
         *********************************************************************************************************************************************************/
 
-        //Find the children of a node of a given index, and push their indexes inside a vector
-        bool find_children( size_t in_father_index,std::vector<size_t> &ira_children_indexes );
+
 
     //Visible only inside the class
     private:
@@ -772,7 +781,7 @@ size_t Tree<Payload>::create_child( size_t in_father_index, Payload it_payload )
 //! \n		|-202		|-101
 //! \n		|-203			|-201
 //! \n	------------------------------
-//! \n  "Swap" will swap two nodes along with all their subtrees
+//! \n  "Swap" will swap two nodes along with all their subtrees. When the targets are not of the same bloodline the operation is straight forward
 //! \n	EXAMPLE: Priority Swap (201, 202)
 //! \n	100				100
 //! \n	|-101			|-101
@@ -790,9 +799,9 @@ size_t Tree<Payload>::create_child( size_t in_father_index, Payload it_payload )
 //! \n	100				100
 //! \n	|-101			|-101
 //! \n		|-201			|-201
-//! \n	|-102		    |-202
-//! \n	    |-202           |-102
-//! \n		     |-204      |-204
+//! \n	|-102(R)	    |-202(L)
+//! \n	    |-202(L)        |-102(R)
+//! \n		     |-204(L.C) |-204 (L.C)
 //! \n              |-301       |-301
 //! \n		|-203			|-203
 //! \n	------------------------------
@@ -838,6 +847,10 @@ bool Tree<Payload>::swap( size_t in_lhs, size_t in_rhs, Swap_mode ie_swap_mode )
     //--------------------------------------------------------------------------
     //I want to swap node LHS with node RHS
 
+    //true: the nodes are related and belong to the same line
+    bool x_lhs_rhs_related;
+    bool x_execute_subtree_swap;
+
     DPRINT("Payload Swap | LHS: %s | RHS %s\n", this->to_string( in_lhs ).c_str(), this->to_string( in_rhs ).c_str() );
     switch(ie_swap_mode)
     {
@@ -866,29 +879,24 @@ bool Tree<Payload>::swap( size_t in_lhs, size_t in_rhs, Swap_mode ie_swap_mode )
             std::swap( this->gast_nodes[in_lhs].n_own_priority, this->gast_nodes[in_rhs].n_own_priority );
             break;
         }
-        //Swap the payload of two nodes, it's always possible
+        //Swap two nodes, along with all their descendence. Prevent two descendent to be swapped, as the operation might not yield the result the user wants
         case Swap_mode::SUBTREE_SAFE:
         {
-			DPRINT("Subtree Safe Swap | \n");
+			x_lhs_rhs_related = this->is_descendant(in_lhs, in_rhs);
             //If the nodes belong to the same subtree
-            if (this->is_descendant(in_lhs, in_rhs) == true)
+            if (x_lhs_rhs_related == true)
             {
                 DRETURN_ARG("ERR%d | SUBTREE_SAFE swap is not allowed when two nodes belong to the same subtree and they are relatives.",__LINE__);
                 return true;
             }
+            x_execute_subtree_swap = true;
+            break;
         }
-        //Swap the payload of two nodes, it's always possible
+        //Swap two nodes, along with all their descendence. When two nodes of the same bloodline are swapped, it changes the way the children of those nodes relate to each others
         case Swap_mode::SUBTREE:
         {
-			DPRINT("Subtree Swap | \n");
-            //If the nodes belong to the same subtree
-            if (this->is_descendant(in_lhs, in_rhs) == true)
-            {
-
-
-            }
-
-            std::swap( this->gast_nodes[in_lhs].t_payload, this->gast_nodes[in_rhs].t_payload );
+			x_lhs_rhs_related = this->is_descendant(in_lhs, in_rhs);
+			x_execute_subtree_swap = true;
             break;
         }
         default:
@@ -897,6 +905,13 @@ bool Tree<Payload>::swap( size_t in_lhs, size_t in_rhs, Swap_mode ie_swap_mode )
 			return true;
             break;
 		}
+    }
+	//If a subtree swap was authorized
+    if (x_execute_subtree_swap = true)
+    {
+
+
+
     }
 
     DPRINT("After        | LHS: %s | RHS %s\n", this->to_string( in_lhs ).c_str(), this->to_string( in_rhs ).c_str() );
