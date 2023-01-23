@@ -360,8 +360,15 @@ class Tree : public Tree_interface<Payload>
                             DRETURN_ARG("ERR%d: find children failed", __LINE__);
                             return true;
                         }
-                        for (auto cl_children_iterator = an_children_indexes.begin();cl_children_iterator != an_children_indexes.end();cl_children_iterator++)
+                        for (auto cl_children_iterator = an_children_indexes.rbegin();cl_children_iterator != an_children_indexes.rend();cl_children_iterator++)
                         {
+							//If the stack is empty
+							if ((Tree<Payload>::Config::CU1_INTERNAL_CHECKS) && (n_current_index >= this->grcl_tree.gast_nodes.size()))
+							{
+								//ERROR. Return the root, but this is wrong
+								DRETURN_ARG("ERR:__LINE__:OOB | Index: %d of %d", n_current_index, this->grcl_tree.gast_nodes.size() );
+								return this->grcl_tree.gast_nodes.size();
+							}
                             //Push the index of the child of the popped item in the pseudorecursive stack
                             this->gcl_pseudorecursive_stack.push( *cl_children_iterator );
                         }
@@ -1095,7 +1102,7 @@ bool Tree<Payload>::find_children( size_t in_father_index,std::vector<size_t> &i
                 return true;
             }
             //I can presort the array by using the priority as index to the preallocated chidlren array, saving lots of work
-            iran_children_indexes[n_num_expected_children -1 -n_priority] = n_children_index;
+            iran_children_indexes[n_priority] = n_children_index;
             DPRINT("Found children : %s\n", this->to_string(this->gast_nodes[n_children_index]).c_str() );
             //I just found a child
             n_num_found_children++;
