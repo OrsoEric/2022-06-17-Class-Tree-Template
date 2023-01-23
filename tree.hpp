@@ -59,8 +59,8 @@ namespace User
 //! @version    2022-06-17
 //! @brief      Generic tree template implementation
 //! @copyright  BSD 3-Clause License Copyright (c) 2022, Orso Eric
-//! @bug Avoid push_back | add a move constructor C(C&& c) C(const &c) | use emplace-back | construct/destruct https://stackoverflow.com/questions/21798396/destructor-is-called-when-i-push-back-to-the-vector
 //! @bug swap can be done with std::swap std::vector::swap, the second is the fastest for vectors | https://stackoverflow.com/questions/41090557/c-swap-two-elements-of-two-different-vectors
+//! @todo add rbegin and rend iterators that do the shallow tree exploration. begin and end do the depth exploration
 //! @details
 //! \n	A basic tree class that stores a template payload
 //! \n	Implements the generic Tree_interface
@@ -299,7 +299,7 @@ class Tree : public Tree_interface<Payload>
 
                 T &operator*(void)
                 {
-                    DENTER();
+                    //DENTER();
                     //If the stack is empty
                     if (this->gcl_pseudorecursive_stack.empty() == true)
                     {
@@ -309,7 +309,7 @@ class Tree : public Tree_interface<Payload>
 
                     //Fetch the index that is at the top of the stack
                     size_t n_current_index = this->gcl_pseudorecursive_stack.top();
-                    DRETURN_ARG("Index: %d | Stack size: %d | Node: %s", n_current_index, this->gcl_pseudorecursive_stack.size(), Tree<Payload>::to_string( grcl_tree.gast_nodes[n_current_index] ).c_str() );
+                    //DRETURN_ARG("Index: %d | Stack size: %d | Node: %s", n_current_index, this->gcl_pseudorecursive_stack.size(), Tree<Payload>::to_string( grcl_tree.gast_nodes[n_current_index] ).c_str() );
                     return grcl_tree.gast_nodes[n_current_index];
                 }
 
@@ -434,6 +434,12 @@ class Tree : public Tree_interface<Payload>
         **	PRIVATE METHODS
         **********************************************************************************************************************************************************
         *********************************************************************************************************************************************************/
+
+		//Overloads of string that is not static and accept a node index
+        std::string to_string( size_t n_index )
+        {
+			return to_string( this->gast_nodes[ n_index ] );
+        }
 
         //! @brief turns a Node into a string
         static std::string to_string( User::Tree<Payload>::Node &ist_node )
@@ -837,12 +843,15 @@ bool Tree<Payload>::swap( size_t in_lhs, size_t in_rhs, Swap_mode ie_swap_mode )
         //Swap the payload of two nodes, it's always possible
         case Swap_mode::PAYLOAD:
         {
+			DPRINT("Payload Swap | LHS: %s | RHS %s\n", this->to_string( in_lhs ).c_str(), this->to_string( in_rhs ).c_str() );
             std::swap( this->gast_nodes[in_lhs].t_payload, this->gast_nodes[in_rhs].t_payload );
+            DPRINT("After        | LHS: %s | RHS %s\n", this->to_string( in_lhs ).c_str(), this->to_string( in_rhs ).c_str() );
             break;
         }
         //Swap the priority of two nodes that are children to the same father
         case Swap_mode::PRIORITY:
         {
+			DPRINT("Priorty Swap | \n");
             if (this->gast_nodes[in_lhs].n_index_father != this->gast_nodes[in_rhs].n_index_father)
             {
                 DRETURN_ARG("ERR%d | Priority Swap is only defined for siblings. LHS%d.father is %d | RHS%d.father is %d", __LINE__, in_lhs, this->gast_nodes[in_lhs].n_index_father, in_rhs, this->gast_nodes[in_rhs].n_index_father );
@@ -854,6 +863,7 @@ bool Tree<Payload>::swap( size_t in_lhs, size_t in_rhs, Swap_mode ie_swap_mode )
         //Swap the payload of two nodes, it's always possible
         case Swap_mode::SUBTREE_SAFE:
         {
+			DPRINT("Subtree Safe Swap | \n");
             //If the nodes belong to the same subtree
             if (this->is_descendant(in_lhs, in_rhs) == true)
             {
@@ -864,6 +874,7 @@ bool Tree<Payload>::swap( size_t in_lhs, size_t in_rhs, Swap_mode ie_swap_mode )
         //Swap the payload of two nodes, it's always possible
         case Swap_mode::SUBTREE:
         {
+			DPRINT("Subtree Swap | \n");
             //If the nodes belong to the same subtree
             if (this->is_descendant(in_lhs, in_rhs) == true)
             {
@@ -876,8 +887,11 @@ bool Tree<Payload>::swap( size_t in_lhs, size_t in_rhs, Swap_mode ie_swap_mode )
             break;
         }
         default:
+		{
+			DRETURN_ARG("ERR: Unknow swap mode!!!");
+			return true;
             break;
-
+		}
     }
 
     //--------------------------------------------------------------------------

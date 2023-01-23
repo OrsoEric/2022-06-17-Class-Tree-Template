@@ -222,6 +222,20 @@ bool test_bench( void )
             std::cout << "Iterator Address: " << &(*cl_custom_iterator) << " | Node: " << (*cl_custom_iterator) << "\n";
         }
 
+		std::cout << "-------------------------------------\n";
+        std::cout << "Test swap - payload\n";
+
+		bool x_fail;
+		size_t n_index_a = 0;
+		size_t n_index_b = 0;
+        x_fail = cl_my_tree.swap( n_index_a, n_index_b, User::Tree<int>::Swap_mode::PAYLOAD );
+        std::cout << "Swap " << n_index_a << " <-> " << n_index_b << " | Result: " << (x_fail?"FAIL":"OK") << "\n";
+
+        n_index_b = 1;
+        x_fail = cl_my_tree.swap( n_index_a, n_index_b, User::Tree<int>::Swap_mode::PAYLOAD );
+        std::cout << "Swap " << n_index_a << " <-> " << n_index_b << " | Result: " << (x_fail?"FAIL":"OK") << "\n";
+		cl_my_tree.show(0);
+
     }
 
 
