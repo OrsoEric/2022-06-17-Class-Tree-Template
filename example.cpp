@@ -261,6 +261,8 @@ bool test_bench( void )
 		cl_my_tree.show();
 		cl_my_tree.show(0);
 
+		std::cout << "-------------------------------------\n";
+        std::cout << "Test swap - Sub Tree - Swap two children that are not of the same bloodline along with all their descendence\n"
 
 
 
