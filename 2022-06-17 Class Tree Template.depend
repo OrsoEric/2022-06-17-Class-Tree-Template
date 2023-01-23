@@ -28,23 +28,23 @@
 	<cstdio>
 	"debug.h"
 
-1653285491 c:\data\project\project programming\project classes\2022-06-17 class tree template\debug.h
+1674456205 c:\data\project\project programming\project classes\2022-06-17 class tree template\debug.h
 	<cstdio>
 
-1673606767 source:c:\data\project\project programming\project classes\2022-06-17 class tree template\example.cpp
+1674456205 source:c:\data\project\project programming\project classes\2022-06-17 class tree template\example.cpp
 	<cstdio>
 	<iostream>
 	"debug.h"
 	"tree.hpp"
 
-1673629237 c:\data\project\project programming\project classes\2022-06-17 class tree template\tree.hpp
+1674456205 c:\data\project\project programming\project classes\2022-06-17 class tree template\tree.hpp
 	<string>
 	<vector>
 	<stack>
 	<algorithm>
 	"Tree_interface.h"
 
-1673607165 c:\data\project\project programming\project classes\2022-06-17 class tree template\tree_interface.h
+1674456205 c:\data\project\project programming\project classes\2022-06-17 class tree template\tree_interface.h
 	<vector>
 
 1673338964 source:c:\data\project\project programming\project classes\2022-06-17 class tree template\test_iterator.cpp

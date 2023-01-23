@@ -2,55 +2,55 @@ Start Debug!
 -->> "int main()" |
 	OrangeBot Projects
 	-->> "bool test_bench()" |
-		-->> "User::Tree<Payload>::Tree(Payload, Payload) [with Payload = int]" | This: 000000000061fc50
+		-->> "User::Tree<Payload>::Tree(Payload, Payload) [with Payload = int]" | This: 006dfc28
 			-->> "bool User::Tree<Payload>::init_class_vars(Payload) [with Payload = int]" |
 			<<-- "bool User::Tree<Payload>::init_class_vars(Payload) [with Payload = int]" |
 		<<-- "User::Tree<Payload>::Tree(Payload, Payload) [with Payload = int]" |
 		-->> "Payload& User::Tree<Payload>::root(bool&) [with Payload = int]" |
 		<<-- "Payload& User::Tree<Payload>::root(bool&) [with Payload = int]" |
-		-->> "Payload& User::Tree<Payload>::operator[](size_t) [with Payload = int; size_t = long long unsigned int]" | Object: 000000000061fc50, Index: 0
-		<<-- "Payload& User::Tree<Payload>::operator[](size_t) [with Payload = int; size_t = long long unsigned int]" |
-		-->> "Payload& User::Tree<Payload>::operator[](size_t) [with Payload = int; size_t = long long unsigned int]" | Object: 000000000061fc50, Index: 99
-		<<-- "Payload& User::Tree<Payload>::operator[](size_t) [with Payload = int; size_t = long long unsigned int]" | Index OOB: 99 of 1
-		-->> "size_t User::Tree<Payload>::create_child(Payload) [with Payload = int; size_t = long long unsigned int]" |
-			-->> "size_t User::Tree<Payload>::create_child(size_t, Payload) [with Payload = int; size_t = long long unsigned int]" |
-			<<-- "size_t User::Tree<Payload>::create_child(size_t, Payload) [with Payload = int; size_t = long long unsigned int]" | Father Index: 0 | Own Index: 1 | Nodes under Father: 2
-		<<-- "size_t User::Tree<Payload>::create_child(Payload) [with Payload = int; size_t = long long unsigned int]" | Child Index: 1
-		-->> "size_t User::Tree<Payload>::create_child(Payload) [with Payload = int; size_t = long long unsigned int]" |
-			-->> "size_t User::Tree<Payload>::create_child(size_t, Payload) [with Payload = int; size_t = long long unsigned int]" |
-			<<-- "size_t User::Tree<Payload>::create_child(size_t, Payload) [with Payload = int; size_t = long long unsigned int]" | Father Index: 0 | Own Index: 2 | Nodes under Father: 3
-		<<-- "size_t User::Tree<Payload>::create_child(Payload) [with Payload = int; size_t = long long unsigned int]" | Child Index: 2
+		-->> "Payload& User::Tree<Payload>::operator[](size_t) [with Payload = int; size_t = unsigned int]" | Object: 006dfc28, Index: 0
+		<<-- "Payload& User::Tree<Payload>::operator[](size_t) [with Payload = int; size_t = unsigned int]" |
+		-->> "Payload& User::Tree<Payload>::operator[](size_t) [with Payload = int; size_t = unsigned int]" | Object: 006dfc28, Index: 99
+		<<-- "Payload& User::Tree<Payload>::operator[](size_t) [with Payload = int; size_t = unsigned int]" | Index OOB: 99 of 1
+		-->> "size_t User::Tree<Payload>::create_child(Payload) [with Payload = int; size_t = unsigned int]" |
+			-->> "size_t User::Tree<Payload>::create_child(size_t, Payload) [with Payload = int; size_t = unsigned int]" |
+			<<-- "size_t User::Tree<Payload>::create_child(size_t, Payload) [with Payload = int; size_t = unsigned int]" | Father Index: 0 | Own Index: 1 | Nodes under Father: 2
+		<<-- "size_t User::Tree<Payload>::create_child(Payload) [with Payload = int; size_t = unsigned int]" | Child Index: 1
+		-->> "size_t User::Tree<Payload>::create_child(Payload) [with Payload = int; size_t = unsigned int]" |
+			-->> "size_t User::Tree<Payload>::create_child(size_t, Payload) [with Payload = int; size_t = unsigned int]" |
+			<<-- "size_t User::Tree<Payload>::create_child(size_t, Payload) [with Payload = int; size_t = unsigned int]" | Father Index: 0 | Own Index: 2 | Nodes under Father: 3
+		<<-- "size_t User::Tree<Payload>::create_child(Payload) [with Payload = int; size_t = unsigned int]" | Child Index: 2
 		-->> "bool User::Tree<Payload>::show() [with Payload = int]" | Nodes: 3
 		<<-- "bool User::Tree<Payload>::show() [with Payload = int]" |
-		-->> "size_t User::Tree<Payload>::create_child(size_t, Payload) [with Payload = int; size_t = long long unsigned int]" |
-		<<-- "size_t User::Tree<Payload>::create_child(size_t, Payload) [with Payload = int; size_t = long long unsigned int]" | Father Index: 1 | Own Index: 3 | Nodes under Father: 2
+		-->> "size_t User::Tree<Payload>::create_child(size_t, Payload) [with Payload = int; size_t = unsigned int]" |
+		<<-- "size_t User::Tree<Payload>::create_child(size_t, Payload) [with Payload = int; size_t = unsigned int]" | Father Index: 1 | Own Index: 3 | Nodes under Father: 2
 		-->> "bool User::Tree<Payload>::show() [with Payload = int]" | Nodes: 4
 		<<-- "bool User::Tree<Payload>::show() [with Payload = int]" |
-		-->> "size_t User::Tree<Payload>::create_child(size_t, Payload) [with Payload = int; size_t = long long unsigned int]" |
-		<<-- "size_t User::Tree<Payload>::create_child(size_t, Payload) [with Payload = int; size_t = long long unsigned int]" | Father Index: 0 | Own Index: 4 | Nodes under Father: 4
-		-->> "size_t User::Tree<Payload>::create_child(size_t, Payload) [with Payload = int; size_t = long long unsigned int]" |
-		<<-- "size_t User::Tree<Payload>::create_child(size_t, Payload) [with Payload = int; size_t = long long unsigned int]" | Father Index: 4 | Own Index: 5 | Nodes under Father: 2
-		-->> "size_t User::Tree<Payload>::create_child(size_t, Payload) [with Payload = int; size_t = long long unsigned int]" |
-		<<-- "size_t User::Tree<Payload>::create_child(size_t, Payload) [with Payload = int; size_t = long long unsigned int]" | Father Index: 5 | Own Index: 6 | Nodes under Father: 2
-		-->> "size_t User::Tree<Payload>::create_child(size_t, Payload) [with Payload = int; size_t = long long unsigned int]" |
-		<<-- "size_t User::Tree<Payload>::create_child(size_t, Payload) [with Payload = int; size_t = long long unsigned int]" | Father Index: 6 | Own Index: 7 | Nodes under Father: 2
-		-->> "bool User::Tree<Payload>::show(size_t) [with Payload = int; size_t = long long unsigned int]" | Index: 0
-			-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 000000000061f9f0 | Begin: 1
+		-->> "size_t User::Tree<Payload>::create_child(size_t, Payload) [with Payload = int; size_t = unsigned int]" |
+		<<-- "size_t User::Tree<Payload>::create_child(size_t, Payload) [with Payload = int; size_t = unsigned int]" | Father Index: 0 | Own Index: 4 | Nodes under Father: 4
+		-->> "size_t User::Tree<Payload>::create_child(size_t, Payload) [with Payload = int; size_t = unsigned int]" |
+		<<-- "size_t User::Tree<Payload>::create_child(size_t, Payload) [with Payload = int; size_t = unsigned int]" | Father Index: 4 | Own Index: 5 | Nodes under Father: 2
+		-->> "size_t User::Tree<Payload>::create_child(size_t, Payload) [with Payload = int; size_t = unsigned int]" |
+		<<-- "size_t User::Tree<Payload>::create_child(size_t, Payload) [with Payload = int; size_t = unsigned int]" | Father Index: 5 | Own Index: 6 | Nodes under Father: 2
+		-->> "size_t User::Tree<Payload>::create_child(size_t, Payload) [with Payload = int; size_t = unsigned int]" |
+		<<-- "size_t User::Tree<Payload>::create_child(size_t, Payload) [with Payload = int; size_t = unsigned int]" | Father Index: 6 | Own Index: 7 | Nodes under Father: 2
+		-->> "bool User::Tree<Payload>::show(size_t) [with Payload = int; size_t = unsigned int]" | Index: 0
+			-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 006dfaf0 | Begin: 1
 			<<-- "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Count nodes: 0 | Stack size: 1
-			-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 000000000061fa50 | Begin: 0
+			-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 006dfb20 | Begin: 0
 			<<-- "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Count nodes: 8 | Stack size: 0
 			-->> "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" |
 			<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 0 | Stack size: 1 | Node: Payload: 117 | Father Index: 0 | Own Priority 0 | Children: 3 | Depth: 0
 			-->> "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" |
 			<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 0 | Stack size: 1 | Node: Payload: 117 | Father Index: 0 | Own Priority 0 | Children: 3 | Depth: 0
-			-->> "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = long long unsigned int]" |
-				-->> "bool User::Tree<Payload>::find_children(size_t, std::vector<long long unsigned int>&) [with Payload = int; size_t = long long unsigned int]" | Father: 0
+			-->> "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = unsigned int]" |
+				-->> "bool User::Tree<Payload>::find_children(size_t, std::vector<unsigned int>&) [with Payload = int; size_t = unsigned int]" | Father: 0
 					Found children : Payload: 100 | Father Index: 0 | Own Priority 0 | Children: 1 | Depth: 1
 					Found children : Payload: 101 | Father Index: 0 | Own Priority 1 | Children: 0 | Depth: 1
 					Found children : Payload: 333 | Father Index: 0 | Own Priority 2 | Children: 1 | Depth: 1
-				<<-- "bool User::Tree<Payload>::find_children(size_t, std::vector<long long unsigned int>&) [with Payload = int; size_t = long long unsigned int]" | Found 3 | 3 children
-			<<-- "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = long long unsigned int]" | Count nodes: 0 | Index: 0
-			-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 000000000061fa50 | Begin: 0
+				<<-- "bool User::Tree<Payload>::find_children(size_t, std::vector<unsigned int>&) [with Payload = int; size_t = unsigned int]" | Found 3 | 3 children
+			<<-- "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = unsigned int]" | Count nodes: 0 | Index: 0
+			-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 006dfb20 | Begin: 0
 			<<-- "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Count nodes: 8 | Stack size: 0
 			-->> "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" |
 			<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 1 | Stack size: 3 | Node: Payload: 100 | Father Index: 0 | Own Priority 0 | Children: 1 | Depth: 1
@@ -60,12 +60,12 @@ Start Debug!
 			<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 1 | Stack size: 3 | Node: Payload: 100 | Father Index: 0 | Own Priority 0 | Children: 1 | Depth: 1
 			-->> "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" |
 			<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 1 | Stack size: 3 | Node: Payload: 100 | Father Index: 0 | Own Priority 0 | Children: 1 | Depth: 1
-			-->> "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = long long unsigned int]" |
-				-->> "bool User::Tree<Payload>::find_children(size_t, std::vector<long long unsigned int>&) [with Payload = int; size_t = long long unsigned int]" | Father: 1
+			-->> "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = unsigned int]" |
+				-->> "bool User::Tree<Payload>::find_children(size_t, std::vector<unsigned int>&) [with Payload = int; size_t = unsigned int]" | Father: 1
 					Found children : Payload: 100 | Father Index: 1 | Own Priority 0 | Children: 0 | Depth: 2
-				<<-- "bool User::Tree<Payload>::find_children(size_t, std::vector<long long unsigned int>&) [with Payload = int; size_t = long long unsigned int]" | Found 1 | 1 children
-			<<-- "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = long long unsigned int]" | Count nodes: 1 | Index: 1
-			-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 000000000061fa50 | Begin: 0
+				<<-- "bool User::Tree<Payload>::find_children(size_t, std::vector<unsigned int>&) [with Payload = int; size_t = unsigned int]" | Found 1 | 1 children
+			<<-- "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = unsigned int]" | Count nodes: 1 | Index: 1
+			-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 006dfb20 | Begin: 0
 			<<-- "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Count nodes: 8 | Stack size: 0
 			-->> "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" |
 			<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 3 | Stack size: 3 | Node: Payload: 100 | Father Index: 1 | Own Priority 0 | Children: 0 | Depth: 2
@@ -79,11 +79,11 @@ Start Debug!
 			<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 3 | Stack size: 3 | Node: Payload: 100 | Father Index: 1 | Own Priority 0 | Children: 0 | Depth: 2
 			-->> "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" |
 			<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 3 | Stack size: 3 | Node: Payload: 100 | Father Index: 1 | Own Priority 0 | Children: 0 | Depth: 2
-			-->> "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = long long unsigned int]" |
-				-->> "bool User::Tree<Payload>::find_children(size_t, std::vector<long long unsigned int>&) [with Payload = int; size_t = long long unsigned int]" | Father: 3
-				<<-- "bool User::Tree<Payload>::find_children(size_t, std::vector<long long unsigned int>&) [with Payload = int; size_t = long long unsigned int]" | Found 0 | 0 children
-			<<-- "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = long long unsigned int]" | Count nodes: 2 | Index: 3
-			-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 000000000061fa50 | Begin: 0
+			-->> "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = unsigned int]" |
+				-->> "bool User::Tree<Payload>::find_children(size_t, std::vector<unsigned int>&) [with Payload = int; size_t = unsigned int]" | Father: 3
+				<<-- "bool User::Tree<Payload>::find_children(size_t, std::vector<unsigned int>&) [with Payload = int; size_t = unsigned int]" | Found 0 | 0 children
+			<<-- "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = unsigned int]" | Count nodes: 2 | Index: 3
+			-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 006dfb20 | Begin: 0
 			<<-- "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Count nodes: 8 | Stack size: 0
 			-->> "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" |
 			<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 2 | Stack size: 2 | Node: Payload: 101 | Father Index: 0 | Own Priority 1 | Children: 0 | Depth: 1
@@ -93,11 +93,11 @@ Start Debug!
 			<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 2 | Stack size: 2 | Node: Payload: 101 | Father Index: 0 | Own Priority 1 | Children: 0 | Depth: 1
 			-->> "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" |
 			<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 2 | Stack size: 2 | Node: Payload: 101 | Father Index: 0 | Own Priority 1 | Children: 0 | Depth: 1
-			-->> "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = long long unsigned int]" |
-				-->> "bool User::Tree<Payload>::find_children(size_t, std::vector<long long unsigned int>&) [with Payload = int; size_t = long long unsigned int]" | Father: 2
-				<<-- "bool User::Tree<Payload>::find_children(size_t, std::vector<long long unsigned int>&) [with Payload = int; size_t = long long unsigned int]" | Found 0 | 0 children
-			<<-- "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = long long unsigned int]" | Count nodes: 3 | Index: 2
-			-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 000000000061fa50 | Begin: 0
+			-->> "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = unsigned int]" |
+				-->> "bool User::Tree<Payload>::find_children(size_t, std::vector<unsigned int>&) [with Payload = int; size_t = unsigned int]" | Father: 2
+				<<-- "bool User::Tree<Payload>::find_children(size_t, std::vector<unsigned int>&) [with Payload = int; size_t = unsigned int]" | Found 0 | 0 children
+			<<-- "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = unsigned int]" | Count nodes: 3 | Index: 2
+			-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 006dfb20 | Begin: 0
 			<<-- "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Count nodes: 8 | Stack size: 0
 			-->> "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" |
 			<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 4 | Stack size: 1 | Node: Payload: 333 | Father Index: 0 | Own Priority 2 | Children: 1 | Depth: 1
@@ -107,12 +107,12 @@ Start Debug!
 			<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 4 | Stack size: 1 | Node: Payload: 333 | Father Index: 0 | Own Priority 2 | Children: 1 | Depth: 1
 			-->> "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" |
 			<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 4 | Stack size: 1 | Node: Payload: 333 | Father Index: 0 | Own Priority 2 | Children: 1 | Depth: 1
-			-->> "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = long long unsigned int]" |
-				-->> "bool User::Tree<Payload>::find_children(size_t, std::vector<long long unsigned int>&) [with Payload = int; size_t = long long unsigned int]" | Father: 4
+			-->> "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = unsigned int]" |
+				-->> "bool User::Tree<Payload>::find_children(size_t, std::vector<unsigned int>&) [with Payload = int; size_t = unsigned int]" | Father: 4
 					Found children : Payload: 337 | Father Index: 4 | Own Priority 0 | Children: 1 | Depth: 2
-				<<-- "bool User::Tree<Payload>::find_children(size_t, std::vector<long long unsigned int>&) [with Payload = int; size_t = long long unsigned int]" | Found 1 | 1 children
-			<<-- "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = long long unsigned int]" | Count nodes: 4 | Index: 4
-			-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 000000000061fa50 | Begin: 0
+				<<-- "bool User::Tree<Payload>::find_children(size_t, std::vector<unsigned int>&) [with Payload = int; size_t = unsigned int]" | Found 1 | 1 children
+			<<-- "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = unsigned int]" | Count nodes: 4 | Index: 4
+			-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 006dfb20 | Begin: 0
 			<<-- "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Count nodes: 8 | Stack size: 0
 			-->> "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" |
 			<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 5 | Stack size: 1 | Node: Payload: 337 | Father Index: 4 | Own Priority 0 | Children: 1 | Depth: 2
@@ -126,12 +126,12 @@ Start Debug!
 			<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 5 | Stack size: 1 | Node: Payload: 337 | Father Index: 4 | Own Priority 0 | Children: 1 | Depth: 2
 			-->> "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" |
 			<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 5 | Stack size: 1 | Node: Payload: 337 | Father Index: 4 | Own Priority 0 | Children: 1 | Depth: 2
-			-->> "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = long long unsigned int]" |
-				-->> "bool User::Tree<Payload>::find_children(size_t, std::vector<long long unsigned int>&) [with Payload = int; size_t = long long unsigned int]" | Father: 5
+			-->> "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = unsigned int]" |
+				-->> "bool User::Tree<Payload>::find_children(size_t, std::vector<unsigned int>&) [with Payload = int; size_t = unsigned int]" | Father: 5
 					Found children : Payload: 338 | Father Index: 5 | Own Priority 0 | Children: 1 | Depth: 3
-				<<-- "bool User::Tree<Payload>::find_children(size_t, std::vector<long long unsigned int>&) [with Payload = int; size_t = long long unsigned int]" | Found 1 | 1 children
-			<<-- "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = long long unsigned int]" | Count nodes: 5 | Index: 5
-			-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 000000000061fa50 | Begin: 0
+				<<-- "bool User::Tree<Payload>::find_children(size_t, std::vector<unsigned int>&) [with Payload = int; size_t = unsigned int]" | Found 1 | 1 children
+			<<-- "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = unsigned int]" | Count nodes: 5 | Index: 5
+			-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 006dfb20 | Begin: 0
 			<<-- "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Count nodes: 8 | Stack size: 0
 			-->> "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" |
 			<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 6 | Stack size: 1 | Node: Payload: 338 | Father Index: 5 | Own Priority 0 | Children: 1 | Depth: 3
@@ -149,12 +149,12 @@ Start Debug!
 			<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 6 | Stack size: 1 | Node: Payload: 338 | Father Index: 5 | Own Priority 0 | Children: 1 | Depth: 3
 			-->> "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" |
 			<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 6 | Stack size: 1 | Node: Payload: 338 | Father Index: 5 | Own Priority 0 | Children: 1 | Depth: 3
-			-->> "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = long long unsigned int]" |
-				-->> "bool User::Tree<Payload>::find_children(size_t, std::vector<long long unsigned int>&) [with Payload = int; size_t = long long unsigned int]" | Father: 6
+			-->> "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = unsigned int]" |
+				-->> "bool User::Tree<Payload>::find_children(size_t, std::vector<unsigned int>&) [with Payload = int; size_t = unsigned int]" | Father: 6
 					Found children : Payload: 339 | Father Index: 6 | Own Priority 0 | Children: 0 | Depth: 4
-				<<-- "bool User::Tree<Payload>::find_children(size_t, std::vector<long long unsigned int>&) [with Payload = int; size_t = long long unsigned int]" | Found 1 | 1 children
-			<<-- "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = long long unsigned int]" | Count nodes: 6 | Index: 6
-			-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 000000000061fa50 | Begin: 0
+				<<-- "bool User::Tree<Payload>::find_children(size_t, std::vector<unsigned int>&) [with Payload = int; size_t = unsigned int]" | Found 1 | 1 children
+			<<-- "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = unsigned int]" | Count nodes: 6 | Index: 6
+			-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 006dfb20 | Begin: 0
 			<<-- "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Count nodes: 8 | Stack size: 0
 			-->> "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" |
 			<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 7 | Stack size: 1 | Node: Payload: 339 | Father Index: 6 | Own Priority 0 | Children: 0 | Depth: 4
@@ -176,105 +176,105 @@ Start Debug!
 			<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 7 | Stack size: 1 | Node: Payload: 339 | Father Index: 6 | Own Priority 0 | Children: 0 | Depth: 4
 			-->> "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" |
 			<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 7 | Stack size: 1 | Node: Payload: 339 | Father Index: 6 | Own Priority 0 | Children: 0 | Depth: 4
-			-->> "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = long long unsigned int]" |
-				-->> "bool User::Tree<Payload>::find_children(size_t, std::vector<long long unsigned int>&) [with Payload = int; size_t = long long unsigned int]" | Father: 7
-				<<-- "bool User::Tree<Payload>::find_children(size_t, std::vector<long long unsigned int>&) [with Payload = int; size_t = long long unsigned int]" | Found 0 | 0 children
-			<<-- "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = long long unsigned int]" | Count nodes: 7 | Index: 7
-			-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 000000000061fa50 | Begin: 0
+			-->> "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = unsigned int]" |
+				-->> "bool User::Tree<Payload>::find_children(size_t, std::vector<unsigned int>&) [with Payload = int; size_t = unsigned int]" | Father: 7
+				<<-- "bool User::Tree<Payload>::find_children(size_t, std::vector<unsigned int>&) [with Payload = int; size_t = unsigned int]" | Found 0 | 0 children
+			<<-- "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = unsigned int]" | Count nodes: 7 | Index: 7
+			-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 006dfb20 | Begin: 0
 			<<-- "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Count nodes: 8 | Stack size: 0
-		<<-- "bool User::Tree<Payload>::show(size_t) [with Payload = int; size_t = long long unsigned int]" |
-		-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 000000000061fc80 | Begin: 1
+		<<-- "bool User::Tree<Payload>::show(size_t) [with Payload = int; size_t = unsigned int]" |
+		-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 006dfe40 | Begin: 1
 		<<-- "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Count nodes: 0 | Stack size: 1
-		-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 000000000061fce0 | Begin: 0
+		-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 006dfe70 | Begin: 0
 		<<-- "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Count nodes: 8 | Stack size: 0
 		-->> "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" |
 		<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 0 | Stack size: 1 | Node: Payload: 117 | Father Index: 0 | Own Priority 0 | Children: 3 | Depth: 0
 		-->> "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" |
 		<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 0 | Stack size: 1 | Node: Payload: 117 | Father Index: 0 | Own Priority 0 | Children: 3 | Depth: 0
-		-->> "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = long long unsigned int]" |
-			-->> "bool User::Tree<Payload>::find_children(size_t, std::vector<long long unsigned int>&) [with Payload = int; size_t = long long unsigned int]" | Father: 0
+		-->> "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = unsigned int]" |
+			-->> "bool User::Tree<Payload>::find_children(size_t, std::vector<unsigned int>&) [with Payload = int; size_t = unsigned int]" | Father: 0
 				Found children : Payload: 100 | Father Index: 0 | Own Priority 0 | Children: 1 | Depth: 1
 				Found children : Payload: 101 | Father Index: 0 | Own Priority 1 | Children: 0 | Depth: 1
 				Found children : Payload: 333 | Father Index: 0 | Own Priority 2 | Children: 1 | Depth: 1
-			<<-- "bool User::Tree<Payload>::find_children(size_t, std::vector<long long unsigned int>&) [with Payload = int; size_t = long long unsigned int]" | Found 3 | 3 children
-		<<-- "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = long long unsigned int]" | Count nodes: 0 | Index: 0
-		-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 000000000061fce0 | Begin: 0
+			<<-- "bool User::Tree<Payload>::find_children(size_t, std::vector<unsigned int>&) [with Payload = int; size_t = unsigned int]" | Found 3 | 3 children
+		<<-- "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = unsigned int]" | Count nodes: 0 | Index: 0
+		-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 006dfe70 | Begin: 0
 		<<-- "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Count nodes: 8 | Stack size: 0
 		-->> "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" |
 		<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 1 | Stack size: 3 | Node: Payload: 100 | Father Index: 0 | Own Priority 0 | Children: 1 | Depth: 1
 		-->> "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" |
 		<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 1 | Stack size: 3 | Node: Payload: 100 | Father Index: 0 | Own Priority 0 | Children: 1 | Depth: 1
-		-->> "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = long long unsigned int]" |
-			-->> "bool User::Tree<Payload>::find_children(size_t, std::vector<long long unsigned int>&) [with Payload = int; size_t = long long unsigned int]" | Father: 1
+		-->> "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = unsigned int]" |
+			-->> "bool User::Tree<Payload>::find_children(size_t, std::vector<unsigned int>&) [with Payload = int; size_t = unsigned int]" | Father: 1
 				Found children : Payload: 100 | Father Index: 1 | Own Priority 0 | Children: 0 | Depth: 2
-			<<-- "bool User::Tree<Payload>::find_children(size_t, std::vector<long long unsigned int>&) [with Payload = int; size_t = long long unsigned int]" | Found 1 | 1 children
-		<<-- "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = long long unsigned int]" | Count nodes: 1 | Index: 1
-		-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 000000000061fce0 | Begin: 0
+			<<-- "bool User::Tree<Payload>::find_children(size_t, std::vector<unsigned int>&) [with Payload = int; size_t = unsigned int]" | Found 1 | 1 children
+		<<-- "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = unsigned int]" | Count nodes: 1 | Index: 1
+		-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 006dfe70 | Begin: 0
 		<<-- "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Count nodes: 8 | Stack size: 0
 		-->> "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" |
 		<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 3 | Stack size: 3 | Node: Payload: 100 | Father Index: 1 | Own Priority 0 | Children: 0 | Depth: 2
 		-->> "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" |
 		<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 3 | Stack size: 3 | Node: Payload: 100 | Father Index: 1 | Own Priority 0 | Children: 0 | Depth: 2
-		-->> "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = long long unsigned int]" |
-			-->> "bool User::Tree<Payload>::find_children(size_t, std::vector<long long unsigned int>&) [with Payload = int; size_t = long long unsigned int]" | Father: 3
-			<<-- "bool User::Tree<Payload>::find_children(size_t, std::vector<long long unsigned int>&) [with Payload = int; size_t = long long unsigned int]" | Found 0 | 0 children
-		<<-- "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = long long unsigned int]" | Count nodes: 2 | Index: 3
-		-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 000000000061fce0 | Begin: 0
+		-->> "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = unsigned int]" |
+			-->> "bool User::Tree<Payload>::find_children(size_t, std::vector<unsigned int>&) [with Payload = int; size_t = unsigned int]" | Father: 3
+			<<-- "bool User::Tree<Payload>::find_children(size_t, std::vector<unsigned int>&) [with Payload = int; size_t = unsigned int]" | Found 0 | 0 children
+		<<-- "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = unsigned int]" | Count nodes: 2 | Index: 3
+		-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 006dfe70 | Begin: 0
 		<<-- "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Count nodes: 8 | Stack size: 0
 		-->> "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" |
 		<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 2 | Stack size: 2 | Node: Payload: 101 | Father Index: 0 | Own Priority 1 | Children: 0 | Depth: 1
 		-->> "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" |
 		<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 2 | Stack size: 2 | Node: Payload: 101 | Father Index: 0 | Own Priority 1 | Children: 0 | Depth: 1
-		-->> "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = long long unsigned int]" |
-			-->> "bool User::Tree<Payload>::find_children(size_t, std::vector<long long unsigned int>&) [with Payload = int; size_t = long long unsigned int]" | Father: 2
-			<<-- "bool User::Tree<Payload>::find_children(size_t, std::vector<long long unsigned int>&) [with Payload = int; size_t = long long unsigned int]" | Found 0 | 0 children
-		<<-- "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = long long unsigned int]" | Count nodes: 3 | Index: 2
-		-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 000000000061fce0 | Begin: 0
+		-->> "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = unsigned int]" |
+			-->> "bool User::Tree<Payload>::find_children(size_t, std::vector<unsigned int>&) [with Payload = int; size_t = unsigned int]" | Father: 2
+			<<-- "bool User::Tree<Payload>::find_children(size_t, std::vector<unsigned int>&) [with Payload = int; size_t = unsigned int]" | Found 0 | 0 children
+		<<-- "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = unsigned int]" | Count nodes: 3 | Index: 2
+		-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 006dfe70 | Begin: 0
 		<<-- "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Count nodes: 8 | Stack size: 0
 		-->> "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" |
 		<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 4 | Stack size: 1 | Node: Payload: 333 | Father Index: 0 | Own Priority 2 | Children: 1 | Depth: 1
 		-->> "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" |
 		<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 4 | Stack size: 1 | Node: Payload: 333 | Father Index: 0 | Own Priority 2 | Children: 1 | Depth: 1
-		-->> "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = long long unsigned int]" |
-			-->> "bool User::Tree<Payload>::find_children(size_t, std::vector<long long unsigned int>&) [with Payload = int; size_t = long long unsigned int]" | Father: 4
+		-->> "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = unsigned int]" |
+			-->> "bool User::Tree<Payload>::find_children(size_t, std::vector<unsigned int>&) [with Payload = int; size_t = unsigned int]" | Father: 4
 				Found children : Payload: 337 | Father Index: 4 | Own Priority 0 | Children: 1 | Depth: 2
-			<<-- "bool User::Tree<Payload>::find_children(size_t, std::vector<long long unsigned int>&) [with Payload = int; size_t = long long unsigned int]" | Found 1 | 1 children
-		<<-- "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = long long unsigned int]" | Count nodes: 4 | Index: 4
-		-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 000000000061fce0 | Begin: 0
+			<<-- "bool User::Tree<Payload>::find_children(size_t, std::vector<unsigned int>&) [with Payload = int; size_t = unsigned int]" | Found 1 | 1 children
+		<<-- "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = unsigned int]" | Count nodes: 4 | Index: 4
+		-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 006dfe70 | Begin: 0
 		<<-- "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Count nodes: 8 | Stack size: 0
 		-->> "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" |
 		<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 5 | Stack size: 1 | Node: Payload: 337 | Father Index: 4 | Own Priority 0 | Children: 1 | Depth: 2
 		-->> "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" |
 		<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 5 | Stack size: 1 | Node: Payload: 337 | Father Index: 4 | Own Priority 0 | Children: 1 | Depth: 2
-		-->> "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = long long unsigned int]" |
-			-->> "bool User::Tree<Payload>::find_children(size_t, std::vector<long long unsigned int>&) [with Payload = int; size_t = long long unsigned int]" | Father: 5
+		-->> "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = unsigned int]" |
+			-->> "bool User::Tree<Payload>::find_children(size_t, std::vector<unsigned int>&) [with Payload = int; size_t = unsigned int]" | Father: 5
 				Found children : Payload: 338 | Father Index: 5 | Own Priority 0 | Children: 1 | Depth: 3
-			<<-- "bool User::Tree<Payload>::find_children(size_t, std::vector<long long unsigned int>&) [with Payload = int; size_t = long long unsigned int]" | Found 1 | 1 children
-		<<-- "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = long long unsigned int]" | Count nodes: 5 | Index: 5
-		-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 000000000061fce0 | Begin: 0
+			<<-- "bool User::Tree<Payload>::find_children(size_t, std::vector<unsigned int>&) [with Payload = int; size_t = unsigned int]" | Found 1 | 1 children
+		<<-- "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = unsigned int]" | Count nodes: 5 | Index: 5
+		-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 006dfe70 | Begin: 0
 		<<-- "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Count nodes: 8 | Stack size: 0
 		-->> "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" |
 		<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 6 | Stack size: 1 | Node: Payload: 338 | Father Index: 5 | Own Priority 0 | Children: 1 | Depth: 3
 		-->> "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" |
 		<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 6 | Stack size: 1 | Node: Payload: 338 | Father Index: 5 | Own Priority 0 | Children: 1 | Depth: 3
-		-->> "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = long long unsigned int]" |
-			-->> "bool User::Tree<Payload>::find_children(size_t, std::vector<long long unsigned int>&) [with Payload = int; size_t = long long unsigned int]" | Father: 6
+		-->> "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = unsigned int]" |
+			-->> "bool User::Tree<Payload>::find_children(size_t, std::vector<unsigned int>&) [with Payload = int; size_t = unsigned int]" | Father: 6
 				Found children : Payload: 339 | Father Index: 6 | Own Priority 0 | Children: 0 | Depth: 4
-			<<-- "bool User::Tree<Payload>::find_children(size_t, std::vector<long long unsigned int>&) [with Payload = int; size_t = long long unsigned int]" | Found 1 | 1 children
-		<<-- "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = long long unsigned int]" | Count nodes: 6 | Index: 6
-		-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 000000000061fce0 | Begin: 0
+			<<-- "bool User::Tree<Payload>::find_children(size_t, std::vector<unsigned int>&) [with Payload = int; size_t = unsigned int]" | Found 1 | 1 children
+		<<-- "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = unsigned int]" | Count nodes: 6 | Index: 6
+		-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 006dfe70 | Begin: 0
 		<<-- "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Count nodes: 8 | Stack size: 0
 		-->> "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" |
 		<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 7 | Stack size: 1 | Node: Payload: 339 | Father Index: 6 | Own Priority 0 | Children: 0 | Depth: 4
 		-->> "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" |
 		<<-- "T& User::Tree<Payload>::iterator<T>::operator*() [with T = User::Tree<int>::Node; Payload = int]" | Index: 7 | Stack size: 1 | Node: Payload: 339 | Father Index: 6 | Own Priority 0 | Children: 0 | Depth: 4
-		-->> "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = long long unsigned int]" |
-			-->> "bool User::Tree<Payload>::find_children(size_t, std::vector<long long unsigned int>&) [with Payload = int; size_t = long long unsigned int]" | Father: 7
-			<<-- "bool User::Tree<Payload>::find_children(size_t, std::vector<long long unsigned int>&) [with Payload = int; size_t = long long unsigned int]" | Found 0 | 0 children
-		<<-- "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = long long unsigned int]" | Count nodes: 7 | Index: 7
-		-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 000000000061fce0 | Begin: 0
+		-->> "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = unsigned int]" |
+			-->> "bool User::Tree<Payload>::find_children(size_t, std::vector<unsigned int>&) [with Payload = int; size_t = unsigned int]" | Father: 7
+			<<-- "bool User::Tree<Payload>::find_children(size_t, std::vector<unsigned int>&) [with Payload = int; size_t = unsigned int]" | Found 0 | 0 children
+		<<-- "size_t User::Tree<Payload>::iterator<T>::next() [with T = User::Tree<int>::Node; Payload = int; size_t = unsigned int]" | Count nodes: 7 | Index: 7
+		-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Parent tree: 006dfe70 | Begin: 0
 		<<-- "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool) [with T = User::Tree<int>::Node; Payload = int]" | Count nodes: 8 | Stack size: 0
-		-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 000000000061fc50
+		-->> "User::Tree<Payload>::~Tree() [with Payload = int]" | This: 006dfc28
 		<<-- "User::Tree<Payload>::~Tree() [with Payload = int]" |
 	<<-- "bool test_bench()" |
 <<-- "int main()" |
