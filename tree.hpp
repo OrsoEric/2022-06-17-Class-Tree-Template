@@ -832,7 +832,7 @@ bool Tree<Payload>::swap( size_t in_lhs, size_t in_rhs, Swap_mode ie_swap_mode )
     if ((in_lhs >= this->gast_nodes.size()) || (in_rhs >= this->gast_nodes.size()))
     {
         this->report_error(Error_code::CPS8_ERR_OOB);
-        DRETURN_ARG("ERR%d: Node indexes (%d %d) out of range %d...", in_lhs, in_rhs, this->gast_nodes.size() );
+        DRETURN_ARG("ERR%d: Node indexes (%d %d) out of range %d...", __LINE__, in_lhs, in_rhs, this->gast_nodes.size() );
         return true;
     }
     //if nothing to do
@@ -867,7 +867,7 @@ bool Tree<Payload>::swap( size_t in_lhs, size_t in_rhs, Swap_mode ie_swap_mode )
 			//Root cannot be target of a priority swap
 			if ((in_lhs == 0) || (in_rhs == 0))
 			{
-				DRETURN_ARG("ERR%d | Priority Swap is only defined for siblings. Root has no sibling.", __LINE__, in_lhs, this->gast_nodes[in_lhs].n_index_father, in_rhs, this->gast_nodes[in_rhs].n_index_father );
+				DRETURN_ARG("ERR%d | Priority Swap is only defined for siblings. Root has no sibling.", __LINE__ );
 				return true;
 			}
 			//if not siblings
@@ -907,7 +907,7 @@ bool Tree<Payload>::swap( size_t in_lhs, size_t in_rhs, Swap_mode ie_swap_mode )
 		}
     }
 	//If a subtree swap was authorized
-    if (x_execute_subtree_swap = true)
+    if (x_execute_subtree_swap == true)
     {
 
 
@@ -1116,7 +1116,7 @@ bool Tree<Payload>::find_children( size_t in_father_index,std::vector<size_t> &i
     iran_children_indexes.resize( n_num_expected_children );
     if ((Config::CU1_INTERNAL_CHECKS == true) && (iran_children_indexes.size() != n_num_expected_children))
     {
-        DRETURN_ARG("ERR%d: Failed to resize array expected %d | actual %d", n_num_expected_children, iran_children_indexes.size() );
+        DRETURN_ARG("ERR%d: Failed to resize array expected %d | actual %d", __LINE__, n_num_expected_children, iran_children_indexes.size() );
         return true;
     }
     //while authorized to scan for children
