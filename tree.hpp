@@ -130,10 +130,11 @@ class Tree : public Tree_interface<Payload>
             size_t n_index_father;
             //Priority, defines the order of this node compared to its siblings, 0 is the highest priority node under the given father. It checks against n_children_max_priority of the father of this node
             size_t n_own_priority;
-            //Max Priority, it's the number of children of this node. It also serves as maximum priority.
+            //Max Priority, it's the number of children of this node. It also serves as maximum priority of children
             size_t n_children_max_priority;
             //Distance from root of this node, computed by create_child
             size_t n_distance_from_root;
+
             //! @todo how do I add stringificators for node?
 			/*
             bool to_string( void )
@@ -171,7 +172,7 @@ class Tree : public Tree_interface<Payload>
         **********************************************************************************************************************************************************
         *********************************************************************************************************************************************************/
 
-        //Overload the square bracket operator to do an index search and return a RRHS/LHS reference to the payload
+        //Overload the square bracket operator to do an index search and return a RHS/LHS reference to the payload
         Payload& operator []( size_t in_index );
 
         /*********************************************************************************************************************************************************
@@ -920,6 +921,22 @@ bool Tree<Payload>::swap( size_t in_lhs, size_t in_rhs, Swap_mode ie_swap_mode )
 	//If a subtree swap was authorized
     if (x_execute_subtree_swap == true)
     {
+        //I relink LHS as children of RHS.father
+        //I relink RHS as children of LHS.father
+        //The index of LHS and RHS stay the same
+        //The index of LHS.father and RHS.father stay the same
+
+        //Latch the original indexes of the two fathers
+        size_t n_lhs_father_index = this->gast_nodes[ in_lhs ].n_index_father;
+        size_t n_rhs_father_index = this->gast_nodes[ in_rhs ].n_index_father;
+		//Swap the index of the father of the two nodes
+		std::swap( this->gast_nodes[ in_lhs ].n_index_father, this->gast_nodes[ in_rhs ].n_index_father );
+        //Swap the priorities of
+
+
+
+
+
 
 
 

@@ -405,7 +405,7 @@ bool test_swap_independent_subtree( User::Tree<int> &icl_tree )
     DPRINT("-------------------------------------------SUBTREE UNRELATED-------------------------------------------\n");
 	std::cout << "-------------------------------------\n";
 	std::cout << "Test swap - Subtree with children not part of the same bloodline - swap order in which children are resolved (cheap)\n";
-
+	//Find children of Root
 	std::cout << "\nI ask for a vector with the children of a node, and I swap two of those children\n";
 	size_t n_father_target_index = 0;
 	//Show the list of children of target father
@@ -415,11 +415,19 @@ bool test_swap_independent_subtree( User::Tree<int> &icl_tree )
 	{
 		std::cout << "Children " << cl_iterator_children -an_children.begin() << "of" << an_children.size() << " | " << icl_tree.to_string( *cl_iterator_children ) << "\n";
 	}
-	/*
+
+	//Find a child of one of those children
+	auto an_children_children = icl_tree.get_children( an_children[1] );
+	std::cout << "Father.Children " << an_children[1] << " has " << an_children_children.size() << " children:\n";
+	for (auto cl_iterator_children = an_children_children.begin(); cl_iterator_children != an_children_children.end();cl_iterator_children++)
+	{
+		std::cout << "Children " << cl_iterator_children -an_children.begin() << "of" << an_children.size() << " | " << icl_tree.to_string( *cl_iterator_children ) << "\n";
+	}
+
 	//Execute the swap
 	n_index_a = an_children[0];
-	n_index_b = an_children[1];
-	x_fail = icl_tree.swap( n_index_a, n_index_b, User::Tree<int>::Swap_mode::PRIORITY );
+	n_index_b = an_children_children[0];
+	x_fail = icl_tree.swap( n_index_a, n_index_b, User::Tree<int>::Swap_mode::SUBTREE );
 	std::cout << "Swap " << n_index_a << " <-> " << n_index_b << " | Result: " << (x_fail?"FAIL":"OK") << "\n";
 	icl_tree.show();
 	icl_tree.show(0);
@@ -427,8 +435,6 @@ bool test_swap_independent_subtree( User::Tree<int> &icl_tree )
     //----------------------------------------------------------------
     //	RETURN
     //----------------------------------------------------------------
-
-    */
 
     //Trace Return vith return value
     DRETURN_ARG("out: %d\n\n", x_fail);
