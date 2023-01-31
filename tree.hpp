@@ -286,14 +286,14 @@ class Tree : public Tree_interface<Payload>
         class iterator
         {
             public:
-                iterator(Tree<Payload>& ircl_parent_tree, bool ix_begin ) : grcl_tree(ircl_parent_tree)
+                iterator(Tree<Payload>& ircl_parent_tree, bool ix_begin, size_t in_begin_index = 0 ) : grcl_tree(ircl_parent_tree)
                 {
-                    DENTER_ARG("Parent tree: %p | Begin: %d", &(*this), ix_begin);
+                    DENTER_ARG("Parent tree: %p | Begin: %d | Index: %d", &(*this), ix_begin, in_begin_index );
                     //Constructing a begin iterator
                     if (ix_begin == true)
                     {
                         //Push the root inside the stack
-                        this->gcl_pseudorecursive_stack.push( 0 );
+                        this->gcl_pseudorecursive_stack.push( in_begin_index );
                         //Start from first node
                         this->gn_cnt_nodes = 0;
                     }
@@ -438,16 +438,23 @@ class Tree : public Tree_interface<Payload>
             //End Private
         };	//Class: iterator
         //! @brief iterator that start from the first element of the tree
-        iterator<Node> begin()
+        iterator<Node> begin( void )
         {
             //Construct a Begin iterator with a root inside the pseudorecursive stack
-            return iterator<Node>(*this, true);
+            return iterator<Node>(*this, true );
         }
+        //! @brief iterator that start from a given node
+        iterator<Node> begin( size_t in_index )
+        {
+            //Construct a Begin iterator with a root inside the pseudorecursive stack
+            return iterator<Node>(*this, true, in_index );
+        }
+
         //! @brief iterator that marks the end of the tree
-        iterator<Node> end()
+        iterator<Node> end( void )
         {
             //Construct a End iterator
-            return iterator<Node>(*this, false);
+            return iterator<Node>(*this, false );
         }
 
     //Visible to derived classes
@@ -964,6 +971,15 @@ bool Tree<Payload>::swap( size_t in_lhs, size_t in_rhs, Swap_mode ie_swap_mode )
 		std::swap( this->gast_nodes[ in_lhs ].n_distance_from_root, this->gast_nodes[ in_rhs ].n_distance_from_root );
 		//Update the father to the properties of their new children
 		//Do nothing
+		//Update all the depth information
+		//! @todo skip this step if the depth has not changed
+		for (auto cl_children_iterator = this->begin( in_lhs ); cl_children_iterator != this->end();cl_children_iterator++)
+		{
+            (*cl_children_iterator);
+		}
+
+
+
     }
 
     DPRINT("After        | LHS: %s | RHS %s\n", this->to_string( in_lhs ).c_str(), this->to_string( in_rhs ).c_str() );
