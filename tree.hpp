@@ -396,6 +396,31 @@ class Tree : public Tree_interface<Payload>
                             //Push the index of the child of the popped item in the pseudorecursive stack
                             this->gcl_pseudorecursive_stack.push( *cl_children_iterator );
                         }
+                        //Skip pedantic check of structure
+                        if (false)
+                        {
+							if (n_current_index == 0)
+							{
+								if (this->grcl_tree.gast_nodes[n_current_index].n_index_father != 0 )
+								{
+									DPRINT("ERR%d: n_index_father of root is wrong %d ... FIXED\n", __LINE__, this->grcl_tree.gast_nodes[n_current_index].n_index_father );
+									this->grcl_tree.gast_nodes[n_current_index].n_index_father = 0;
+								}
+								if (this->grcl_tree.gast_nodes[n_current_index].n_distance_from_root != 0)
+								{
+									DPRINT("ERR%d: n_depth of root is wrong %d ... FIXED\n", __LINE__, this->grcl_tree.gast_nodes[n_current_index].n_distance_from_root );
+									this->grcl_tree.gast_nodes[n_current_index].n_distance_from_root = 0;
+								}
+							}
+							else
+							{
+								if (this->grcl_tree.gast_nodes[n_current_index].n_distance_from_root != (this->grcl_tree.gast_nodes[this->grcl_tree.gast_nodes[n_current_index].n_index_father].n_distance_from_root +1))
+								{
+									DPRINT("ERR%d: n_depth of children %d is inconsistent with depth of father %d for node %d... FIXED\n", __LINE__, this->grcl_tree.gast_nodes[n_current_index].n_distance_from_root, this->grcl_tree.gast_nodes[ this->grcl_tree.gast_nodes[n_current_index].n_index_father ].n_distance_from_root );
+									this->grcl_tree.gast_nodes[n_current_index].n_distance_from_root = this->grcl_tree.gast_nodes[ this->grcl_tree.gast_nodes[n_current_index].n_index_father ].n_distance_from_root +1;
+								}
+							}
+                        }
                         n_ret = n_current_index;
                     }
                     DRETURN_ARG("Count nodes: %d | Index: %d", this->gn_cnt_nodes, n_ret);
@@ -861,7 +886,7 @@ bool Tree<Payload>::swap( size_t in_lhs, size_t in_rhs, Swap_mode ie_swap_mode )
 
     //true: the nodes are related and belong to the same line
     bool x_lhs_rhs_related;
-    bool x_execute_subtree_swap;
+    bool x_execute_subtree_swap = false;
 
     DPRINT("Payload Swap | LHS: %s | RHS %s\n", this->to_string( in_lhs ).c_str(), this->to_string( in_rhs ).c_str() );
     switch(ie_swap_mode)
@@ -869,8 +894,11 @@ bool Tree<Payload>::swap( size_t in_lhs, size_t in_rhs, Swap_mode ie_swap_mode )
         //Swap the payload of two nodes, it's always possible
         case Swap_mode::PAYLOAD:
         {
+			std::swap( this->gast_nodes[in_lhs].t_payload, this->gast_nodes[in_rhs].t_payload );
+			//Payload t_tmp = this->gast_nodes[in_lhs].t_payload;
+			//this->gast_nodes[in_lhs].t_payload = this->gast_nodes[in_rhs].t_payload;
+			//this->gast_nodes[in_rhs].t_payload = t_tmp;
 
-            std::swap( this->gast_nodes[in_lhs].t_payload, this->gast_nodes[in_rhs].t_payload );
             break;
         }
         //Swap the priority of two nodes that are children to the same father
@@ -927,19 +955,15 @@ bool Tree<Payload>::swap( size_t in_lhs, size_t in_rhs, Swap_mode ie_swap_mode )
         //The index of LHS.father and RHS.father stay the same
 
         //Latch the original indexes of the two fathers
-        size_t n_lhs_father_index = this->gast_nodes[ in_lhs ].n_index_father;
-        size_t n_rhs_father_index = this->gast_nodes[ in_rhs ].n_index_father;
+        //size_t n_lhs_father_index = this->gast_nodes[ in_lhs ].n_index_father;
+        //size_t n_rhs_father_index = this->gast_nodes[ in_rhs ].n_index_father;
 		//Swap the index of the father of the two nodes
 		std::swap( this->gast_nodes[ in_lhs ].n_index_father, this->gast_nodes[ in_rhs ].n_index_father );
-        //Swap the priorities of
-
-
-
-
-
-
-
-
+        //Update the nodes to the properties of their new father
+		std::swap( this->gast_nodes[ in_lhs ].n_own_priority, this->gast_nodes[ in_rhs ].n_own_priority );
+		std::swap( this->gast_nodes[ in_lhs ].n_distance_from_root, this->gast_nodes[ in_rhs ].n_distance_from_root );
+		//Update the father to the properties of their new children
+		//Do nothing
     }
 
     DPRINT("After        | LHS: %s | RHS %s\n", this->to_string( in_lhs ).c_str(), this->to_string( in_rhs ).c_str() );
@@ -1013,6 +1037,7 @@ bool Tree<Payload>::show( void )
     //	SHOW
     //--------------------------------------------------------------------------
 
+    std::cout << "Number of Nodes: " << this->gast_nodes.size() << "\n";
     //Scan vector of nodes
     for (typename std::vector<Node>::iterator pst_node = this->gast_nodes.begin();pst_node < this->gast_nodes.end();pst_node++)
     {
