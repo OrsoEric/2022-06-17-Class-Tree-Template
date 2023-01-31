@@ -98,6 +98,11 @@ extern bool test_bench( void );
 **	FUNCTIONS
 ****************************************************************/
 
+//Test bench for the priority swap
+extern bool test_swap_priority( User::Tree<int> &icl_tree );
+//Test bench for the subtree swap targeting children not part of the same bloodline
+extern bool test_swap_independent_subtree( User::Tree<int> &icl_tree );
+
 /****************************************************************************
 **	@brief main
 **	main |
@@ -237,37 +242,9 @@ bool test_bench( void )
         std::cout << "Swap " << n_index_a << " <-> " << n_index_b << " | Result: " << (x_fail?"FAIL":"OK") << "\n";
 		cl_my_tree.show();
 
-		std::cout << "-------------------------------------\n";
-        std::cout << "Test swap - Priority - swap order in which children are resolved (cheap)\n";
+		test_swap_priority( cl_my_tree );
 
-        n_index_a = 0;
-        n_index_b = 1;
-        x_fail = cl_my_tree.swap( n_index_a, n_index_b, User::Tree<int>::Swap_mode::PRIORITY );
-        std::cout << "Swap " << n_index_a << " <-> " << n_index_b << " | Result: " << (x_fail?"FAIL":"OK") << "\n";
-
-		n_index_a = 1;
-        n_index_b = 4;
-        x_fail = cl_my_tree.swap( n_index_a, n_index_b, User::Tree<int>::Swap_mode::PRIORITY );
-        std::cout << "Swap " << n_index_a << " <-> " << n_index_b << " | Result: " << (x_fail?"FAIL":"OK") << "\n";
-		cl_my_tree.show();
-		cl_my_tree.show(0);
-
-		std::cout << "\nI ask for a vector with the children of a node, and I swap two of those children\n";
-		auto an_children = cl_my_tree.get_children( 0 );
-        n_index_a = an_children[0];
-        n_index_b = an_children[1];
-        x_fail = cl_my_tree.swap( n_index_a, n_index_b, User::Tree<int>::Swap_mode::PRIORITY );
-        std::cout << "Swap " << n_index_a << " <-> " << n_index_b << " | Result: " << (x_fail?"FAIL":"OK") << "\n";
-		cl_my_tree.show();
-		cl_my_tree.show(0);
-
-		std::cout << "-------------------------------------\n";
-        std::cout << "Test swap - Sub Tree - Swap two children that are not of the same bloodline along with all their descendence\n";
-
-
-
-
-
+		test_swap_independent_subtree( cl_my_tree );
     }
 
     /*
@@ -341,6 +318,126 @@ bool test_bench( void )
 }	//end function: Dummy | bool
 
 /****************************************************************************
+**	@brief test_swap_priority | User::Tree<int> &
+****************************************************************************/
+//! @param f bool
+//! @return bool |
+//! @details
+//! dummy method to copy the code
+/***************************************************************************/
+
+bool test_swap_priority( User::Tree<int> &icl_tree )
+{
+    //Trace Enter with arguments
+    DENTER_ARG("PRIORITY: %p", &(icl_tree));
+    //----------------------------------------------------------------
+    //	BODY
+    //----------------------------------------------------------------
+    //! @details algorithm:
+
+    DPRINT("-------------------------------------------PRIORITY-------------------------------------------\n");
+	std::cout << "-------------------------------------\n";
+	std::cout << "Test swap - Priority - swap order in which children are resolved (cheap)\n";
+
+	size_t n_index_a = 0;
+	size_t  n_index_b = 1;
+	bool x_fail = icl_tree.swap( n_index_a, n_index_b, User::Tree<int>::Swap_mode::PRIORITY );
+	std::cout << "Swap " << n_index_a << " <-> " << n_index_b << " | Result: " << (x_fail?"FAIL":"OK") << "\n";
+
+	n_index_a = 1;
+	n_index_b = 4;
+	x_fail = icl_tree.swap( n_index_a, n_index_b, User::Tree<int>::Swap_mode::PRIORITY );
+	std::cout << "Swap " << n_index_a << " <-> " << n_index_b << " | Result: " << (x_fail?"FAIL":"OK") << "\n";
+	icl_tree.show();
+	icl_tree.show(0);
+
+	std::cout << "\nI ask for a vector with the children of a node, and I swap two of those children\n";
+	size_t n_father_target_index = 0;
+	//Show the list of children of target father
+	auto an_children = icl_tree.get_children( n_father_target_index );
+	std::cout << "Father " << n_father_target_index << " has " << an_children.size() << " children:\n";
+	for (auto cl_iterator_children = an_children.begin(); cl_iterator_children != an_children.end();cl_iterator_children++)
+	{
+		std::cout << "Children " << cl_iterator_children -an_children.begin() << "of" << an_children.size() << " | " << icl_tree.to_string( *cl_iterator_children ) << "\n";
+	}
+	//Execute the swap
+	n_index_a = an_children[0];
+	n_index_b = an_children[1];
+	x_fail = icl_tree.swap( n_index_a, n_index_b, User::Tree<int>::Swap_mode::PRIORITY );
+	std::cout << "Swap " << n_index_a << " <-> " << n_index_b << " | Result: " << (x_fail?"FAIL":"OK") << "\n";
+	icl_tree.show();
+	icl_tree.show(0);
+
+    //----------------------------------------------------------------
+    //	RETURN
+    //----------------------------------------------------------------
+
+    //Trace Return vith return value
+    DRETURN_ARG("out: %d\n\n", x_fail);
+    return x_fail; //OK
+}	//end function: Dummy | bool
+
+/****************************************************************************
+**	@brief test_swap_priority | User::Tree<int> &
+****************************************************************************/
+//! @param f bool
+//! @return bool |
+//! @details
+//! Test bench for the subtree swap targeting children not part of the same bloodline
+/***************************************************************************/
+
+bool test_swap_independent_subtree( User::Tree<int> &icl_tree )
+{
+    //Trace Enter with arguments
+    DENTER_ARG("SUBTREE UNRELATED: %p", &(icl_tree));
+    //----------------------------------------------------------------
+    //	INIT
+    //----------------------------------------------------------------
+
+    bool x_fail;
+    size_t n_index_a, n_index_b;
+
+    //----------------------------------------------------------------
+    //	BODY
+    //----------------------------------------------------------------
+    //! @details algorithm:
+
+    DPRINT("-------------------------------------------SUBTREE UNRELATED-------------------------------------------\n");
+	std::cout << "-------------------------------------\n";
+	std::cout << "Test swap - Subtree with children not part of the same bloodline - swap order in which children are resolved (cheap)\n";
+
+	std::cout << "\nI ask for a vector with the children of a node, and I swap two of those children\n";
+	size_t n_father_target_index = 0;
+	//Show the list of children of target father
+	auto an_children = icl_tree.get_children( n_father_target_index );
+	std::cout << "Father " << n_father_target_index << " has " << an_children.size() << " children:\n";
+	for (auto cl_iterator_children = an_children.begin(); cl_iterator_children != an_children.end();cl_iterator_children++)
+	{
+		std::cout << "Children " << cl_iterator_children -an_children.begin() << "of" << an_children.size() << " | " << icl_tree.to_string( *cl_iterator_children ) << "\n";
+	}
+	/*
+	//Execute the swap
+	n_index_a = an_children[0];
+	n_index_b = an_children[1];
+	x_fail = icl_tree.swap( n_index_a, n_index_b, User::Tree<int>::Swap_mode::PRIORITY );
+	std::cout << "Swap " << n_index_a << " <-> " << n_index_b << " | Result: " << (x_fail?"FAIL":"OK") << "\n";
+	icl_tree.show();
+	icl_tree.show(0);
+
+    //----------------------------------------------------------------
+    //	RETURN
+    //----------------------------------------------------------------
+
+    */
+
+    //Trace Return vith return value
+    DRETURN_ARG("out: %d\n\n", x_fail);
+    return x_fail; //OK
+}	//end function: Dummy | bool
+
+
+
+/****************************************************************************
 **	@brief Function
 **	f | bool
 ****************************************************************************/
@@ -350,7 +447,7 @@ bool test_bench( void )
 //! dummy method to copy the code
 /***************************************************************************/
 
-bool f( bool f )
+bool f( )
 {
     //Trace Enter with arguments
     DENTER_ARG("in: %d\n", 0);
@@ -376,3 +473,4 @@ bool f( bool f )
     DRETURN_ARG("out: %d\n", 0);
     return false; //OK
 }	//end function: Dummy | bool
+

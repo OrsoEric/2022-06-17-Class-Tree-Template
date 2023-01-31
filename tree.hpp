@@ -134,6 +134,13 @@ class Tree : public Tree_interface<Payload>
             size_t n_children_max_priority;
             //Distance from root of this node, computed by create_child
             size_t n_distance_from_root;
+            //! @todo how do I add stringificators for node?
+			/*
+            bool to_string( void )
+            {
+				return to_string( this );
+            }
+            */
         };
 
         /*********************************************************************************************************************************************************
@@ -225,6 +232,12 @@ class Tree : public Tree_interface<Payload>
         **  PUBLIC METHODS
         **********************************************************************************************************************************************************
         *********************************************************************************************************************************************************/
+
+		//Overloads of string that is not static and accept a node index
+        std::string to_string( size_t n_index )
+        {
+			return to_string( this->gast_nodes[ n_index ] );
+        }
 
         /*********************************************************************************************************************************************************
         **********************************************************************************************************************************************************
@@ -444,17 +457,15 @@ class Tree : public Tree_interface<Payload>
         **********************************************************************************************************************************************************
         *********************************************************************************************************************************************************/
 
-		//Overloads of string that is not static and accept a node index
-        std::string to_string( size_t n_index )
-        {
-			return to_string( this->gast_nodes[ n_index ] );
-        }
 
+        //! @todo add "own index", move method to tree interface
         //! @brief turns a Node into a string
         static std::string to_string( User::Tree<Payload>::Node &ist_node )
         {
-            std::string s_ret = "Payload: ";
-            s_ret += std::to_string(ist_node.t_payload);
+            std::string s_ret = "";
+            //size_t n_node_index = ist_node- this->gast_nodes.begin();
+			//s_ret += "Own Index :" +std::to_string( n_node_index );
+            s_ret += "Payload: " + std::to_string(ist_node.t_payload);
             s_ret += " | Father Index: ";
             s_ret += std::to_string(ist_node.n_index_father);
             s_ret += " | Own Priority ";
@@ -988,7 +999,6 @@ bool Tree<Payload>::show( void )
     //Scan vector of nodes
     for (typename std::vector<Node>::iterator pst_node = this->gast_nodes.begin();pst_node < this->gast_nodes.end();pst_node++)
     {
-
         //std::ostream my_stream;
         size_t n_node_index = pst_node- this->gast_nodes.begin();
         std::cout << "Index: " << n_node_index << " | ";
