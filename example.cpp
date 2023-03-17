@@ -112,52 +112,54 @@ class Test_bench
 		{
 			DENTER();
 			bool x_ret = false;
-
-			//----------------------------------------------------------------
-			//	FILL
-			//----------------------------------------------------------------
 			std::cout << "---------------------------------------------------------\n";
+			std::cout << "TEST - fill and flush\n";
+			std::cout << "---------------------------------------------------------\n";
+			//	FILL
 			x_ret = x_ret | this->fill_tree();
 			x_ret = x_ret | this->gcl_tree.show();
-
-			//----------------------------------------------------------------
-			//	FLUSH
-			//----------------------------------------------------------------
+			x_ret = x_ret | this->gcl_tree.show(0);
 			std::cout << "---------------------------------------------------------\n";
+			//	FLUSH
 			x_ret = x_ret | this->gcl_tree.flush();
 			x_ret = x_ret | this->gcl_tree.show();
-
-			//----------------------------------------------------------------
-			//	RETURN
-			//----------------------------------------------------------------
-
+			x_ret = x_ret | this->gcl_tree.show(0);
 			DRETURN();
 			return x_ret;
 		}
 
+		//! @brief test special iterator that explores a tree
+		bool test_tree_iterator( void )
+		{
+			DENTER();
+			std::cout << "---------------------------------------------------------\n";
+			std::cout << "TEST tree iterator - deep exploration\n";
+			std::cout << "---------------------------------------------------------\n";
+			//FILL
+			bool x_ret = this->fill_tree();
+			x_ret = x_ret | this->gcl_tree.show();
+			std::cout << "---------------------------------------------------------\n";
+			//Scan the tree class using the iterator
+			for (User::Tree<int>::iterator<User::Tree<int>::Node> cl_custom_iterator=this->gcl_tree.begin();cl_custom_iterator!=this->gcl_tree.end();cl_custom_iterator++)
+			{
+				std::cout << "Iterator Address: " << &(*cl_custom_iterator) << " | Node: " << (*cl_custom_iterator) << "\n";
+			}
+			DRETURN();
+			return false;
+		}
+
 	private:
+		//! @brief fill the tree with a pattern
 		bool fill_tree( void )
 		{
 			//Construct a tree assigning the default payload and the root payload
 			this->gcl_tree[0] = 404;
 			this->gcl_tree.set_default_payload( 117 );
-			//Special method to return the root
-			std::cout << "Root Payload: " << this->gcl_tree.root() << "\n";
-			//Generic method to return the nth node.
-			std::cout << "Root Payload: " << this->gcl_tree[0] << "\n";
-			std::cout << "Root Payload: " << this->gcl_tree[99] << "\n";
-
 			//Attach two children to the root
 			this->gcl_tree.create_child( 100 );
 			this->gcl_tree.create_child( 101 );
-			//Show content of the array
-			this->gcl_tree.show();
 			//Create a child of node 1 (ROOT) uses the generig create child method
 			this->gcl_tree.create_child( 1, 100 );
-			this->gcl_tree.show();
-
-			std::cout << "-------------------------------------\n";
-
 			//Create a deep ladder of nodes
 			size_t n_child_index = 0;
 			n_child_index = this->gcl_tree.create_child( n_child_index, 333 +n_child_index );
@@ -171,7 +173,6 @@ class Test_bench
 		//Tree structure under test
 		User::Tree<int> gcl_tree;
 };
-
 
 /****************************************************************************
 **	@brief main
@@ -245,23 +246,10 @@ bool test_bench( void )
     //----------------------------------------------------------------
     //! @details algorithm:
 
-
+	//Unit tests
     Test_bench cl_test_bench;
     cl_test_bench.test_fill_flush();
-
-
-    //int s32_payload;
-
-    if (false)
-    {
-        User::Tree<int> cl_my_tree;
-        //Set the default payload in case of bad addressing
-        cl_my_tree.set_default_payload( 404 );
-        //Assign Root payload
-        cl_my_tree.root() = 117;
-
-        std::cout << "Root Payload: " << cl_my_tree.root() << "\n";
-    }
+    cl_test_bench.test_tree_iterator();
 
     if (false)
     {
@@ -272,7 +260,6 @@ bool test_bench( void )
         //Generic method to return the nth node.
         std::cout << "Root Payload: " << cl_my_tree[0] << "\n";
         std::cout << "Root Payload: " << cl_my_tree[99] << "\n";
-
 
         //Attach two children to the root
         cl_my_tree.create_child( 100 );

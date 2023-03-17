@@ -289,6 +289,7 @@ class Tree : public Tree_interface<Payload>
         class iterator
         {
             public:
+				//! @brief
                 iterator(Tree<Payload>& ircl_parent_tree, bool ix_begin, size_t in_begin_index = 0 ) : grcl_tree(ircl_parent_tree)
                 {
                     DENTER_ARG("Parent tree: %p | Begin: %d | Index: %d", &(*this), ix_begin, in_begin_index );
@@ -312,7 +313,8 @@ class Tree : public Tree_interface<Payload>
                 iterator<T>& operator++()
                 {
                     //Advance to the next element of the tree
-                    this->next();
+                    size_t n_ret = this->next();
+
                     return *this;
                 }
 
@@ -371,6 +373,7 @@ class Tree : public Tree_interface<Payload>
                     //If there are no more elements in the stack
                     if (this->gcl_pseudorecursive_stack.empty() == true)
                     {
+						DRETURN_ARG("last element...");
                         //Return index that points to the element after the last element
                         return this->grcl_tree.gast_nodes.size();
                     }
@@ -400,7 +403,7 @@ class Tree : public Tree_interface<Payload>
                             this->gcl_pseudorecursive_stack.push( *cl_children_iterator );
                         }
                         //Skip pedantic check of structure
-                        if (false)
+                        if (true)
                         {
 							if (n_current_index == 0)
 							{
@@ -419,7 +422,7 @@ class Tree : public Tree_interface<Payload>
 							{
 								if (this->grcl_tree.gast_nodes[n_current_index].n_distance_from_root != (this->grcl_tree.gast_nodes[this->grcl_tree.gast_nodes[n_current_index].n_index_father].n_distance_from_root +1))
 								{
-									DPRINT("ERR%d: n_depth of children %d is inconsistent with depth of father %d for node %d... FIXED\n", __LINE__, this->grcl_tree.gast_nodes[n_current_index].n_distance_from_root, this->grcl_tree.gast_nodes[ this->grcl_tree.gast_nodes[n_current_index].n_index_father ].n_distance_from_root );
+									DPRINT("ERR%d: n_depth of children %d is inconsistent with depth of father %d... FIXED\n", __LINE__, this->grcl_tree.gast_nodes[n_current_index].n_distance_from_root, this->grcl_tree.gast_nodes[ this->grcl_tree.gast_nodes[n_current_index].n_index_father ].n_distance_from_root );
 									this->grcl_tree.gast_nodes[n_current_index].n_distance_from_root = this->grcl_tree.gast_nodes[ this->grcl_tree.gast_nodes[n_current_index].n_index_father ].n_distance_from_root +1;
 								}
 							}
@@ -486,6 +489,14 @@ class Tree : public Tree_interface<Payload>
 
         //! @brief initialize class vars to the default
         bool init_class_vars( Payload it_payload );
+		//! @brief initialize the root
+		bool init_root( void );
+        bool init_root( Payload it_payload )
+        {
+			bool x_ret = init_root();
+			if (x_ret == false) { this->gast_nodes[0].t_payload = it_payload; }
+			return x_ret;
+        }
 
         /*********************************************************************************************************************************************************
         **********************************************************************************************************************************************************
@@ -1155,13 +1166,14 @@ bool Tree<Payload>::flush( void )
 		this->gast_nodes.pop_back();
 	}
 
-	//!@todo relign the root
+	//!re align the root
+	bool x_ret = this->init_root();
 
     //--------------------------------------------------------------------------
     //	RETURN
     //--------------------------------------------------------------------------
     DRETURN_ARG("Nodes inside the tree: %d", this->gast_nodes.size() ); //Trace Return
-    return false;	//OK
+    return x_ret;	//OK
 } 	//Public Method: report_error | Error_code
 
 /*********************************************************************************************************************************************************
@@ -1304,6 +1316,14 @@ bool Tree<Payload>::init_class_vars( Payload it_payload )
     //	INIT
     //--------------------------------------------------------------------------
 
+    //If the tree already has nodes
+    if ((Config::CU1_INTERNAL_CHECKS == true) && (this->gast_nodes.size() > 0))
+    {
+		bool x_ret = this->flush();
+		DRETURN_ARG("WAR:__LINE__ The tree was already initialized, flush instead.");
+		return x_ret;
+    }
+
     Node st_node;
     st_node.t_payload = it_payload;
     //Root starts with no children
@@ -1312,6 +1332,8 @@ bool Tree<Payload>::init_class_vars( Payload it_payload )
     st_node.n_own_priority = 0;
     //Root is at depth 0
     st_node.n_distance_from_root = 0;
+    //Register the father index. Root points to itself, special root code
+    st_node.n_index_father = 0;
     //Allocate root and fill root with dummy payload
     this->gast_nodes.push_back( st_node );
     if (this->gast_nodes.size() != 1)
@@ -1321,10 +1343,47 @@ bool Tree<Payload>::init_class_vars( Payload it_payload )
         DRETURN_ARG("ERR%d: There should be exactly one node (Root) after initialization, there are %d instead", __LINE__, this->gast_nodes.size() );
         return true;
     }
-    //Register the father index. Root points to itself
-    this->gast_nodes[0].n_index_father = 0;
-
+    //Initialize error code
     this->gps8_error_code = Error_code::CPS8_OK;
+
+    //--------------------------------------------------------------------------
+    //	RETURN
+    //--------------------------------------------------------------------------
+    DRETURN();      //Trace Return
+    return false;   //OK
+}   //Private Method: init_class_vars | void
+
+/***************************************************************************/
+//! @brief Private Method: init_root | void
+/***************************************************************************/
+//! @param it_payload | root payload
+//! @return no return
+//! @details
+//! \n Initialize class vars
+/***************************************************************************/
+
+template <class Payload>
+bool Tree<Payload>::init_root( void )
+{
+    DENTER();		//Trace Enter
+    //--------------------------------------------------------------------------
+    //	INIT
+    //--------------------------------------------------------------------------
+
+    //If there is no root
+    if ((Config::CU1_INTERNAL_CHECKS == true) && (this->gast_nodes.size() < 1))
+    {
+		DRETURN_ARG("ERR:__LINE__ | There are no nodes! There should be at least the root...");
+		return true;
+    }
+    //Root starts with no children
+    this->gast_nodes[0].n_children_max_priority = 0;
+    //Root cannot have a priority, it has no father and no siblings
+    this->gast_nodes[0].n_own_priority = 0;
+    //Root is at depth 0
+    this->gast_nodes[0].n_distance_from_root = 0;
+    //Register the father index. Root points to itself, the special root code.
+    this->gast_nodes[0].n_index_father = 0;
 
     //--------------------------------------------------------------------------
     //	RETURN
