@@ -1057,14 +1057,8 @@ bool Tree<Payload>::show( void )
     //Scan vector of nodes
     for (typename std::vector<Node>::iterator pst_node = this->gast_nodes.begin();pst_node < this->gast_nodes.end();pst_node++)
     {
-        //std::ostream my_stream;
-        size_t n_node_index = pst_node- this->gast_nodes.begin();
-        std::cout << "Index: " << n_node_index << " | ";
-        size_t n_father_index = pst_node->n_index_father;
-        std::cout << "Father: " << n_father_index;
-        std::cout << " | Payload: " << pst_node->t_payload;
-		std::cout << " | Node: " << this->to_string( *pst_node ).c_str();
-		std::cout << "\n";
+		//Print node
+		std::cout << *pst_node << "\n";
     }
 
     //--------------------------------------------------------------------------

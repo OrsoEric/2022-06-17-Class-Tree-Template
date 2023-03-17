@@ -103,6 +103,76 @@ extern bool test_swap_priority( User::Tree<int> &icl_tree );
 //Test bench for the subtree swap targeting children not part of the same bloodline
 extern bool test_swap_independent_subtree( User::Tree<int> &icl_tree );
 
+
+class Test_bench
+{
+	public:
+		//! @brief test filling and flushing a tree
+		bool test_fill_flush( void )
+		{
+			DENTER();
+			bool x_ret = false;
+
+			//----------------------------------------------------------------
+			//	FILL
+			//----------------------------------------------------------------
+			std::cout << "---------------------------------------------------------\n";
+			x_ret = x_ret | this->fill_tree();
+			x_ret = x_ret | this->gcl_tree.show();
+
+			//----------------------------------------------------------------
+			//	FLUSH
+			//----------------------------------------------------------------
+			std::cout << "---------------------------------------------------------\n";
+			x_ret = x_ret | this->gcl_tree.flush();
+			x_ret = x_ret | this->gcl_tree.show();
+
+			//----------------------------------------------------------------
+			//	RETURN
+			//----------------------------------------------------------------
+
+			DRETURN();
+			return x_ret;
+		}
+
+	private:
+		bool fill_tree( void )
+		{
+			//Construct a tree assigning the default payload and the root payload
+			this->gcl_tree[0] = 404;
+			this->gcl_tree.set_default_payload( 117 );
+			//Special method to return the root
+			std::cout << "Root Payload: " << this->gcl_tree.root() << "\n";
+			//Generic method to return the nth node.
+			std::cout << "Root Payload: " << this->gcl_tree[0] << "\n";
+			std::cout << "Root Payload: " << this->gcl_tree[99] << "\n";
+
+			//Attach two children to the root
+			this->gcl_tree.create_child( 100 );
+			this->gcl_tree.create_child( 101 );
+			//Show content of the array
+			this->gcl_tree.show();
+			//Create a child of node 1 (ROOT) uses the generig create child method
+			this->gcl_tree.create_child( 1, 100 );
+			this->gcl_tree.show();
+
+			std::cout << "-------------------------------------\n";
+
+			//Create a deep ladder of nodes
+			size_t n_child_index = 0;
+			n_child_index = this->gcl_tree.create_child( n_child_index, 333 +n_child_index );
+			n_child_index = this->gcl_tree.create_child( n_child_index, 333 +n_child_index );
+			n_child_index = this->gcl_tree.create_child( n_child_index, 333 +n_child_index );
+			n_child_index = this->gcl_tree.create_child( n_child_index, 333 +n_child_index );
+
+			return false;
+		}
+
+		//Tree structure under test
+		User::Tree<int> gcl_tree;
+};
+
+
 /****************************************************************************
 **	@brief main
 **	main |
