@@ -245,6 +245,11 @@ bool test_bench( void )
     //----------------------------------------------------------------
     //! @details algorithm:
 
+
+    Test_bench cl_test_bench;
+    cl_test_bench.test_fill_flush();
+
+
     //int s32_payload;
 
     if (false)
@@ -258,7 +263,7 @@ bool test_bench( void )
         std::cout << "Root Payload: " << cl_my_tree.root() << "\n";
     }
 
-    if (true)
+    if (false)
     {
         //Construct a tree assigning the default payload and the root payload
         User::Tree<int> cl_my_tree( 404, 117 );
