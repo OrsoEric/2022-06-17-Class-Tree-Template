@@ -307,6 +307,8 @@ Start Debug!
 			<<-- "bool User::Tree<Payload>::show(size_t) [with Payload = int; size_t = unsigned int]" |
 			-->> "bool User::Tree<Payload>::swap(size_t, size_t, User::Tree<Payload>::Swap_mode) [with Payload = int; size_t = unsigned int]" |
 			<<-- "bool User::Tree<Payload>::swap(size_t, size_t, User::Tree<Payload>::Swap_mode) [with Payload = int; size_t = unsigned int]" |
+			-->> "bool User::Tree<Payload>::show() [with Payload = int]" | Nodes: 9
+			<<-- "bool User::Tree<Payload>::show() [with Payload = int]" |
 			-->> "bool User::Tree<Payload>::show(size_t) [with Payload = int; size_t = unsigned int]" | Index: 0
 				-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool, size_t) [with T = User::Tree<int>::Node; Payload = int; size_t = unsigned int]" | Parent tree: 006dfda0 | Begin: 1 | Index: 0
 				<<-- "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool, size_t) [with T = User::Tree<int>::Node; Payload = int; size_t = unsigned int]" | Count nodes: 0 | Stack size: 1
@@ -379,6 +381,8 @@ Start Debug!
 				Payload Swap | LHS: Payload: 100 | Father Index: 0 | Own Priority 0 | Children: 2 | Depth: 1 | RHS Payload: 101 | Father Index: 0 | Own Priority 1 | Children: 0 | Depth: 1
 				After        | LHS: Payload: 101 | Father Index: 0 | Own Priority 0 | Children: 2 | Depth: 1 | RHS Payload: 100 | Father Index: 0 | Own Priority 1 | Children: 0 | Depth: 1
 			<<-- "bool User::Tree<Payload>::swap(size_t, size_t, User::Tree<Payload>::Swap_mode) [with Payload = int; size_t = unsigned int]" |
+			-->> "bool User::Tree<Payload>::show() [with Payload = int]" | Nodes: 9
+			<<-- "bool User::Tree<Payload>::show() [with Payload = int]" |
 			-->> "bool User::Tree<Payload>::show(size_t) [with Payload = int; size_t = unsigned int]" | Index: 0
 				-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool, size_t) [with T = User::Tree<int>::Node; Payload = int; size_t = unsigned int]" | Parent tree: 006dfda0 | Begin: 1 | Index: 0
 				<<-- "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool, size_t) [with T = User::Tree<int>::Node; Payload = int; size_t = unsigned int]" | Count nodes: 0 | Stack size: 1
@@ -451,6 +455,8 @@ Start Debug!
 				Payload Swap | LHS: Payload: 100 | Father Index: 0 | Own Priority 1 | Children: 0 | Depth: 1 | RHS Payload: 101 | Father Index: 0 | Own Priority 0 | Children: 2 | Depth: 1
 				After        | LHS: Payload: 101 | Father Index: 0 | Own Priority 1 | Children: 0 | Depth: 1 | RHS Payload: 100 | Father Index: 0 | Own Priority 0 | Children: 2 | Depth: 1
 			<<-- "bool User::Tree<Payload>::swap(size_t, size_t, User::Tree<Payload>::Swap_mode) [with Payload = int; size_t = unsigned int]" |
+			-->> "bool User::Tree<Payload>::show() [with Payload = int]" | Nodes: 9
+			<<-- "bool User::Tree<Payload>::show() [with Payload = int]" |
 			-->> "bool User::Tree<Payload>::show(size_t) [with Payload = int; size_t = unsigned int]" | Index: 0
 				-->> "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool, size_t) [with T = User::Tree<int>::Node; Payload = int; size_t = unsigned int]" | Parent tree: 006dfda0 | Begin: 1 | Index: 0
 				<<-- "User::Tree<Payload>::iterator<T>::iterator(User::Tree<Payload>&, bool, size_t) [with T = User::Tree<int>::Node; Payload = int; size_t = unsigned int]" | Count nodes: 0 | Stack size: 1

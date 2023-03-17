@@ -178,6 +178,7 @@ class Test_bench
 					User::Tree<int>::Swap_mode::PAYLOAD
 				);
 				std::cout << "Swap " << an_swap_pattern[n_swap_pattern_index][0] << " <-> " << an_swap_pattern[n_swap_pattern_index][1] << " | Result: " << (x_fail?"FAIL":"OK") << "\n";
+				x_fail = x_fail | this->gcl_tree.show();
 				x_fail = x_fail | this->gcl_tree.show(0);
 				std::cout << "---------------------------------------------------------\n";
 			}

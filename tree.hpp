@@ -1072,7 +1072,7 @@ bool Tree<Payload>::show( void )
     for (typename std::vector<Node>::iterator pst_node = this->gast_nodes.begin();pst_node < this->gast_nodes.end();pst_node++)
     {
 		//Print node
-		std::cout << *pst_node << "\n";
+		std::cout << "Index: " << pst_node -this->gast_nodes.begin() << " | " << *pst_node << "\n";
     }
 
     //--------------------------------------------------------------------------
