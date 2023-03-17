@@ -136,13 +136,50 @@ class Test_bench
 			std::cout << "TEST tree iterator - deep exploration\n";
 			std::cout << "---------------------------------------------------------\n";
 			//FILL
-			bool x_ret = this->fill_tree();
-			x_ret = x_ret | this->gcl_tree.show();
+			bool x_fail = this->fill_tree();
+			x_fail = x_fail | this->gcl_tree.show();
 			std::cout << "---------------------------------------------------------\n";
 			//Scan the tree class using the iterator
 			for (User::Tree<int>::iterator<User::Tree<int>::Node> cl_custom_iterator=this->gcl_tree.begin();cl_custom_iterator!=this->gcl_tree.end();cl_custom_iterator++)
 			{
 				std::cout << "Iterator Address: " << &(*cl_custom_iterator) << " | Node: " << (*cl_custom_iterator) << "\n";
+			}
+			DRETURN();
+			return x_fail;
+		}
+
+		bool test_tree_swap_payload( void )
+		{
+			const size_t cn_num_swap_patterns = 3;
+			size_t an_swap_pattern[cn_num_swap_patterns][2] =
+			{
+				{0,0},
+				{1,2},
+				{2,1},
+			};
+			DENTER();
+			std::cout << "---------------------------------------------------------\n";
+			std::cout << "TEST - swap payload | patterns: " << cn_num_swap_patterns << "\n";
+			std::cout << "---------------------------------------------------------\n";
+			//FILL
+			bool x_fail;
+			x_fail = x_fail | this->gcl_tree.flush();
+			x_fail = this->fill_tree();
+			x_fail = x_fail | this->gcl_tree.show(0);
+			std::cout << "---------------------------------------------------------\n";
+			//Scan swap patterns
+			for (size_t n_swap_pattern_index = 0; n_swap_pattern_index < cn_num_swap_patterns;n_swap_pattern_index++)
+			{
+				//Execute the swap with the given pattern
+				x_fail = this->gcl_tree.swap
+				(
+					an_swap_pattern[n_swap_pattern_index][0],
+					an_swap_pattern[n_swap_pattern_index][1],
+					User::Tree<int>::Swap_mode::PAYLOAD
+				);
+				std::cout << "Swap " << an_swap_pattern[n_swap_pattern_index][0] << " <-> " << an_swap_pattern[n_swap_pattern_index][1] << " | Result: " << (x_fail?"FAIL":"OK") << "\n";
+				x_fail = x_fail | this->gcl_tree.show(0);
+				std::cout << "---------------------------------------------------------\n";
 			}
 			DRETURN();
 			return false;
@@ -166,6 +203,8 @@ class Test_bench
 			n_child_index = this->gcl_tree.create_child( n_child_index, 333 +n_child_index );
 			n_child_index = this->gcl_tree.create_child( n_child_index, 333 +n_child_index );
 			n_child_index = this->gcl_tree.create_child( n_child_index, 333 +n_child_index );
+			//Create a child of node 1 (ROOT) uses the generig create child method
+			this->gcl_tree.create_child( 1, 102 );
 
 			return false;
 		}
@@ -250,6 +289,7 @@ bool test_bench( void )
     Test_bench cl_test_bench;
     cl_test_bench.test_fill_flush();
     cl_test_bench.test_tree_iterator();
+    cl_test_bench.test_tree_swap_payload();
 
     if (false)
     {
@@ -281,28 +321,10 @@ bool test_bench( void )
         //Of that node, create a child
         cl_my_tree.show( 0 );
 
-        std::cout << "-------------------------------------\n";
-        std::cout << "Test tree iterator - deep exploration\n";
-        //Scan the tree class using the iterator
-        for (User::Tree<int>::iterator<User::Tree<int>::Node> cl_custom_iterator=cl_my_tree.begin();cl_custom_iterator!=cl_my_tree.end();cl_custom_iterator++)
-        {
-            std::cout << "Iterator Address: " << &(*cl_custom_iterator) << " | Node: " << (*cl_custom_iterator) << "\n";
-        }
-
 		std::cout << "-------------------------------------\n";
         std::cout << "Test swap - payload - swap payload (cheap)\n";
 
-		bool x_fail;
-		size_t n_index_a = 0;
-		size_t n_index_b = 0;
-        x_fail = cl_my_tree.swap( n_index_a, n_index_b, User::Tree<int>::Swap_mode::PAYLOAD );
-        std::cout << "Swap " << n_index_a << " <-> " << n_index_b << " | Result: " << (x_fail?"FAIL":"OK") << "\n";
 
-        n_index_a = 0;
-        n_index_b = 1;
-        x_fail = cl_my_tree.swap( n_index_a, n_index_b, User::Tree<int>::Swap_mode::PAYLOAD );
-        std::cout << "Swap " << n_index_a << " <-> " << n_index_b << " | Result: " << (x_fail?"FAIL":"OK") << "\n";
-		cl_my_tree.show();
 
 		test_swap_priority( cl_my_tree );
 
