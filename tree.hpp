@@ -106,7 +106,7 @@ class Tree : public Tree_interface<Payload>
             static constexpr const char *CPS8_ERR_OOB = "ERR Out Of Boundary: Tried to access an index that doesn't exist";
         };
         //! @brief how a node is to be deleted
-        enum Delete_mode
+        enum Erease_mode
         {
 			//Just delete the node, and relinks the children of the node, to the father of the node
 			NODE,
@@ -205,7 +205,7 @@ class Tree : public Tree_interface<Payload>
         //Create a child of the node with a given index. Returns the index of the node created
         size_t create_child( size_t in_father_index, Payload it_payload );
         //Delete a node from the tree. Two deletion mode, NODE delete a single node and relinks the children, DEEP, delete node and all the children
-        size_t delete_node( size_t in_index, Delete_mode );
+        size_t erease( size_t in_index, Erease_mode );
         //Swap two nodes of the tree
         bool swap( size_t in_lhs, size_t in_rhs, Swap_mode ie_swap_mode = Swap_mode::SUBTREE );
 
@@ -857,15 +857,16 @@ size_t Tree<Payload>::create_child( size_t in_father_index, Payload it_payload )
 }   //Public Setter: create_child | size_t | Payload
 
 /***************************************************************************/
-//! @brief Public Setter: delete_node | size_t
+//! @brief Public Setter: erease | size_t
 /***************************************************************************/
 //! @param in_index | Delete a node
 //! @param ie_delete_mode | NODE = delete node and relinks children | DEEP = delete node and all descendence
 //! @return bool | false = OK | true = FAIL |
 //! @details
+//! \n
 //! \n Create a child of the root
 //! \n	------------------------------
-//! \n	EXAMPLE: delete_node (102, NODE)
+//! \n	EXAMPLE: erease (102, NODE)
 //! \n	100				100
 //! \n	|-101			|-101
 //! \n		|-201			|-201
@@ -873,17 +874,35 @@ size_t Tree<Payload>::create_child( size_t in_father_index, Payload it_payload )
 //! \n		|-202		|-203
 //! \n		|-203
 //! \n	------------------------------
-//! \n	EXAMPLE: delete_node (102, DEEP)
+//! \n	EXAMPLE: erease (102, DEEP)
 //! \n	100				100
 //! \n	|-101			|-101
 //! \n		|-201			|-201
 //! \n	|-102
 //! \n		|-202
 //! \n		|-203
+//! \n	------------------------------
+//! \n	EXAMPLE: erease (100, NODE) (ROOT)
+//! \n	100				101
+//! \n	|-101				|-201
+//! \n		|-201		102
+//! \n	|-102				|-202
+//! \n		|-202			|-203
+//! \n		|-203
+//! \n	not allowed, this could result in multiple roots. The root must be singular and at index 0.
+//! \n	------------------------------
+//! \n	EXAMPLE: erease (100, DEEP) (ROOT)
+//! \n	100
+//! \n	|-101
+//! \n		|-201
+//! \n	|-102
+//! \n		|-202
+//! \n		|-203
+//! \n	erease the whole tree not allowed because there is no root
 /***************************************************************************/
 
 template <class Payload>
-size_t Tree<Payload>::delete_node( size_t in_index, Delete_mode ie_delete_mode ) //=  Tree<Payload>::Delete_mode.NODE
+size_t Tree<Payload>::erease( size_t in_index_erease, Erease_mode ie_delete_mode )
 {
     DENTER(); //Trace Enter
     //--------------------------------------------------------------------------
@@ -895,22 +914,94 @@ size_t Tree<Payload>::delete_node( size_t in_index, Delete_mode ie_delete_mode )
         DRETURN_ARG("ERR:%d Tree is in error: %s | Cannot destroy node", __LINE__, this->gps8_error_code );
         return true;
     }
+	//If user tries to erease a node that is OOB
+    if ((Config::CU1_EXTERNAL_CHECKS) && (in_index_erease >= this->gast_nodes.size()))
+    {
+		this->report_error("ERR%d | index %d of %d | OOB erease index", __LINE__, in_index_erease, this->gast_nodes.size() );
+		DRETURN_ARG("%s", this->gps8_error_code );
+		return true;
+    }
+    //If user tries to erease the ROOT
+    if ((Config::CU1_EXTERNAL_CHECKS) && (in_index_erease == 0))
+    {
+		this->report_error("ERR%d | root cannot be ereased", __LINE__ );
+		DRETURN_ARG("%s", this->gps8_error_code );
+		return true;
+    }
 
     //--------------------------------------------------------------------------
     //	BODY
     //--------------------------------------------------------------------------
 
-	auto cl_iterator = (this->gast_nodes.begin() +in_index);
-	this->gast_nodes.erase( cl_iterator );
+    switch( ie_delete_mode )
+    {
+		//--------------------------------------------------------------------------
+		case Erease_mode.NODE:
+		//--------------------------------------------------------------------------
+		//	Erease a single node
+
+			//Construct an iterator that points to the correct node
+			auto cl_iterator = (this->gast_nodes.begin() +in_index_erease);
+			//Remember the father of the ereased node
+			size_t n_index_father_of_ereased_node = cl_iterator->n_index_father;
+
+			size_t n_size_before_erease = this->gast_nodes.size();
+			//Erease the node, this invalidates the iterator
+			this->gast_nodes.erase( cl_iterator );
+			//If vector erease does't have the expected result
+			if ( (n_size_before_erease -1) != this->gast_nodes.size() )
+			{
+				this->report_error("ERR%d | Size: %d->%d | ERR Vector!!! I expected the vector to have size reduced by one...");
+			}
+
+			//I scan the whole tree and update all node indexes
+			for (cl_iterator = this->gast_nodes.begin(); cl_iterator < this->gast_nodes.end();cl_iterator++)
+			{
+				//The node that have the ereased node as father
+                if (cl_iterator->n_index_father == in_index_erease)
+                {
+					//now have the father of the ereased node as father
+					cl_iterator->n_index_father = n_index_father_of_ereased_node;
+					//priority needs to be updated, they are inserted as later sons
+
+					//Distance from root is reduced by one for all the descendence of the children of the ereased node
 
 
+                } //The node that have the ereased node as father
+                //every node that points to an index that came after the ereased node needs to be reduced by one
+                else
+                {
+
+                }
+
+
+			}
+
+			break;
+
+		//--------------------------------------------------------------------------
+		case Erease_mode.DEEP:
+		//--------------------------------------------------------------------------
+
+
+
+
+			break;
+
+		//--------------------------------------------------------------------------
+		default:
+		//--------------------------------------------------------------------------
+			this->report_error("ERR%d | Unknown erease mode %d", Erease_mode );
+			DPRINT("%s", this->gps8_error_code );
+			return;
+    };	//Delete_mode
 
     //--------------------------------------------------------------------------
     //	RETURN
     //--------------------------------------------------------------------------
     DRETURN_ARG("Child Index: %d", 0 ); //Trace Return
     return 0;	//OK
-}   //Public Setter: delete_node | size_t
+}   //Public Setter: erease | size_t
 
 /***************************************************************************/
 //! @brief Public Setter: swap | size_t | size_t
