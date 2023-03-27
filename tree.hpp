@@ -205,7 +205,7 @@ class Tree : public Tree_interface<Payload>
         //Create a child of the node with a given index. Returns the index of the node created
         size_t create_child( size_t in_father_index, Payload it_payload );
         //Delete a node from the tree. Two deletion mode, NODE delete a single node and relinks the children, DEEP, delete node and all the children
-        size_t erease( size_t in_index, Erease_mode );
+        bool erease( size_t in_index, Erease_mode );
         //Swap two nodes of the tree
         bool swap( size_t in_lhs, size_t in_rhs, Swap_mode ie_swap_mode = Swap_mode::SUBTREE );
 
@@ -902,7 +902,7 @@ size_t Tree<Payload>::create_child( size_t in_father_index, Payload it_payload )
 /***************************************************************************/
 
 template <class Payload>
-size_t Tree<Payload>::erease( size_t in_index_erease, Erease_mode ie_delete_mode )
+bool Tree<Payload>::erease( size_t in_index_erease, Erease_mode ie_delete_mode )
 {
     DENTER(); //Trace Enter
     //--------------------------------------------------------------------------
@@ -917,15 +917,13 @@ size_t Tree<Payload>::erease( size_t in_index_erease, Erease_mode ie_delete_mode
 	//If user tries to erease a node that is OOB
     if ((Config::CU1_EXTERNAL_CHECKS) && (in_index_erease >= this->gast_nodes.size()))
     {
-		this->report_error("ERR%d | index %d of %d | OOB erease index", __LINE__, in_index_erease, this->gast_nodes.size() );
-		DRETURN_ARG("%s", this->gps8_error_code );
+		DRETURN_ARG("ERR%d | index %d of %d | OOB erease index", __LINE__, in_index_erease, this->gast_nodes.size() );
 		return true;
     }
     //If user tries to erease the ROOT
     if ((Config::CU1_EXTERNAL_CHECKS) && (in_index_erease == 0))
     {
-		this->report_error("ERR%d | root cannot be ereased", __LINE__ );
-		DRETURN_ARG("%s", this->gps8_error_code );
+		DRETURN_ARG( "ERR%d | root cannot be ereased", __LINE__ );
 		return true;
     }
 
@@ -939,7 +937,7 @@ size_t Tree<Payload>::erease( size_t in_index_erease, Erease_mode ie_delete_mode
 		case Erease_mode::NODE:
 		//--------------------------------------------------------------------------
 		//	Erease a single node
-
+		{
 			//Construct an iterator that points to the correct node
 			auto cl_iterator = (this->gast_nodes.begin() +in_index_erease);
 			//Remember the father of the ereased node
@@ -953,7 +951,6 @@ size_t Tree<Payload>::erease( size_t in_index_erease, Erease_mode ie_delete_mode
 			{
 				this->report_error("ERR%d | Size: %d->%d | ERR Vector!!! I expected the vector to have size reduced by one...");
 			}
-
 			//I scan the whole tree and update all node indexes
 			for (cl_iterator = this->gast_nodes.begin(); cl_iterator < this->gast_nodes.end();cl_iterator++)
 			{
@@ -976,29 +973,30 @@ size_t Tree<Payload>::erease( size_t in_index_erease, Erease_mode ie_delete_mode
 			}
 
 			break;
-
+		}
 		//--------------------------------------------------------------------------
 		case Erease_mode::DEEP:
 		//--------------------------------------------------------------------------
-
-
+		{
 
 
 			break;
-
+		}
 		//--------------------------------------------------------------------------
 		default:
 		//--------------------------------------------------------------------------
-			this->report_error("ERR%d | Unknown erease mode %d", ie_delete_mode );
-			DPRINT("%s", this->gps8_error_code );
-			return;
+		{
+			this->report_error( Error_code::CPS8_ERR );
+			DPRINT("ERR%d | Unknown erease mode %d", __LINE__, ie_delete_mode );
+			return true;
+		}
     };	//Delete_mode
 
     //--------------------------------------------------------------------------
     //	RETURN
     //--------------------------------------------------------------------------
-    DRETURN_ARG("Child Index: %d", 0 ); //Trace Return
-    return 0;	//OK
+    DRETURN(); //Trace Return
+    return false;	//OK
 }   //Public Setter: erease | size_t
 
 /***************************************************************************/
