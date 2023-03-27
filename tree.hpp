@@ -959,8 +959,12 @@ bool Tree<Payload>::erease( size_t in_index_erease, Erease_mode ie_delete_mode )
                 {
 					//now have the father of the ereased node as father
 					cl_iterator->n_index_father = n_index_father_of_ereased_node;
-					//priority needs to be updated, they are inserted as later sons
-
+					DPRINT("Relinked node: %d as child of node: %d\n", this->gast_nodes.end() -cl_iterator, cl_iterator->n_index_father);
+					//priority needs to be updated, they are inserted as newborn children
+					cl_iterator->n_own_priority = this->gast_nodes[n_index_father_of_ereased_node].n_children_max_priority;
+					this->gast_nodes[n_index_father_of_ereased_node].n_children_max_priority++;
+					DPRINT("Updated priority of child index: %d of ereased node: %d\n", this->gast_nodes.end() -cl_iterator, cl_iterator->n_own_priority );
+					DPRINT("Updated number of children/max priority of node %d that is father of ereased node: %d\n", n_index_father_of_ereased_node, this->gast_nodes[n_index_father_of_ereased_node].n_children_max_priority );
 					//Distance from root is reduced by one for all the descendence of the children of the ereased node
 
 
@@ -968,9 +972,13 @@ bool Tree<Payload>::erease( size_t in_index_erease, Erease_mode ie_delete_mode )
                 //every node that points to an index that came after the ereased node needs to be reduced by one
                 else
                 {
-
+					//Fix the father index of later index nodes
+					if (cl_iterator->n_index_father > in_index_erease)
+					{
+						cl_iterator->n_index_father--;
+					}
                 }
-			}
+			}	//I scan the whole tree and update all node indexes
 
 			break;
 		}

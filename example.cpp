@@ -180,6 +180,7 @@ class Test_bench
 				x_fail = this->gcl_tree.erease( an_erease_pattern[n_erease_pattern_index], User::Tree<int>::Erease_mode::NODE );
 				std::cout << "Erease node: " << an_erease_pattern[n_erease_pattern_index] << " | Result:" << (x_fail?"FAIL":"OK") << "\n";
 				x_fail = x_fail | this->gcl_tree.show();
+				std::cout << "Explore tree\n";
 				x_fail = x_fail | this->gcl_tree.show(0);
 				std::cout << "---------------------------------------------------------\n";
 			}
