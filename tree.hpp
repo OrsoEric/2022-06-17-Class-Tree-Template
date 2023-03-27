@@ -936,7 +936,7 @@ size_t Tree<Payload>::erease( size_t in_index_erease, Erease_mode ie_delete_mode
     switch( ie_delete_mode )
     {
 		//--------------------------------------------------------------------------
-		case Erease_mode.NODE:
+		case Erease_mode::NODE:
 		//--------------------------------------------------------------------------
 		//	Erease a single node
 
@@ -973,14 +973,12 @@ size_t Tree<Payload>::erease( size_t in_index_erease, Erease_mode ie_delete_mode
                 {
 
                 }
-
-
 			}
 
 			break;
 
 		//--------------------------------------------------------------------------
-		case Erease_mode.DEEP:
+		case Erease_mode::DEEP:
 		//--------------------------------------------------------------------------
 
 
@@ -991,7 +989,7 @@ size_t Tree<Payload>::erease( size_t in_index_erease, Erease_mode ie_delete_mode
 		//--------------------------------------------------------------------------
 		default:
 		//--------------------------------------------------------------------------
-			this->report_error("ERR%d | Unknown erease mode %d", Erease_mode );
+			this->report_error("ERR%d | Unknown erease mode %d", ie_delete_mode );
 			DPRINT("%s", this->gps8_error_code );
 			return;
     };	//Delete_mode

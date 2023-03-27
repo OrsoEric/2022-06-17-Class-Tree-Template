@@ -152,6 +152,21 @@ class Test_bench
 			DRETURN();
 			return x_fail;
 		}
+		//! @brief erease a node from the tree
+		bool test_erease( void )
+		{
+			DENTER();
+			std::cout << "---------------------------------------------------------\n";
+			std::cout << "TEST erease\n";
+			std::cout << "---------------------------------------------------------\n";
+			//FILL
+			bool x_fail = this->fill_tree();
+			x_fail = x_fail | this->gcl_tree.show();
+			x_fail = x_fail | this->gcl_tree.show(0);
+			DRETURN();
+		}
+
+
 		//! @brief test expensive method that returns true if two nodes are descendents, needed to understand when swaps can be done safely
 		bool test_is_descendent( void )
 		{
@@ -423,6 +438,10 @@ class Test_bench
 			//Create a child of node 1 (ROOT) uses the generig create child method
 			this->gcl_tree.create_child( 1, 102 );
 
+			//Construct a custom decorator to print out the payload, since payload is a template and can even be a complex structure
+			std::string (*f_my_decorator)(int) = [](int in_payload){ return std::to_string( in_payload ); };
+			this->gcl_tree.link_decorator( f_my_decorator );
+
 			return false;
 		}
 
@@ -542,19 +561,20 @@ bool test_bench( void )
     //----------------------------------------------------------------
     //! @details algorithm:
 
-    if (false)
+    if (true)
     {
 		//Unit tests
 		Test_bench cl_test_bench;
 		cl_test_bench.test_fill_flush();
-		cl_test_bench.test_tree_iterator();
-		cl_test_bench.test_is_descendent();
-		cl_test_bench.test_tree_swap_payload();
-		cl_test_bench.test_swap_priority();
-		cl_test_bench.test_swap_independent_subtree();
+		cl_test_bench.test_erease();
+		//cl_test_bench.test_is_descendent();
+		////cl_test_bench.test_tree_swap_payload();
+		//cl_test_bench.test_swap_priority();
+		//cl_test_bench.test_tree_iterator();
+		//cl_test_bench.test_swap_independent_subtree();
 	}
 
-	if (true)
+	if (false)
 	{
 		Test_bench_equation cl_test_equation;
 		cl_test_equation.show();
