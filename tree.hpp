@@ -16,6 +16,8 @@
 #include <stack>
 //Used to sort the nodes of the tree based on priority
 #include <algorithm>
+//Used to get a lambda to stringfy a node
+#include <functional>
 
 //Interface of the class
 #include "Tree_interface.h"
@@ -59,8 +61,10 @@ namespace User
 //! @version    2022-06-17
 //! @brief      Generic tree template implementation
 //! @copyright  BSD 3-Clause License Copyright (c) 2022, Orso Eric
-//! @bug Avoid push_back | add a move constructor C(C&& c) C(const &c) | use emplace-back | construct/destruct https://stackoverflow.com/questions/21798396/destructor-is-called-when-i-push-back-to-the-vector
 //! @bug swap can be done with std::swap std::vector::swap, the second is the fastest for vectors | https://stackoverflow.com/questions/41090557/c-swap-two-elements-of-two-different-vectors
+//! @todo swap between descendence, it's a complex and weird operation that maybe doesn't make sense
+//! @todo delete node, two modes, delete subtree, or move up the subtree
+//! @todo move node, if the node has children, children are reattached to the father
 //! @details
 //! \n	A basic tree class that stores a template payload
 //! \n	Implements the generic Tree_interface
@@ -90,6 +94,8 @@ class Tree : public Tree_interface<Payload>
             //true = pedantic count children. check all nodes, and make sure all nodes have coherent priority
             //false = fast count children. will return the max priority of the first children with the correct father, if any
             static const bool CU1_PEDANTIC_COUNT_CHILDREN = true;
+			//true = the iterator will automatically fix depth
+            static const bool CU1_PEDANTIC_ITERATOR_FIX_DEPTH = true;
         };
 
         //! @brief Error codes of the class
@@ -99,6 +105,15 @@ class Tree : public Tree_interface<Payload>
             static constexpr const char *CPS8_ERR = "ERR";
             static constexpr const char *CPS8_ERR_OOB = "ERR Out Of Boundary: Tried to access an index that doesn't exist";
         };
+        //! @brief how a node is to be deleted
+        enum Erease_mode
+        {
+			//Just delete the node, and relinks the children of the node, to the father of the node
+			NODE,
+			//Delete the node, and delete all the subtree under that node
+			DEEP
+        };
+
         //! @brief Swapping nodes can be done in fundamentally different ways, see swap method documentation for details
         enum Swap_mode
         {
@@ -129,10 +144,17 @@ class Tree : public Tree_interface<Payload>
             size_t n_index_father;
             //Priority, defines the order of this node compared to its siblings, 0 is the highest priority node under the given father. It checks against n_children_max_priority of the father of this node
             size_t n_own_priority;
-            //Max Priority, it's the number of children of this node. It also serves as maximum priority.
+            //Max Priority, it's the number of children of this node. It also serves as maximum priority of children
             size_t n_children_max_priority;
             //Distance from root of this node, computed by create_child
             size_t n_distance_from_root;
+            //! @todo how do I add stringificators for node?
+			/*
+            bool to_string( void )
+            {
+				return to_string( this );
+            }
+            */
         };
 
         /*********************************************************************************************************************************************************
@@ -163,7 +185,7 @@ class Tree : public Tree_interface<Payload>
         **********************************************************************************************************************************************************
         *********************************************************************************************************************************************************/
 
-        //Overload the square bracket operator to do an index search and return a RRHS/LHS reference to the payload
+        //Overload the square bracket operator to do an index search and return a RHS/LHS reference to the payload
         Payload& operator []( size_t in_index );
 
         /*********************************************************************************************************************************************************
@@ -172,10 +194,18 @@ class Tree : public Tree_interface<Payload>
         **********************************************************************************************************************************************************
         *********************************************************************************************************************************************************/
 
+		//! @brief allows user to specify a decorator to print out Node as a std::string, useful especially for the payload
+        bool link_decorator(std::function<std::string(Payload)> if_decorator )
+        {
+			this->gf_lambda_decorator = if_decorator;
+			return false;
+		}
         //Create a child of the root
         size_t create_child( Payload it_payload );
         //Create a child of the node with a given index. Returns the index of the node created
         size_t create_child( size_t in_father_index, Payload it_payload );
+        //Delete a node from the tree. Two deletion mode, NODE delete a single node and relinks the children, DEEP, delete node and all the children
+        size_t erease( size_t in_index, Erease_mode );
         //Swap two nodes of the tree
         bool swap( size_t in_lhs, size_t in_rhs, Swap_mode ie_swap_mode = Swap_mode::SUBTREE );
 
@@ -192,7 +222,15 @@ class Tree : public Tree_interface<Payload>
             bool x_fail;
             return this->root( x_fail );
         }
-
+        //Find the children of a node of a given index, and push their indexes inside a vector
+        bool find_children( size_t in_father_index, std::vector<size_t> &ira_children_indexes );
+        //Overloads used when a ector has to be created.
+        std::vector<size_t> get_children( size_t in_father_index )
+        {
+			std::vector<size_t> an_children;
+			find_children( in_father_index, an_children );
+			return an_children;
+        }
         //Show the nodes stored inside the vector and their links
         bool show( void );
         bool show( size_t in_index );
@@ -204,17 +242,21 @@ class Tree : public Tree_interface<Payload>
         *********************************************************************************************************************************************************/
 
         //! @brief check if two nodes are direct relatives
-        bool is_descendant(size_t in_lhs, size_t in_rhs)
-        {
-
-            return false;
-        }
+        bool is_descendant( size_t in_lhs, size_t in_rhs );
 
         /*********************************************************************************************************************************************************
         **********************************************************************************************************************************************************
         **  PUBLIC METHODS
         **********************************************************************************************************************************************************
         *********************************************************************************************************************************************************/
+
+		//! @brief flush the tree except for the root, realign the root
+		bool flush( void );
+		//Overloads of string that is not static and accept a node index
+        std::string to_string( size_t n_index )
+        {
+			return to_string( this->gast_nodes[ n_index ] );
+        }
 
         /*********************************************************************************************************************************************************
         **********************************************************************************************************************************************************
@@ -262,17 +304,97 @@ class Tree : public Tree_interface<Payload>
         class iterator
         {
             public:
-                iterator(Tree<Payload>& ircl_parent_tree, bool ix_begin ) : grcl_tree(ircl_parent_tree)
+				iterator( Tree<Payload>& ircl_parent_tree, bool ix_begin ) : grcl_tree(ircl_parent_tree)
+				{
+					this->init( ircl_parent_tree, ix_begin, 0 );
+				}
+
+				//! @brief construct a new iterator linked to the underlying tree. can either be a begin or an end iterator
+                iterator( Tree<Payload>& ircl_parent_tree, bool ix_begin, size_t in_begin_index ) : grcl_tree(ircl_parent_tree)
                 {
-                    DENTER_ARG("Parent tree: %p | Begin: %d", &(*this), ix_begin);
+					this->init( ircl_parent_tree, ix_begin, in_begin_index );
+                }
+				//! @brief iterator post increment operator
+                iterator<T>& operator++()
+                {
+                    //Advance to the next element of the tree
+                    size_t n_ret = this->next();
+                    //if next failed
+                    if (n_ret >= this->grcl_tree.gast_nodes.size())
+                    {
+						//nothing to do, next has already stopped and iterator points to END
+                    }
+                    return *this;
+                }
+				//! @brief iterator pre increment operator
+                iterator<T> operator++(int)
+                {
+                    iterator<T> tmp(*this);
+                    //Advance to the next element of the tree
+                    size_t n_ret = this->next();
+                    //if next failed
+                    if (n_ret >= this->grcl_tree.gast_nodes.size())
+                    {
+						//nothing to do, next has already stopped and iterator points to END
+                    }
+                    return tmp;
+                }
+				//! @brief iterator dereference operator
+                T &operator*(void)
+                {
+					//Fetch index of current item, item on top of the stack
+					size_t n_current_index = this->get_index();
+					//valid index
+					if (n_current_index < this->grcl_tree.gast_nodes.size())
+					{
+						return grcl_tree.gast_nodes[n_current_index];
+					}
+					//invalid index return the root
+					else
+					{
+						return grcl_tree.gast_nodes[0];
+					}
+                    //DRETURN_ARG("Index: %d | Stack size: %d | Node: %s", n_current_index, this->gcl_pseudorecursive_stack.size(), Tree<Payload>::to_string( grcl_tree.gast_nodes[n_current_index] ).c_str() );
+                }
+				//! @brief iterator equal operator, meant to find the end
+                bool operator==(const iterator<T>& icl_rhs_iterator) const
+                {
+                    //! @todo there might be need for additional checks e.g. on container sizes?
+                    //equal if I counted the same number of items on both iterators
+                    return (this->gn_cnt_nodes == icl_rhs_iterator.gn_cnt_nodes);
+                }
+				//! @brief iterator equal operator, meant to find the end
+                bool operator!=(const iterator<T>& icl_rhs_iterator) const
+                {
+                    //unequal if I counted different number of items on both iterators
+                    return (this->gn_cnt_nodes != icl_rhs_iterator.gn_cnt_nodes);
+                }
+                //! @brief index of the node, works by pulling the top of the stack
+				size_t get_index( void )
+				{
+					 //If the stack is empty
+                    if (this->gcl_pseudorecursive_stack.empty() == true)
+                    {
+                        //ERROR. Return invalid index
+                        return this->grcl_tree.gast_nodes.size();
+                    }
+                    //Fetch the index that is at the top of the stack
+                    return this->gcl_pseudorecursive_stack.top();
+				}
+
+            private:
+				bool init( Tree<Payload>& ircl_parent_tree, bool ix_begin, size_t in_begin_index )
+				{
+					DENTER_ARG("Parent tree: %p | Begin: %d | Index: %d", &(*this), ix_begin, in_begin_index );
                     //Constructing a begin iterator
                     if (ix_begin == true)
                     {
                         //Push the root inside the stack
-                        this->gcl_pseudorecursive_stack.push( 0 );
+                        this->gcl_pseudorecursive_stack.push( in_begin_index );
                         //Start from first node
                         this->gn_cnt_nodes = 0;
                     }
+                    //Constructing an end iterator
                     else //if (ix_begin == false)
                     {
                         //No need to initialize the stack of the end iterator
@@ -280,53 +402,9 @@ class Tree : public Tree_interface<Payload>
                         this->gn_cnt_nodes = ircl_parent_tree.gast_nodes.size();
                     }
                     DRETURN_ARG("Count nodes: %d | Stack size: %d", this->gn_cnt_nodes, this->gcl_pseudorecursive_stack.size() );
-                    return;
-                }
-                iterator<T>& operator++()
-                {
-                    //Advance to the next element of the tree
-                    this->next();
-                    return *this;
-                }
-
-                iterator<T> operator++(int)
-                {
-                    iterator<T> tmp(*this);
-                    //Advance to the next element of the tree
-                    this->next();
-                    return tmp;
-                }
-
-                T &operator*(void)
-                {
-                    DENTER();
-                    //If the stack is empty
-                    if (this->gcl_pseudorecursive_stack.empty() == true)
-                    {
-                        //ERROR. Return the root, but this is wrong
-                        return grcl_tree.gast_nodes[0];
-                    }
-
-                    //Fetch the index that is at the top of the stack
-                    size_t n_current_index = this->gcl_pseudorecursive_stack.top();
-                    DRETURN_ARG("Index: %d | Stack size: %d | Node: %s", n_current_index, this->gcl_pseudorecursive_stack.size(), Tree<Payload>::to_string( grcl_tree.gast_nodes[n_current_index] ).c_str() );
-                    return grcl_tree.gast_nodes[n_current_index];
-                }
-
-                bool operator==(const iterator<T>& icl_rhs_iterator) const
-                {
-                    //! @todo there might be need for additional checks e.g. on container sizes?
-                    //equal if I counted the same number of items on both iterators
-                    return (this->gn_cnt_nodes == icl_rhs_iterator.gn_cnt_nodes);
-                }
-
-                bool operator!=(const iterator<T>& icl_rhs_iterator) const
-                {
-                    //unequal if I counted different number of items on both iterators
-                    return (this->gn_cnt_nodes != icl_rhs_iterator.gn_cnt_nodes);
-                }
-
-            private:
+                    return false;
+				}
+				//! @brief flush pseudorecursive stack
                 bool flush_stack()
                 {
                     //Flush the stack
@@ -336,23 +414,22 @@ class Tree : public Tree_interface<Payload>
                     }
                     return false;
                 }
-                //Advance the iterator to the next element
+                //! @brief advance the iterator to the next element
                 size_t next()
                 {
                     DENTER();
-                    size_t n_ret;
-                    //If there are no more elements in the stack
-                    if (this->gcl_pseudorecursive_stack.empty() == true)
-                    {
-                        //Return index that points to the element after the last element
-                        return this->grcl_tree.gast_nodes.size();
-                    }
-                    else
+                    //If there are elements in the stack
+                    if (this->gcl_pseudorecursive_stack.empty() == false)
                     {
                         //Take the top index out of the array
                         size_t n_current_index = this->gcl_pseudorecursive_stack.top();
                         this->gcl_pseudorecursive_stack.pop();
-                        //This is the tree exploration. I find all the children of the node I just popped, and push them
+                        if ((Config::CU1_INTERNAL_CHECKS) && (n_current_index >= this->grcl_tree.gast_nodes.size()))
+                        {
+                            DRETURN_ARG("ERR%d: Wrong index popped from stack. This should NEVER happen. Popped index: %d of %d", __LINE__, n_current_index, this->grcl_tree.gast_nodes.size());
+                            return true;
+                        }
+                        //I find all the children of the node I just popped, and push them
                         std::vector<size_t> an_children_indexes;
                         bool x_fail = this->grcl_tree.find_children( n_current_index, an_children_indexes );
                         if (x_fail == true)
@@ -360,26 +437,53 @@ class Tree : public Tree_interface<Payload>
                             DRETURN_ARG("ERR%d: find children failed", __LINE__);
                             return true;
                         }
+                        //for all children of the node that i popped
                         for (auto cl_children_iterator = an_children_indexes.rbegin();cl_children_iterator != an_children_indexes.rend();cl_children_iterator++)
                         {
-							//If the stack is empty
-							if ((Tree<Payload>::Config::CU1_INTERNAL_CHECKS) && (n_current_index >= this->grcl_tree.gast_nodes.size()))
-							{
-								//ERROR. Return the root, but this is wrong
-								DRETURN_ARG("ERR:__LINE__:OOB | Index: %d of %d", n_current_index, this->grcl_tree.gast_nodes.size() );
-								return this->grcl_tree.gast_nodes.size();
-							}
                             //Push the index of the child of the popped item in the pseudorecursive stack
                             this->gcl_pseudorecursive_stack.push( *cl_children_iterator );
                         }
-                        n_ret = n_current_index;
+                        //fix the depth
+                        if (Config::CU1_PEDANTIC_ITERATOR_FIX_DEPTH == true)
+                        {
+							if (n_current_index == 0)
+							{
+								if (this->grcl_tree.gast_nodes[n_current_index].n_index_father != 0 )
+								{
+									DPRINT("ERR%d: n_index_father of root is wrong %d ... FIXED\n", __LINE__, this->grcl_tree.gast_nodes[n_current_index].n_index_father );
+									this->grcl_tree.gast_nodes[n_current_index].n_index_father = 0;
+								}
+								if (this->grcl_tree.gast_nodes[n_current_index].n_distance_from_root != 0)
+								{
+									DPRINT("ERR%d: n_depth of root is wrong %d ... FIXED\n", __LINE__, this->grcl_tree.gast_nodes[n_current_index].n_distance_from_root );
+									this->grcl_tree.gast_nodes[n_current_index].n_distance_from_root = 0;
+								}
+							}
+							else
+							{
+								if (this->grcl_tree.gast_nodes[n_current_index].n_distance_from_root != (this->grcl_tree.gast_nodes[this->grcl_tree.gast_nodes[n_current_index].n_index_father].n_distance_from_root +1))
+								{
+									DPRINT("ERR%d: n_depth of children %d is inconsistent with depth of father %d... FIXED\n", __LINE__, this->grcl_tree.gast_nodes[n_current_index].n_distance_from_root, this->grcl_tree.gast_nodes[ this->grcl_tree.gast_nodes[n_current_index].n_index_father ].n_distance_from_root );
+									this->grcl_tree.gast_nodes[n_current_index].n_distance_from_root = this->grcl_tree.gast_nodes[ this->grcl_tree.gast_nodes[n_current_index].n_index_father ].n_distance_from_root +1;
+								}
+							}
+                        }
+                        //I have scanned a node
+						this->gn_cnt_nodes++;
+						//Return index popped or max size if nothing was popped
+						DRETURN_ARG("Count nodes: %d | Index: %d", this->gn_cnt_nodes, n_current_index );
+						return n_current_index;
                     }
-                    DRETURN_ARG("Count nodes: %d | Index: %d", this->gn_cnt_nodes, n_ret);
-                    //I have scanned a node
-                    this->gn_cnt_nodes++;
-                    return n_ret;
-                }
-
+                    //Stack is empty
+                    else
+                    {
+						//Mark this an END iterator
+						this->gn_cnt_nodes = this->grcl_tree.gast_nodes.size();
+                        //Return index that points to the element after the last element
+                        DRETURN_ARG("last element...");
+                        return this->grcl_tree.gast_nodes.size();
+                    }
+                }	//end private method: next
                 //! The reference to the parent class
                 Tree<Payload> &grcl_tree;
                 //!	Stack to handle the pseudorecursion
@@ -388,17 +492,24 @@ class Tree : public Tree_interface<Payload>
                 size_t gn_cnt_nodes;
             //End Private
         };	//Class: iterator
+
         //! @brief iterator that start from the first element of the tree
-        iterator<Node> begin()
+        iterator<Node> begin( void )
         {
             //Construct a Begin iterator with a root inside the pseudorecursive stack
-            return iterator<Node>(*this, true);
+            return iterator<Node>(*this, true );
+        }
+        //! @brief iterator that start from a given node
+        iterator<Node> begin( size_t in_index )
+        {
+            //Construct a Begin iterator with a root inside the pseudorecursive stack
+            return iterator<Node>(*this, true, in_index );
         }
         //! @brief iterator that marks the end of the tree
-        iterator<Node> end()
+        iterator<Node> end( void )
         {
             //Construct a End iterator
-            return iterator<Node>(*this, false);
+            return iterator<Node>(*this, false );
         }
 
     //Visible to derived classes
@@ -408,9 +519,6 @@ class Tree : public Tree_interface<Payload>
         **  PROTECTED METHODS
         **********************************************************************************************************************************************************
         *********************************************************************************************************************************************************/
-
-        //Find the children of a node of a given index, and push their indexes inside a vector
-        bool find_children( size_t in_father_index,std::vector<size_t> &ira_children_indexes );
 
     //Visible only inside the class
     private:
@@ -428,6 +536,14 @@ class Tree : public Tree_interface<Payload>
 
         //! @brief initialize class vars to the default
         bool init_class_vars( Payload it_payload );
+		//! @brief initialize the root
+		bool init_root( void );
+        bool init_root( Payload it_payload )
+        {
+			bool x_ret = init_root();
+			if (x_ret == false) { this->gast_nodes[0].t_payload = it_payload; }
+			return x_ret;
+        }
 
         /*********************************************************************************************************************************************************
         **********************************************************************************************************************************************************
@@ -435,11 +551,14 @@ class Tree : public Tree_interface<Payload>
         **********************************************************************************************************************************************************
         *********************************************************************************************************************************************************/
 
+        //! @todo add "own index", move method to tree interface
         //! @brief turns a Node into a string
         static std::string to_string( User::Tree<Payload>::Node &ist_node )
         {
-            std::string s_ret = "Payload: ";
-            s_ret += std::to_string(ist_node.t_payload);
+            std::string s_ret = "";
+            //size_t n_node_index = ist_node- this->gast_nodes.begin();
+			//s_ret += "Own Index :" +std::to_string( n_node_index );
+            //s_ret += "Payload: " + thisist_node.t_payload);
             s_ret += " | Father Index: ";
             s_ret += std::to_string(ist_node.n_index_father);
             s_ret += " | Own Priority ";
@@ -466,6 +585,8 @@ class Tree : public Tree_interface<Payload>
         **********************************************************************************************************************************************************
         *********************************************************************************************************************************************************/
 
+		//! @brief stores decorator to convert a Payload into a std::string
+		std::function<std::string(Payload)> gf_lambda_decorator;
         //The nodes are stored inside a standard vector
         std::vector<Node> gast_nodes;
 };	//End Class: Tree
@@ -736,6 +857,153 @@ size_t Tree<Payload>::create_child( size_t in_father_index, Payload it_payload )
 }   //Public Setter: create_child | size_t | Payload
 
 /***************************************************************************/
+//! @brief Public Setter: erease | size_t
+/***************************************************************************/
+//! @param in_index | Delete a node
+//! @param ie_delete_mode | NODE = delete node and relinks children | DEEP = delete node and all descendence
+//! @return bool | false = OK | true = FAIL |
+//! @details
+//! \n
+//! \n Create a child of the root
+//! \n	------------------------------
+//! \n	EXAMPLE: erease (102, NODE)
+//! \n	100				100
+//! \n	|-101			|-101
+//! \n		|-201			|-201
+//! \n	|-102			|-202
+//! \n		|-202		|-203
+//! \n		|-203
+//! \n	------------------------------
+//! \n	EXAMPLE: erease (102, DEEP)
+//! \n	100				100
+//! \n	|-101			|-101
+//! \n		|-201			|-201
+//! \n	|-102
+//! \n		|-202
+//! \n		|-203
+//! \n	------------------------------
+//! \n	EXAMPLE: erease (100, NODE) (ROOT)
+//! \n	100				101
+//! \n	|-101				|-201
+//! \n		|-201		102
+//! \n	|-102				|-202
+//! \n		|-202			|-203
+//! \n		|-203
+//! \n	not allowed, this could result in multiple roots. The root must be singular and at index 0.
+//! \n	------------------------------
+//! \n	EXAMPLE: erease (100, DEEP) (ROOT)
+//! \n	100
+//! \n	|-101
+//! \n		|-201
+//! \n	|-102
+//! \n		|-202
+//! \n		|-203
+//! \n	erease the whole tree not allowed because there is no root
+/***************************************************************************/
+
+template <class Payload>
+size_t Tree<Payload>::erease( size_t in_index_erease, Erease_mode ie_delete_mode )
+{
+    DENTER(); //Trace Enter
+    //--------------------------------------------------------------------------
+    //	CHECK&INIT
+    //--------------------------------------------------------------------------
+    //if class is in error
+    if (this->gps8_error_code != Error_code::CPS8_OK)
+    {
+        DRETURN_ARG("ERR:%d Tree is in error: %s | Cannot destroy node", __LINE__, this->gps8_error_code );
+        return true;
+    }
+	//If user tries to erease a node that is OOB
+    if ((Config::CU1_EXTERNAL_CHECKS) && (in_index_erease >= this->gast_nodes.size()))
+    {
+		this->report_error("ERR%d | index %d of %d | OOB erease index", __LINE__, in_index_erease, this->gast_nodes.size() );
+		DRETURN_ARG("%s", this->gps8_error_code );
+		return true;
+    }
+    //If user tries to erease the ROOT
+    if ((Config::CU1_EXTERNAL_CHECKS) && (in_index_erease == 0))
+    {
+		this->report_error("ERR%d | root cannot be ereased", __LINE__ );
+		DRETURN_ARG("%s", this->gps8_error_code );
+		return true;
+    }
+
+    //--------------------------------------------------------------------------
+    //	BODY
+    //--------------------------------------------------------------------------
+
+    switch( ie_delete_mode )
+    {
+		//--------------------------------------------------------------------------
+		case Erease_mode.NODE:
+		//--------------------------------------------------------------------------
+		//	Erease a single node
+
+			//Construct an iterator that points to the correct node
+			auto cl_iterator = (this->gast_nodes.begin() +in_index_erease);
+			//Remember the father of the ereased node
+			size_t n_index_father_of_ereased_node = cl_iterator->n_index_father;
+
+			size_t n_size_before_erease = this->gast_nodes.size();
+			//Erease the node, this invalidates the iterator
+			this->gast_nodes.erase( cl_iterator );
+			//If vector erease does't have the expected result
+			if ( (n_size_before_erease -1) != this->gast_nodes.size() )
+			{
+				this->report_error("ERR%d | Size: %d->%d | ERR Vector!!! I expected the vector to have size reduced by one...");
+			}
+
+			//I scan the whole tree and update all node indexes
+			for (cl_iterator = this->gast_nodes.begin(); cl_iterator < this->gast_nodes.end();cl_iterator++)
+			{
+				//The node that have the ereased node as father
+                if (cl_iterator->n_index_father == in_index_erease)
+                {
+					//now have the father of the ereased node as father
+					cl_iterator->n_index_father = n_index_father_of_ereased_node;
+					//priority needs to be updated, they are inserted as later sons
+
+					//Distance from root is reduced by one for all the descendence of the children of the ereased node
+
+
+                } //The node that have the ereased node as father
+                //every node that points to an index that came after the ereased node needs to be reduced by one
+                else
+                {
+
+                }
+
+
+			}
+
+			break;
+
+		//--------------------------------------------------------------------------
+		case Erease_mode.DEEP:
+		//--------------------------------------------------------------------------
+
+
+
+
+			break;
+
+		//--------------------------------------------------------------------------
+		default:
+		//--------------------------------------------------------------------------
+			this->report_error("ERR%d | Unknown erease mode %d", Erease_mode );
+			DPRINT("%s", this->gps8_error_code );
+			return;
+    };	//Delete_mode
+
+    //--------------------------------------------------------------------------
+    //	RETURN
+    //--------------------------------------------------------------------------
+    DRETURN_ARG("Child Index: %d", 0 ); //Trace Return
+    return 0;	//OK
+}   //Public Setter: erease | size_t
+
+/***************************************************************************/
 //! @brief Public Setter: swap | size_t | size_t
 /***************************************************************************/
 //! @param in_lhs | Node to be swapped
@@ -766,7 +1034,7 @@ size_t Tree<Payload>::create_child( size_t in_father_index, Payload it_payload )
 //! \n		|-202		|-101
 //! \n		|-203			|-201
 //! \n	------------------------------
-//! \n  "Swap" will swap two nodes along with all their subtrees
+//! \n  "Swap" will swap two nodes along with all their subtrees. When the targets are not of the same bloodline the operation is straight forward
 //! \n	EXAMPLE: Priority Swap (201, 202)
 //! \n	100				100
 //! \n	|-101			|-101
@@ -777,31 +1045,30 @@ size_t Tree<Payload>::create_child( size_t in_father_index, Payload it_payload )
 //! \n		|-203			|-203
 //! \n	------------------------------
 //! \n  "Swap" executed on two nodes that belong to the same subtree is a more complicated operation
-//! \n  swap between father and child, will make child->father, father->child, father.children->children.children and children.children->father.chidlren
+//! \n  swap between father and child, will make:
+//! \n	child->father, father->child, father.children->children.children and children.children->father.children
 //! \n  subtrees if those node are not impacted
 //! \n  I am not sure if this complex operation makes sense, maybe it should be a configuration toggle of the tree to allow such a swap to take place
 //! \n	EXAMPLE: Priority Swap (102, 202)
 //! \n	100				100
 //! \n	|-101			|-101
 //! \n		|-201			|-201
-//! \n	|-102		    |-202
-//! \n	    |-202           |-102
-//! \n		     |-204      |-204
+//! \n	|-102(R)	    |-202(L)
+//! \n	    |-202(L)        |-102(R)
+//! \n		     |-204(L.C) |-204 (L.C)
 //! \n              |-301       |-301
 //! \n		|-203			|-203
 //! \n	------------------------------
-//! \n
-//! \n
-//! \n
-//! \n
-//! \n
-//! \n
-//! \n
-//! \n
-//! \n
-//! \n
-//! \n
-//! \n
+//! \n	EXAMPLE: Priority Swap (102, 204)
+//! \n	100				100
+//! \n	|-101			|-101
+//! \n		|-201			|-201
+//! \n	|-102(R)	    |-204(L)
+//! \n	    |-202       	|-301(L.C)
+//! \n			|-204(L)		|-102 (R)
+//! \n           	|-301       	|-202 (R.C)
+//! \n					|- 409			|-409
+//! \n	------------------------------
 //! \n
 /***************************************************************************/
 
@@ -817,7 +1084,7 @@ bool Tree<Payload>::swap( size_t in_lhs, size_t in_rhs, Swap_mode ie_swap_mode )
     if ((in_lhs >= this->gast_nodes.size()) || (in_rhs >= this->gast_nodes.size()))
     {
         this->report_error(Error_code::CPS8_ERR_OOB);
-        DRETURN_ARG("ERR%d: Node indexes (%d %d) out of range %d...", in_lhs, in_rhs, this->gast_nodes.size() );
+        DRETURN_ARG("ERR%d: Node indexes (%d %d) out of range %d...", __LINE__, in_lhs, in_rhs, this->gast_nodes.size() );
         return true;
     }
     //if nothing to do
@@ -832,53 +1099,107 @@ bool Tree<Payload>::swap( size_t in_lhs, size_t in_rhs, Swap_mode ie_swap_mode )
     //--------------------------------------------------------------------------
     //I want to swap node LHS with node RHS
 
+    //true: the nodes are related and belong to the same line
+    bool x_lhs_rhs_related;
+    bool x_execute_subtree_swap = false;
+
+    DPRINT("Payload Swap | LHS: %s | RHS %s\n", this->to_string( in_lhs ).c_str(), this->to_string( in_rhs ).c_str() );
     switch(ie_swap_mode)
     {
         //Swap the payload of two nodes, it's always possible
         case Swap_mode::PAYLOAD:
         {
-            std::swap( this->gast_nodes[in_lhs].t_payload, this->gast_nodes[in_rhs].t_payload );
+			//Payload t_tmp = this->gast_nodes[in_lhs].t_payload;
+			//this->gast_nodes[in_lhs].t_payload = this->gast_nodes[in_rhs].t_payload;
+			//this->gast_nodes[in_rhs].t_payload = t_tmp;
+			std::swap( this->gast_nodes[in_lhs].t_payload, this->gast_nodes[in_rhs].t_payload );
             break;
         }
         //Swap the priority of two nodes that are children to the same father
         case Swap_mode::PRIORITY:
         {
+			//Root cannot be target of a priority swap
+			if ((in_lhs == 0) || (in_rhs == 0))
+			{
+				DRETURN_ARG("ERR%d | Priority Swap is only defined for siblings. Root has no sibling.", __LINE__ );
+				return true;
+			}
+			//if not siblings
             if (this->gast_nodes[in_lhs].n_index_father != this->gast_nodes[in_rhs].n_index_father)
             {
                 DRETURN_ARG("ERR%d | Priority Swap is only defined for siblings. LHS%d.father is %d | RHS%d.father is %d", __LINE__, in_lhs, this->gast_nodes[in_lhs].n_index_father, in_rhs, this->gast_nodes[in_rhs].n_index_father );
                 return true;
             }
-            std::swap( this->gast_nodes[in_lhs].n_own_priority, this->gast_nodes[in_lhs].n_own_priority );
+            std::swap( this->gast_nodes[in_lhs].n_own_priority, this->gast_nodes[in_rhs].n_own_priority );
             break;
         }
-        //Swap the payload of two nodes, it's always possible
+        //Swap two nodes, along with all their descendence. Prevent two descendent to be swapped, as the operation might not yield the result the user wants
         case Swap_mode::SUBTREE_SAFE:
         {
+			x_lhs_rhs_related = this->is_descendant(in_lhs, in_rhs);
             //If the nodes belong to the same subtree
-            if (this->is_descendant(in_lhs, in_rhs) == true)
+            if (x_lhs_rhs_related == true)
             {
                 DRETURN_ARG("ERR%d | SUBTREE_SAFE swap is not allowed when two nodes belong to the same subtree and they are relatives.",__LINE__);
                 return true;
             }
+            x_execute_subtree_swap = true;
+            break;
         }
-        //Swap the payload of two nodes, it's always possible
+        //Swap two nodes, along with all their descendence. When two nodes of the same bloodline are swapped, it changes the way the children of those nodes relate to each others
         case Swap_mode::SUBTREE:
         {
-            //If the nodes belong to the same subtree
-            if (this->is_descendant(in_lhs, in_rhs) == true)
-            {
-
-
-            }
-
-
-            std::swap( this->gast_nodes[in_lhs].t_payload, this->gast_nodes[in_rhs].t_payload );
+			x_lhs_rhs_related = this->is_descendant(in_lhs, in_rhs);
+			x_execute_subtree_swap = true;
             break;
         }
         default:
+		{
+			DRETURN_ARG("ERR: Unknown swap mode!!!");
+			return true;
             break;
-
+		}
     }
+	//If a subtree swap was authorized
+    if (x_execute_subtree_swap == true)
+    {
+        //I relink LHS as children of RHS.father
+        //I relink RHS as children of LHS.father
+        //The index of LHS and RHS stay the same
+        //The index of LHS.father and RHS.father stay the same
+
+        //Latch the original indexes of the two fathers
+        //size_t n_lhs_father_index = this->gast_nodes[ in_lhs ].n_index_father;
+        //size_t n_rhs_father_index = this->gast_nodes[ in_rhs ].n_index_father;
+		//Swap the index of the father of the two nodes
+		std::swap( this->gast_nodes[ in_lhs ].n_index_father, this->gast_nodes[ in_rhs ].n_index_father );
+        //Update the nodes to the properties of their new father
+		std::swap( this->gast_nodes[ in_lhs ].n_own_priority, this->gast_nodes[ in_rhs ].n_own_priority );
+
+		//Update the father to the properties of their new children
+		//Nothing to be done
+
+		//Update all the depth information
+		//If father had the same depth, no need to change depth information
+		if (this->gast_nodes[ in_lhs ].n_distance_from_root != this->gast_nodes[ in_rhs ].n_distance_from_root)
+		{
+			//Swap subtree fathers depth
+			std::swap( this->gast_nodes[ in_lhs ].n_distance_from_root, this->gast_nodes[ in_rhs ].n_distance_from_root );
+			//Swap LHS subfather tree depth, the iterator automagically fixes depth information
+			for (auto cl_children_iterator = this->begin( in_lhs ); cl_children_iterator != this->end();cl_children_iterator++)
+			{
+				(*cl_children_iterator);
+			}
+			//Swap RHS subfather tree depth, the iterator automagically fixes depth information
+			for (auto cl_children_iterator = this->begin( in_rhs ); cl_children_iterator != this->end();cl_children_iterator++)
+			{
+				(*cl_children_iterator);
+			}
+		}
+
+    }	//If a subtree swap was authorized
+
+    DPRINT("After        | LHS: %s | RHS %s\n", this->to_string( in_lhs ).c_str(), this->to_string( in_rhs ).c_str() );
 
     //--------------------------------------------------------------------------
     //	RETURN
@@ -926,7 +1247,7 @@ Payload &Tree<Payload>::root( bool &oru1_fail )
 /***************************************************************************/
 //! @brief Public getter: show | void |
 /***************************************************************************/
-//! @param bool | false = OK | true = FAIL |
+//! @return bool | false = OK | true = FAIL |
 //! @details
 //! \n Show the nodes stored inside the vector and their links
 /***************************************************************************/
@@ -949,29 +1270,19 @@ bool Tree<Payload>::show( void )
     //	SHOW
     //--------------------------------------------------------------------------
 
+    std::cout << "Number of Nodes: " << this->gast_nodes.size() << "\n";
     //Scan vector of nodes
     for (typename std::vector<Node>::iterator pst_node = this->gast_nodes.begin();pst_node < this->gast_nodes.end();pst_node++)
     {
-
-        //std::ostream my_stream;
-        size_t n_node_index = pst_node- this->gast_nodes.begin();
-        std::cout << "Index: " << n_node_index << " | ";
-        size_t n_father_index = pst_node->n_index_father;
-        std::cout << "Father: " << n_father_index;
-        std::cout << " | Payload: " << pst_node->t_payload;
-        //Root is the only node that has itself as father
-        if (n_node_index == n_father_index)
-        {
-            std::cout << " | ROOT ";
-        }
-        std::cout << "\n";
+		//Print node
+		std::cout << ">" << this->gf_lambda_decorator((*pst_node).t_payload) << "< || Index: " << (pst_node -this->gast_nodes.begin()) << " | " << *pst_node << "\n";
     }
 
     //--------------------------------------------------------------------------
     //	RETURN
     //--------------------------------------------------------------------------
     DRETURN(); //Trace Return
-    return this->gast_nodes[0].t_payload;
+    return false;
 }   //Public getter: show | void |
 
 /***************************************************************************/
@@ -1015,11 +1326,12 @@ bool Tree<Payload>::show( size_t in_index )
             }
             else
             {
-                std::cout << "|-- ";
+				//std::cout << "|---";
+                std::cout << "    ";
             }
         }
         //Print the content of the node
-        std::cout << this->to_string(*cl_explore_iterator) << "\n";
+        std::cout << ">" << this->gf_lambda_decorator((*cl_explore_iterator).t_payload) << "< || Index: " << cl_explore_iterator.get_index() << " | " << this->to_string(*cl_explore_iterator) << "\n";
     }
 
     //--------------------------------------------------------------------------
@@ -1028,6 +1340,136 @@ bool Tree<Payload>::show( size_t in_index )
     DRETURN();
     return false;
 }   //Public getter: show | void |
+
+/*********************************************************************************************************************************************************
+**********************************************************************************************************************************************************
+**	PUBLIC TESTER
+**********************************************************************************************************************************************************
+*********************************************************************************************************************************************************/
+
+/***************************************************************************/
+//! @brief Public Method | is_descendant | size_t | size_t
+/***************************************************************************/
+//! @param in_lhs | index of node to be checked
+//! @param in_rhs | index of node to be checked
+//! @return bool | false = OK | true = FAIL |
+//! @todo I feel there is a much more efficient algorithm...
+//! @details
+//! \n check if two nodes are direct relatives
+//! \n I need to explore both subtrees and check if one appears in the other subtree
+/***************************************************************************/
+
+template <class Payload>
+bool Tree<Payload>::is_descendant(size_t in_lhs, size_t in_rhs)
+{
+    DENTER_ARG("LHS: %d | RHS: %d", in_lhs, in_rhs ); //Trace Enter
+    //--------------------------------------------------------------------------
+    //	CHECK
+    //--------------------------------------------------------------------------
+
+    if ((Config::CU1_INTERNAL_CHECKS == true) && ((in_lhs >= this->gast_nodes.size()) || (in_rhs >= this->gast_nodes.size())) )
+    {
+		this->report_error(Error_code::CPS8_ERR_OOB);
+        DRETURN_ARG("ERR%d: OOB size: %d", __LINE__, this->gast_nodes.size() );
+        return true;
+    }
+
+    //--------------------------------------------------------------------------
+    //	QUICK CHECKS
+    //--------------------------------------------------------------------------
+
+    //Same nodes
+	if (in_lhs == in_rhs)
+	{
+		DRETURN_ARG("The same node are not descendants...");
+		return false;
+	}
+	//One is the other Father, quick check
+	else if (in_lhs == this->gast_nodes[in_rhs].n_index_father)
+	{
+		DRETURN_ARG("LHS is father of RHS");
+		return true;
+	}
+	else if (in_lhs == this->gast_nodes[in_rhs].n_index_father)
+	{
+		DRETURN_ARG("RHS is father of LHS");
+		return true;
+	}
+
+	//--------------------------------------------------------------------------
+    //	SLOW CHECK
+    //--------------------------------------------------------------------------
+    //	Use iterator to build both trees under the nodes, and stop if one is found under that node
+
+    //Scan all the descendence of LHS
+	for (User::Tree<Payload>::iterator<User::Tree<Payload>::Node> cl_lhs_iterator=this->begin( in_lhs );cl_lhs_iterator!=this->end();cl_lhs_iterator++)
+	{
+		DPRINT("LHS scan: %d\n", cl_lhs_iterator.get_index() );
+		//if RHS is a descendant of LHS
+		if (cl_lhs_iterator.get_index() == in_rhs)
+		{
+			DRETURN_ARG("RHS is a descendent of LHS through node: %d", cl_lhs_iterator.get_index() );
+			return true;
+		}
+	}
+	//Scan all the descendence of RHS
+	for (User::Tree<Payload>::iterator<User::Tree<Payload>::Node> cl_rhs_iterator=this->begin( in_rhs );cl_rhs_iterator!=this->end();cl_rhs_iterator++)
+	{
+		DPRINT("RHS scan: %d\n", cl_rhs_iterator.get_index() );
+		//if RHS is a descendant of LHS
+		if (cl_rhs_iterator.get_index() == in_lhs)
+		{
+			DRETURN_ARG("LHS is a descendent of RHS through node: %d", cl_rhs_iterator.get_index() );
+			return true;
+		}
+	}
+
+    //--------------------------------------------------------------------------
+    //	RETURN
+    //--------------------------------------------------------------------------
+    //LHS and RHS are not related
+    DRETURN();
+    return false;
+} 	//Public Method | is_descendant | size_t | size_t
+
+/*********************************************************************************************************************************************************
+**********************************************************************************************************************************************************
+**	PUBLIC METHODS
+**********************************************************************************************************************************************************
+*********************************************************************************************************************************************************/
+
+/***************************************************************************/
+//! @brief Public Method | flush | void
+/***************************************************************************/
+//! @return bool | false = OK | true = FAIL |
+//! @details
+//! \n Flush the content of a tree except for the root
+/***************************************************************************/
+
+template <class Payload>
+bool Tree<Payload>::flush( void )
+{
+    DENTER_ARG( "Nodes inside the tree: %d", this->gast_nodes.size() ); //Trace Enter
+    //--------------------------------------------------------------------------
+    //	BODY
+    //--------------------------------------------------------------------------
+
+	//while I have more than the root
+	while (this->gast_nodes.size() > 1)
+	{
+		//Remove an element
+		this->gast_nodes.pop_back();
+	}
+
+	//!re align the root
+	bool x_ret = this->init_root();
+
+    //--------------------------------------------------------------------------
+    //	RETURN
+    //--------------------------------------------------------------------------
+    DRETURN_ARG("Nodes inside the tree: %d", this->gast_nodes.size() ); //Trace Return
+    return x_ret;	//OK
+} 	//Public Method: report_error | Error_code
 
 /*********************************************************************************************************************************************************
 **********************************************************************************************************************************************************
@@ -1084,7 +1526,7 @@ bool Tree<Payload>::find_children( size_t in_father_index,std::vector<size_t> &i
     iran_children_indexes.resize( n_num_expected_children );
     if ((Config::CU1_INTERNAL_CHECKS == true) && (iran_children_indexes.size() != n_num_expected_children))
     {
-        DRETURN_ARG("ERR%d: Failed to resize array expected %d | actual %d", n_num_expected_children, iran_children_indexes.size() );
+        DRETURN_ARG("ERR%d: Failed to resize array expected %d | actual %d", __LINE__, n_num_expected_children, iran_children_indexes.size() );
         return true;
     }
     //while authorized to scan for children
@@ -1169,6 +1611,14 @@ bool Tree<Payload>::init_class_vars( Payload it_payload )
     //	INIT
     //--------------------------------------------------------------------------
 
+    //If the tree already has nodes
+    if ((Config::CU1_INTERNAL_CHECKS == true) && (this->gast_nodes.size() > 0))
+    {
+		bool x_ret = this->flush();
+		DRETURN_ARG("WAR:__LINE__ The tree was already initialized, flush instead.");
+		return x_ret;
+    }
+
     Node st_node;
     st_node.t_payload = it_payload;
     //Root starts with no children
@@ -1177,6 +1627,8 @@ bool Tree<Payload>::init_class_vars( Payload it_payload )
     st_node.n_own_priority = 0;
     //Root is at depth 0
     st_node.n_distance_from_root = 0;
+    //Register the father index. Root points to itself, special root code
+    st_node.n_index_father = 0;
     //Allocate root and fill root with dummy payload
     this->gast_nodes.push_back( st_node );
     if (this->gast_nodes.size() != 1)
@@ -1186,10 +1638,49 @@ bool Tree<Payload>::init_class_vars( Payload it_payload )
         DRETURN_ARG("ERR%d: There should be exactly one node (Root) after initialization, there are %d instead", __LINE__, this->gast_nodes.size() );
         return true;
     }
-    //Register the father index. Root points to itself
-    this->gast_nodes[0].n_index_father = 0;
-
+    //Initialize error code
     this->gps8_error_code = Error_code::CPS8_OK;
+    //Link a default decorator to stringify the payload.
+    this->gf_lambda_decorator = [](Payload it_payload){ return std::string("use link_decorator to stringfy your Payload"); };
+
+    //--------------------------------------------------------------------------
+    //	RETURN
+    //--------------------------------------------------------------------------
+    DRETURN();      //Trace Return
+    return false;   //OK
+}   //Private Method: init_class_vars | void
+
+/***************************************************************************/
+//! @brief Private Method: init_root | void
+/***************************************************************************/
+//! @param it_payload | root payload
+//! @return no return
+//! @details
+//! \n Initialize class vars
+/***************************************************************************/
+
+template <class Payload>
+bool Tree<Payload>::init_root( void )
+{
+    DENTER();		//Trace Enter
+    //--------------------------------------------------------------------------
+    //	INIT
+    //--------------------------------------------------------------------------
+
+    //If there is no root
+    if ((Config::CU1_INTERNAL_CHECKS == true) && (this->gast_nodes.size() < 1))
+    {
+		DRETURN_ARG("ERR:__LINE__ | There are no nodes! There should be at least the root...");
+		return true;
+    }
+    //Root starts with no children
+    this->gast_nodes[0].n_children_max_priority = 0;
+    //Root cannot have a priority, it has no father and no siblings
+    this->gast_nodes[0].n_own_priority = 0;
+    //Root is at depth 0
+    this->gast_nodes[0].n_distance_from_root = 0;
+    //Register the father index. Root points to itself, the special root code.
+    this->gast_nodes[0].n_index_father = 0;
 
     //--------------------------------------------------------------------------
     //	RETURN

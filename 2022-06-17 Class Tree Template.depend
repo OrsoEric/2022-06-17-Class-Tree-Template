@@ -24,27 +24,28 @@
 1657556824 c:\data\project\project programming\project classes\2022-06-17 class tree template\src\tree.hpp
 	<vector>
 
-1653285491 source:c:\data\project\project programming\project classes\2022-06-17 class tree template\debug.cpp
+1653289091 source:c:\data\project\project programming\project classes\2022-06-17 class tree template\debug.cpp
 	<cstdio>
 	"debug.h"
 
-1674456205 c:\data\project\project programming\project classes\2022-06-17 class tree template\debug.h
+1673684376 c:\data\project\project programming\project classes\2022-06-17 class tree template\debug.h
 	<cstdio>
 
-1674456205 source:c:\data\project\project programming\project classes\2022-06-17 class tree template\example.cpp
+1679675956 source:c:\data\project\project programming\project classes\2022-06-17 class tree template\example.cpp
 	<cstdio>
 	<iostream>
 	"debug.h"
 	"tree.hpp"
 
-1674490394 c:\data\project\project programming\project classes\2022-06-17 class tree template\tree.hpp
+1679896966 c:\data\project\project programming\project classes\2022-06-17 class tree template\tree.hpp
 	<string>
 	<vector>
 	<stack>
 	<algorithm>
+	<functional>
 	"Tree_interface.h"
 
-1674456205 c:\data\project\project programming\project classes\2022-06-17 class tree template\tree_interface.h
+1673684387 c:\data\project\project programming\project classes\2022-06-17 class tree template\tree_interface.h
 	<vector>
 
 1673338964 source:c:\data\project\project programming\project classes\2022-06-17 class tree template\test_iterator.cpp
