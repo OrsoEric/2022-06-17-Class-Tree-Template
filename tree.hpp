@@ -942,21 +942,43 @@ bool Tree<Payload>::erease( size_t in_index_erease, Erease_mode ie_delete_mode )
 			auto cl_iterator = (this->gast_nodes.begin() +in_index_erease);
 			//Remember the father of the ereased node
 			size_t n_index_father_of_ereased_node = cl_iterator->n_index_father;
-
+			//Sanity check size
 			size_t n_size_before_erease = this->gast_nodes.size();
+			size_t n_priority_of_ereased_node = this->gast_nodes[in_index_erease].n_own_priority;
 			//Erease the node, this invalidates the iterator
 			this->gast_nodes.erase( cl_iterator );
+			//TRICKY: children priority 0 1 2 3. Erease 1. I need to change priority 0 DEL1 2-> 3->2
 			//If vector erease does't have the expected result
 			if ( (n_size_before_erease -1) != this->gast_nodes.size() )
 			{
-				this->report_error("ERR%d | Size: %d->%d | ERR Vector!!! I expected the vector to have size reduced by one...");
+				DRETURN_ARG("ERR%d | Size: %d->%d | ERR Vector!!! I expected the vector to have size reduced by one...", __LINE__, n_size_before_erease, this->gast_nodes.size() );
+				return true;
 			}
+			//The father of ereased node has one fewer child
+			this->gast_nodes[n_index_father_of_ereased_node].n_children_max_priority--;
 			//I scan the whole tree and update all node indexes
 			for (cl_iterator = this->gast_nodes.begin(); cl_iterator < this->gast_nodes.end();cl_iterator++)
 			{
+				//If scanning the root
+				if (cl_iterator==this->gast_nodes.begin())
+				{
+					//Do nothing
+				}
+				//Update the priorities of the children of the father of the ereased node. decrease all priorities of following children to ereased one.
+				//If this node has the father of the ereased node as father and is not the root
+				else if (cl_iterator->n_index_father == n_index_father_of_ereased_node)
+				{
+					//If this node has a priority that comes after the priority of the ereased node
+					if (cl_iterator->n_own_priority > n_priority_of_ereased_node)
+					{
+						cl_iterator->n_own_priority--;
+					}
+				}
 				//The node that have the ereased node as father
                 if (cl_iterator->n_index_father == in_index_erease)
                 {
+					//Adjust depth since I'm bumping them up by one (adjust depth of their children as well)
+					cl_iterator->n_distance_from_root--;
 					//now have the father of the ereased node as father
 					cl_iterator->n_index_father = n_index_father_of_ereased_node;
 					DPRINT("Relinked node: %d as child of node: %d\n", this->gast_nodes.end() -cl_iterator, cl_iterator->n_index_father);
@@ -1533,6 +1555,14 @@ bool Tree<Payload>::find_children( size_t in_father_index,std::vector<size_t> &i
         DRETURN_ARG("ERR%d: Failed to resize array expected %d | actual %d", __LINE__, n_num_expected_children, iran_children_indexes.size() );
         return true;
     }
+    if (Config::CU1_INTERNAL_CHECKS == true)
+    {
+		//initialize array of children indexes to invalid
+		for (auto cl_iter_children = iran_children_indexes.begin(); cl_iter_children<iran_children_indexes.end(); cl_iter_children++ )
+		{
+			(*cl_iter_children) = this->gast_nodes.size();
+		}
+	}
     //while authorized to scan for children
     while (x_search_children == true)
     {
@@ -1564,7 +1594,7 @@ bool Tree<Payload>::find_children( size_t in_father_index,std::vector<size_t> &i
         if (n_children_index > this->gast_nodes.size())
         {
             iran_children_indexes.clear();
-            DRETURN_ARG("ERR%d: Search for child reached the end of the array without finding one...", __LINE__ );
+            DRETURN_ARG("ERR%d: Search for child %d of %d reached the end of the array without finding one...", __LINE__, n_num_found_children, n_num_expected_children );
             return true;
         }
     }	//while authorized to scan for children
@@ -1573,6 +1603,19 @@ bool Tree<Payload>::find_children( size_t in_father_index,std::vector<size_t> &i
     //	RETURN
     //--------------------------------------------------------------------------
 
+    //check if one of the expected priorities wasn't found. can happen if priority got mangled. E.g. GOOD 0 1 2 3 | BAD 0 2 2 3
+	if (Config::CU1_INTERNAL_CHECKS == true)
+    {
+		//initialize array of children indexes to invalid
+		for (auto cl_iter_children = iran_children_indexes.begin(); cl_iter_children<iran_children_indexes.end(); cl_iter_children++ )
+		{
+			if ((*cl_iter_children) == this->gast_nodes.size())
+			{
+				DRETURN_ARG("ERR%d: priority %d of %d wasn't found after searching for children. priority of children is mangled...", __LINE__, cl_iter_children- iran_children_indexes.begin(), n_num_expected_children );
+				return true;
+			}
+		}
+	}
     //If the number of found children doesn't match the number of children of the father
     if (n_num_found_children != n_num_expected_children)
     {
