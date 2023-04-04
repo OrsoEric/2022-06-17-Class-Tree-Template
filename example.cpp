@@ -642,13 +642,15 @@ bool test_bench( void )
 		cl_test_bench.test_fill_flush();
 		//cl_test_bench.test_tree_iterator();
 
-		cl_test_bench.test_move();
+		//BROKEN
+		cl_test_bench.test_is_descendent();
+
+		//cl_test_bench.test_move();
 
 		//BROKEN
 		//cl_test_bench.test_erease();
 
-		//BROKEN
-		//cl_test_bench.test_is_descendent();
+
 
 		//cl_test_bench.test_tree_swap_payload();
 		//cl_test_bench.test_swap_priority();

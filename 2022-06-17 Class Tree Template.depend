@@ -31,13 +31,13 @@
 1673684376 c:\data\project\project programming\project classes\2022-06-17 class tree template\debug.h
 	<cstdio>
 
-1680629021 source:c:\data\project\project programming\project classes\2022-06-17 class tree template\example.cpp
+1680629464 source:c:\data\project\project programming\project classes\2022-06-17 class tree template\example.cpp
 	<cstdio>
 	<iostream>
 	"debug.h"
 	"tree.hpp"
 
-1680629258 c:\data\project\project programming\project classes\2022-06-17 class tree template\tree.hpp
+1680629635 c:\data\project\project programming\project classes\2022-06-17 class tree template\tree.hpp
 	<string>
 	<vector>
 	<stack>
