@@ -106,16 +106,23 @@ class Tree : public Tree_interface<Payload>
             static constexpr const char *CPS8_ERR_OOB = "ERR Out Of Boundary: Tried to access an index that doesn't exist";
         };
         //! @brief how a node is to be deleted
-        enum Erease_mode
+        enum class Erease_mode
         {
 			//Just delete the node, and relinks the children of the node, to the father of the node
 			NODE,
 			//Delete the node, and delete all the subtree under that node
 			DEEP
         };
-
+        //! @brief Moving nodes can be done in two different ways
+		enum class Move_mode
+		{
+			//Move an individual node, and bump the children of the source upward
+			NODE,
+			//Move a node, and all its children
+			SUBTREE
+		};
         //! @brief Swapping nodes can be done in fundamentally different ways, see swap method documentation for details
-        enum Swap_mode
+        enum class Swap_mode
         {
             //Payload swap will swap the payload field of two nodes
             PAYLOAD,
@@ -204,7 +211,11 @@ class Tree : public Tree_interface<Payload>
         size_t create_child( Payload it_payload );
         //Create a child of the node with a given index. Returns the index of the node created
         size_t create_child( size_t in_father_index, Payload it_payload );
-        //Delete a node from the tree. Two deletion mode, NODE delete a single node and relinks the children, DEEP, delete node and all the children
+        //move a node somewhere else. Two move modes:
+        //! @todo
+        bool move( size_t in_index_node_source, size_t in_index_father_destination, Move_mode ie_move_mode = Move_mode::NODE );
+        //Delete a node from the tree. Two deletion modes: NODE delete a single node and relinks the children, DEEP, delete node and all the children
+        //! @todo
         bool erease( size_t in_index, Erease_mode );
         //Swap two nodes of the tree
         bool swap( size_t in_lhs, size_t in_rhs, Swap_mode ie_swap_mode = Swap_mode::SUBTREE );
@@ -550,6 +561,11 @@ class Tree : public Tree_interface<Payload>
         **	PRIVATE METHODS
         **********************************************************************************************************************************************************
         *********************************************************************************************************************************************************/
+
+        //! @brief the children of target nodes are bumped as children of the father of target nodes (from children to siblings)
+        bool bump_children( size_t in_index_node );
+        //! @brief relink target node under a new father
+        bool relink_node_nocheck( size_t in_index_target_node, size_t in_index_father_destination );
 
         //! @todo add "own index", move method to tree interface
         //! @brief turns a Node into a string
@@ -974,6 +990,7 @@ bool Tree<Payload>::erease( size_t in_index_erease, Erease_mode ie_delete_mode )
 						cl_iterator->n_own_priority--;
 					}
 				}
+
 				//The node that have the ereased node as father
                 if (cl_iterator->n_index_father == in_index_erease)
                 {
@@ -1017,7 +1034,7 @@ bool Tree<Payload>::erease( size_t in_index_erease, Erease_mode ie_delete_mode )
 		//--------------------------------------------------------------------------
 		{
 			this->report_error( Error_code::CPS8_ERR );
-			DPRINT("ERR%d | Unknown erease mode %d", __LINE__, ie_delete_mode );
+			DPRINT("ERR%d | Unknown erease mode %d", __LINE__, int(ie_delete_mode) );
 			return true;
 		}
     };	//Delete_mode
@@ -1233,6 +1250,69 @@ bool Tree<Payload>::swap( size_t in_lhs, size_t in_rhs, Swap_mode ie_swap_mode )
     DRETURN(); //Trace Return
     return false;
 }
+
+/***************************************************************************/
+//! @brief Public Setter: root | size_t | size_t
+/***************************************************************************/
+//! @param oru1_fail | false = OK | true = FAIL
+//! @return Payload & | Reference to the payload of the root node |
+//! @details
+//! \n Return the reference to the payload of the root node
+/***************************************************************************/
+
+template <class Payload>
+bool Tree<Payload>::move( size_t in_index_node_target, size_t in_index_new_father, Move_mode ie_move_mode )
+{
+    DENTER(); //Trace Enter
+    //--------------------------------------------------------------------------
+    //	INIT
+    //--------------------------------------------------------------------------
+
+    //if class is in error
+    if (this->gps8_error_code != Error_code::CPS8_OK)
+    {
+		DRETURN();
+		return true;
+    }
+    //if source OOB
+    if ((in_index_node_target == 0) || (in_index_node_target >= this->gast_nodes.size()))
+    {
+		DRETURN_ARG("ERR%d | OOB source index %d of %d", __LINE__, in_index_node_target, this->gast_nodes.size() );
+		return true;
+    }
+    //if new father OOB
+	if (in_index_new_father >= this->gast_nodes.size())
+    {
+		DRETURN_ARG("ERR%d | OOB new father index %d of %d", __LINE__, in_index_new_father, this->gast_nodes.size() );
+		return true;
+    }
+
+    bool x_fail = false;
+
+	//--------------------------------------------------------------------------
+    //	INIT
+    //--------------------------------------------------------------------------
+
+    //I want to move just the target node
+	if (ie_move_mode == Move_mode::NODE)
+	{
+		//Bump all children of target node to be siblings instead
+		x_fail = this->bump_children( in_index_node_target );
+		if (x_fail == true)
+		{
+			DRETURN_ARG("ERR%d | couldn't bump children of node %d...", __LINE__, in_index_node_target );
+			return x_fail;
+		}
+	}
+	//Now the node I want to move is isolated
+	x_fail = this->relink_node_nocheck( in_index_node_target, in_index_new_father );
+
+    //--------------------------------------------------------------------------
+    //	RETURN
+    //--------------------------------------------------------------------------
+    DRETURN(); //Trace Return
+    return x_fail;
+}   //Public getter: root | bool & |
 
 /*********************************************************************************************************************************************************
 **********************************************************************************************************************************************************
@@ -1574,12 +1654,12 @@ bool Tree<Payload>::find_children( size_t in_father_index,std::vector<size_t> &i
             //Pedantic check that the priority of the node is consistent with the number of children of the father
             if ( (Config::CU1_INTERNAL_CHECKS == true) && (n_priority >= n_num_expected_children))
             {
-                DRETURN_ARG("ERR%d: Priority %d of %d | Found a child whose priority exceed the number of children of the father...", __LINE__, n_priority, n_num_expected_children );
+                DRETURN_ARG("ERR%d: Priority %d of %d | Found child (index %d) whose priority exceed the number of children of the father...", __LINE__, n_priority, n_num_expected_children, n_children_index );
                 return true;
             }
             //I can presort the array by using the priority as index to the preallocated chidlren array, saving lots of work
             iran_children_indexes[n_priority] = n_children_index;
-            DPRINT("Found children : %s\n", this->to_string(this->gast_nodes[n_children_index]).c_str() );
+            DPRINT("Found children || Index %d | %s\n", n_children_index, this->to_string( this->gast_nodes[n_children_index] ).c_str() );
             //I just found a child
             n_num_found_children++;
             //If I found ALL the children of this node
@@ -1594,7 +1674,7 @@ bool Tree<Payload>::find_children( size_t in_father_index,std::vector<size_t> &i
         if (n_children_index > this->gast_nodes.size())
         {
             iran_children_indexes.clear();
-            DRETURN_ARG("ERR%d: Search for child %d of %d reached the end of the array without finding one...", __LINE__, n_num_found_children, n_num_expected_children );
+            DRETURN_ARG("ERR%d: Search for child reached the end of the array without finding one... Found %d of %d expected children...", __LINE__, n_num_found_children, n_num_expected_children );
             return true;
         }
     }	//while authorized to scan for children
@@ -1741,6 +1821,170 @@ bool Tree<Payload>::init_root( void )
 **	PRIVATE METHODS
 **********************************************************************************************************************************************************
 *********************************************************************************************************************************************************/
+
+/***************************************************************************/
+//! @brief Private Method | bump_children | in_index_node
+/***************************************************************************/
+//! @param in_index_node | index of the target node
+//! @return bool | false = OK | true = FAIL |
+//! @details
+//! \n the children of target nodes are bumped as children of the father of target nodes (from children to siblings)
+//! \n	------------------------------
+//! \n  "Payload Swap" will swap the content of two nodes
+//! \n	EXAMPLE: Bump (102)
+//! \n	100				100
+//! \n	|-101			|-101
+//! \n		|-201			|-201
+//! \n	|-102			|-102
+//! \n		|-202		|-202
+//! \n		|-203		|-203
+//! \n			|-301		|-301
+/***************************************************************************/
+
+template <class Payload>
+bool Tree<Payload>::bump_children( size_t in_index_node )
+{
+    DENTER(); //Trace Enter
+    //--------------------------------------------------------------------------
+    //	INIT
+    //--------------------------------------------------------------------------
+
+    //If trying to bump root's children
+    if (in_index_node == 0)
+    {
+		DRETURN_ARG("ERR%d | Root's children cannot be bumped as root's siblings as root doesn't have a father...", __LINE__ );
+		return true;
+    }
+    else if (in_index_node >= this->gast_nodes.size() )
+    {
+		DRETURN_ARG("ERR%d | OOB | Index %d of %d", __LINE__, in_index_node, this->gast_nodes.size() );
+		return true;
+    }
+
+    //Find children of target node
+	auto an_children = this->get_children( in_index_node );
+	if (an_children.size() <= 0)
+	{
+		DRETURN_ARG("target node has %d children to be bumped as siblings", an_children.size() );
+		return false;
+	}
+
+	//--------------------------------------------------------------------------
+    //	BODY
+    //--------------------------------------------------------------------------
+	//TRICKY: children priority 0 1 2 3. Erease 1. I need to change priority 0 DEL1 2-> 3->2
+
+	//Remember the father of the ereased node
+	size_t n_index_father_of_target_node = this->gast_nodes[in_index_node].n_index_father;
+	//I scan the whole tree and update all node indexes
+	for (auto cl_iterator = this->gast_nodes.begin(); cl_iterator < this->gast_nodes.end();cl_iterator++)
+	{
+		//If scanning the root
+		if (cl_iterator==this->gast_nodes.begin())
+		{
+			//Do nothing
+		}
+		//If this node has the father of the ereased node as father and is not the root
+		else if (cl_iterator->n_index_father == n_index_father_of_target_node)
+		{
+			//Do nothing
+		}
+		//The node has the target as father
+		else if (cl_iterator->n_index_father == in_index_node)
+		{
+			//Relinks children of target to be children of father of target, also, sibling of target
+			//now have the father of the ereased node as father
+			cl_iterator->n_index_father = n_index_father_of_target_node;
+			DPRINT("Relinked node: %d as child of node: %d\n", this->gast_nodes.end() -cl_iterator, cl_iterator->n_index_father);
+			//priority needs to be updated, they are inserted as newborn children
+			cl_iterator->n_own_priority = this->gast_nodes[n_index_father_of_target_node].n_children_max_priority;
+			this->gast_nodes[n_index_father_of_target_node].n_children_max_priority++;
+			DPRINT("Updated priority of child index: %d of ereased node: %d\n", this->gast_nodes.end() -cl_iterator, cl_iterator->n_own_priority );
+			DPRINT("Updated number of children/max priority of node %d that is father of ereased node: %d\n", n_index_father_of_target_node, this->gast_nodes[n_index_father_of_target_node].n_children_max_priority );
+			//Adjust depth since I'm bumping them up by one (adjust depth of their children as well)
+			cl_iterator->n_distance_from_root--;
+			//! @TODO: adjust depth of every node that is child of this node
+			//Distance from root is reduced by one for all the descendence of the children of the ereased node
+		} //The node that have the ereased node as father
+		//every node that points to an index that came after the ereased node needs to be reduced by one
+		else
+		{
+			//Do nothing
+		}
+	}	//I scan the whole tree and update all node indexes
+	//The target father has no children now that they have all been bumped
+	this->gast_nodes[in_index_node].n_children_max_priority = 0;
+	//The father of target father has lost a child
+	//this->gast_nodes[n_index_father_of_target_node].n_children_max_priority--;
+	//! @todo I need to update the priority of the siblings
+
+    //--------------------------------------------------------------------------
+    //	RETURN
+    //--------------------------------------------------------------------------
+    DRETURN(); //Trace Return
+    return false;	//OK
+} 	//Private Method: report_error | Error_code
+
+/***************************************************************************/
+//! @brief Private Method | relink_node_nocheck | size_t, size_t
+/***************************************************************************/
+//! @param in_index_target_node | index of target node to be relinked
+//! @param in_index_father_destination
+//! @return bool | false = OK | true = FAIL |
+//! @details
+//! \n Fast relink with no integrity checks
+//! \n Relink target to be a child of another father
+//! \n Doesn't care to update the descendence of target
+//! \n Updates old and new father of target
+//! \n Updates priority of old siblings
+//! \n
+/***************************************************************************/
+
+template <class Payload>
+bool Tree<Payload>::relink_node_nocheck( size_t in_index_target_node, size_t in_index_new_father )
+{
+    DENTER();
+    //--------------------------------------------------------------------------
+    //	BODY
+    //--------------------------------------------------------------------------
+
+    //Remember old father of target for relinking
+    size_t n_index_target_old_father = this->gast_nodes[in_index_target_node].n_index_father;
+    size_t n_old_priority_target = this->gast_nodes[in_index_target_node].n_own_priority;
+    //Relink node to new father
+	this->gast_nodes[in_index_target_node].n_index_father = in_index_new_father;
+	//Recompute priority of taget and new father
+	this->gast_nodes[in_index_target_node].n_own_priority = this->gast_nodes[in_index_new_father].n_children_max_priority;
+	this->gast_nodes[in_index_new_father].n_children_max_priority++;
+	//Recompute depth of target
+	this->gast_nodes[in_index_target_node].n_distance_from_root = this->gast_nodes[in_index_new_father].n_distance_from_root +1;
+	//Recompute number of children of old father
+	this->gast_nodes[n_index_target_old_father].n_children_max_priority--;
+	//if old father has more children, and there is priority to be adjusted
+	if (this->gast_nodes[n_index_target_old_father].n_children_max_priority >= 1)
+	{
+		//Scan old father children to update priority
+		for (auto cl_iterator_node = this->gast_nodes.begin();cl_iterator_node < this->gast_nodes.end();cl_iterator_node++)
+		{
+			//If children of old father/sibling of target
+			if (cl_iterator_node->n_index_father == n_index_target_old_father)
+			{
+				//if lower priority/higher number/younger sibling
+				if (cl_iterator_node->n_own_priority >= n_old_priority_target)
+				{
+					//Increase the priority/decrease priority number
+					cl_iterator_node->n_own_priority--;
+				}
+			}
+		}
+	}
+
+    //--------------------------------------------------------------------------
+    //	RETURN
+    //--------------------------------------------------------------------------
+    DRETURN(); //Trace Return
+    return false;	//OK
+} 	//Private Method: Private Method | relink_node_nocheck | size_t, size_t
 
 /***************************************************************************/
 //! @brief Private Method | report_error | Error_code

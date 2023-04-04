@@ -440,6 +440,52 @@ class Test_bench
 			return x_fail; //OK
 		}	//end public method: test_swap_independent_subtree | bool
 
+		/****************************************************************************
+		**	@brief test_move | User::Tree<int> &
+		****************************************************************************/
+		//! @param f bool
+		//! @return bool |
+		//! @details
+		//! Test bench for the move
+		/***************************************************************************/
+
+		bool test_move( void )
+		{
+			const size_t cn_num_swap_patterns = 2;
+			size_t an_swap_pattern[cn_num_swap_patterns][2] =
+			{
+				{0,0},
+				{7,0},
+			};
+			DENTER();
+			std::cout << "---------------------------------------------------------\n";
+			std::cout << "TEST - swap payload | patterns: " << cn_num_swap_patterns << "\n";
+			std::cout << "---------------------------------------------------------\n";
+			//FILL
+			bool x_fail;
+			x_fail = x_fail | this->gcl_tree.flush();
+			x_fail = this->fill_tree();
+			x_fail = x_fail | this->gcl_tree.show(0);
+			std::cout << "---------------------------------------------------------\n";
+			//Scan swap patterns
+			for (size_t n_swap_pattern_index = 0; n_swap_pattern_index < cn_num_swap_patterns;n_swap_pattern_index++)
+			{
+				//Execute the swap with the given pattern
+				x_fail = this->gcl_tree.move
+				(
+					an_swap_pattern[n_swap_pattern_index][0],
+					an_swap_pattern[n_swap_pattern_index][1],
+					User::Tree<int>::Move_mode::NODE
+				);
+				std::cout << "Swap " << an_swap_pattern[n_swap_pattern_index][0] << " <-> " << an_swap_pattern[n_swap_pattern_index][1] << " | Result: " << (x_fail?"FAIL":"OK") << "\n";
+				x_fail = x_fail | this->gcl_tree.show();
+				x_fail = x_fail | this->gcl_tree.show(0);
+				std::cout << "---------------------------------------------------------\n";
+			}
+			DRETURN();
+			return false;
+		}
+
 	private:
 		//! @brief fill the tree with a pattern
 		bool fill_tree( void )
@@ -589,7 +635,8 @@ bool test_bench( void )
 		//Unit tests
 		Test_bench cl_test_bench;
 		cl_test_bench.test_fill_flush();
-		cl_test_bench.test_erease();
+		cl_test_bench.test_move();
+		//cl_test_bench.test_erease();
 		//cl_test_bench.test_is_descendent();
 		////cl_test_bench.test_tree_swap_payload();
 		//cl_test_bench.test_swap_priority();
