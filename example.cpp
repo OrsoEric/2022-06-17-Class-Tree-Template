@@ -451,11 +451,14 @@ class Test_bench
 
 		bool test_move( void )
 		{
-			const size_t cn_num_swap_patterns = 2;
+			const size_t cn_num_swap_patterns = 3;
 			size_t an_swap_pattern[cn_num_swap_patterns][2] =
 			{
-				{0,0},
-				{7,0},
+				//target, new father
+				{0, 0},
+				{7, 0},
+				{7, 6},
+
 			};
 			DENTER();
 			std::cout << "---------------------------------------------------------\n";

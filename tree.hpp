@@ -1960,7 +1960,8 @@ bool Tree<Payload>::relink_node_nocheck( size_t in_index_target_node, size_t in_
 	this->gast_nodes[in_index_target_node].n_distance_from_root = this->gast_nodes[in_index_new_father].n_distance_from_root +1;
 	//Recompute number of children of old father
 	this->gast_nodes[n_index_target_old_father].n_children_max_priority--;
-	//if old father has more children, and there is priority to be adjusted
+	//if old father has more children, and
+	//!@todo if there is priority to be adjusted
 	if (this->gast_nodes[n_index_target_old_father].n_children_max_priority >= 1)
 	{
 		//Scan old father children to update priority
