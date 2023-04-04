@@ -1246,9 +1246,16 @@ bool Tree<Payload>::move( size_t in_index_node_target, size_t in_index_new_fathe
 		DRETURN_ARG("ERR%d | OOB new father index %d of %d", __LINE__, in_index_new_father, this->gast_nodes.size() );
 		return true;
     }
+    //Remember previous father
+	size_t n_index_target_old_father = this->gast_nodes[in_index_node_target].n_index_father;
+    //if new father is same as old father there is nothing to do
+    if (in_index_new_father == n_index_target_old_father)
+    {
+		DRETURN_ARG("Nothing to do. Target is already under father %d", n_index_target_old_father );
+		return false;
+    }
 
-    bool x_fail = false;
-
+	bool x_fail = false;
 	//--------------------------------------------------------------------------
     //	INIT
     //--------------------------------------------------------------------------

@@ -459,8 +459,7 @@ class Test_bench
 				{7, 0},
 				{7, 6},
 				{6, 4},
-				{1, 0},
-
+				{1, 0},	//1 is already under father 0
 			};
 			DENTER();
 			std::cout << "---------------------------------------------------------\n";
@@ -641,12 +640,18 @@ bool test_bench( void )
 		//Unit tests
 		Test_bench cl_test_bench;
 		cl_test_bench.test_fill_flush();
-		cl_test_bench.test_move();
-		//cl_test_bench.test_erease();
-		//cl_test_bench.test_is_descendent();
-		////cl_test_bench.test_tree_swap_payload();
-		//cl_test_bench.test_swap_priority();
 		//cl_test_bench.test_tree_iterator();
+
+		cl_test_bench.test_move();
+
+		//BROKEN
+		//cl_test_bench.test_erease();
+
+		//BROKEN
+		//cl_test_bench.test_is_descendent();
+
+		//cl_test_bench.test_tree_swap_payload();
+		//cl_test_bench.test_swap_priority();
 		//cl_test_bench.test_swap_independent_subtree();
 	}
 
