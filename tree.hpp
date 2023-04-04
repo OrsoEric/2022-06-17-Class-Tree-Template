@@ -147,6 +147,8 @@ class Tree : public Tree_interface<Payload>
         {
             //Payload inside the node
             Payload t_payload;
+            //Index of this node. Needed when trying to extract an index from an iterator, a very common operation
+            size_t n_own_index;
             //Index of the father. using father means that there is no variable number of children index to maintain. all nodes have exactly one father except the root. It also makes it impossible to make loops. Root is the only node that has itself as father.
             size_t n_index_father;
             //Priority, defines the order of this node compared to its siblings, 0 is the highest priority node under the given father. It checks against n_children_max_priority of the father of this node
@@ -155,13 +157,6 @@ class Tree : public Tree_interface<Payload>
             size_t n_children_max_priority;
             //Distance from root of this node, computed by create_child
             size_t n_distance_from_root;
-            //! @todo how do I add stringificators for node?
-			/*
-            bool to_string( void )
-            {
-				return to_string( this );
-            }
-            */
         };
 
         /*********************************************************************************************************************************************************
@@ -566,15 +561,13 @@ class Tree : public Tree_interface<Payload>
         bool bump_children( size_t in_index_node );
         //! @brief relink target node under a new father
         bool relink_node_nocheck( size_t in_index_target_node, size_t in_index_father_destination );
-
-        //! @todo add "own index", move method to tree interface
+        //! @brief iterator to node to be ereased
+		bool erease_single_node( typename std::vector<Node>::iterator cl_iterator_erease );
         //! @brief turns a Node into a string
         static std::string to_string( User::Tree<Payload>::Node &ist_node )
         {
             std::string s_ret = "";
-            //size_t n_node_index = ist_node- this->gast_nodes.begin();
-			//s_ret += "Own Index :" +std::to_string( n_node_index );
-            //s_ret += "Payload: " + thisist_node.t_payload);
+			s_ret += "Own Index: " +std::to_string( ist_node.n_own_index );
             s_ret += " | Father Index: ";
             s_ret += std::to_string(ist_node.n_index_father);
             s_ret += " | Own Priority ";
@@ -854,22 +847,22 @@ size_t Tree<Payload>::create_child( size_t in_father_index, Payload it_payload )
     //Distance from the root. The depth of this node is one deeper than the father. For create child it's easy to compute.
     st_node.n_distance_from_root = this->gast_nodes[ st_node.n_index_father ].n_distance_from_root +1;
     //This is what the index of this node should be after the creation operation is complete
-    size_t n_own_index = this->gast_nodes.size();
+    st_node.n_own_index = this->gast_nodes.size();
     //Add the node to the tree
     this->gast_nodes.push_back( st_node );
     //!@todo check that the node has been created with the right content
-    if (n_own_index != this->gast_nodes.size() -1)
+    if (st_node.n_own_index != this->gast_nodes.size() -1)
     {
         this->report_error( Error_code::CPS8_ERR );
-        DRETURN_ARG("ERR%d: push_back seemingly did not create a new node | %d of %d", __LINE__, n_own_index, this->gast_nodes.size() );
+        DRETURN_ARG("ERR%d: push_back seemingly did not create a new node | %d of %d", __LINE__, st_node.n_own_index, this->gast_nodes.size() );
         return true;
     }
 
     //--------------------------------------------------------------------------
     //	RETURN
     //--------------------------------------------------------------------------
-    DRETURN_ARG("Father Index: %d | Own Index: %d | Nodes under Father: %d", st_node.n_index_father, n_own_index, n_num_children +1 ); //Trace Return
-    return n_own_index;	//OK
+    DRETURN_ARG("Father Index: %d | Own Index: %d | Nodes under Father: %d", st_node.n_index_father, st_node.n_own_index, n_num_children +1 ); //Trace Return
+    return st_node.n_own_index;	//OK
 }   //Public Setter: create_child | size_t | Payload
 
 /***************************************************************************/
@@ -943,6 +936,8 @@ bool Tree<Payload>::erease( size_t in_index_erease, Erease_mode ie_delete_mode )
 		return true;
     }
 
+
+
     //--------------------------------------------------------------------------
     //	BODY
     //--------------------------------------------------------------------------
@@ -954,10 +949,19 @@ bool Tree<Payload>::erease( size_t in_index_erease, Erease_mode ie_delete_mode )
 		//--------------------------------------------------------------------------
 		//	Erease a single node
 		{
+			auto cl_iterator = (this->gast_nodes.begin() +in_index_erease);
+			this->erease_single_node( cl_iterator );
+
+			/*
+			//Bump children of node to be ereased
+			bool x_fail = this->bump_children( in_index_erease );
+			if (x_fail == true)
+			{
+				DRETURN_ARG("ERR:%d | Failed to bump children of target %d", __LINE__, in_index_erease );
+				return true;
+			}
 			//Construct an iterator that points to the correct node
 			auto cl_iterator = (this->gast_nodes.begin() +in_index_erease);
-			//Remember the father of the ereased node
-			size_t n_index_father_of_ereased_node = cl_iterator->n_index_father;
 			//Sanity check size
 			size_t n_size_before_erease = this->gast_nodes.size();
 			size_t n_priority_of_ereased_node = this->gast_nodes[in_index_erease].n_own_priority;
@@ -970,54 +974,10 @@ bool Tree<Payload>::erease( size_t in_index_erease, Erease_mode ie_delete_mode )
 				DRETURN_ARG("ERR%d | Size: %d->%d | ERR Vector!!! I expected the vector to have size reduced by one...", __LINE__, n_size_before_erease, this->gast_nodes.size() );
 				return true;
 			}
-			//The father of ereased node has one fewer child
-			this->gast_nodes[n_index_father_of_ereased_node].n_children_max_priority--;
-			//I scan the whole tree and update all node indexes
-			for (cl_iterator = this->gast_nodes.begin(); cl_iterator < this->gast_nodes.end();cl_iterator++)
-			{
-				//If scanning the root
-				if (cl_iterator==this->gast_nodes.begin())
-				{
-					//Do nothing
-				}
-				//Update the priorities of the children of the father of the ereased node. decrease all priorities of following children to ereased one.
-				//If this node has the father of the ereased node as father and is not the root
-				else if (cl_iterator->n_index_father == n_index_father_of_ereased_node)
-				{
-					//If this node has a priority that comes after the priority of the ereased node
-					if (cl_iterator->n_own_priority > n_priority_of_ereased_node)
-					{
-						cl_iterator->n_own_priority--;
-					}
-				}
+			//A children with given priority has been removed. Fix priority of father, and priority of all children
+			//this->fix_priority(   );
+			*/
 
-				//The node that have the ereased node as father
-                if (cl_iterator->n_index_father == in_index_erease)
-                {
-					//Adjust depth since I'm bumping them up by one (adjust depth of their children as well)
-					cl_iterator->n_distance_from_root--;
-					//now have the father of the ereased node as father
-					cl_iterator->n_index_father = n_index_father_of_ereased_node;
-					DPRINT("Relinked node: %d as child of node: %d\n", this->gast_nodes.end() -cl_iterator, cl_iterator->n_index_father);
-					//priority needs to be updated, they are inserted as newborn children
-					cl_iterator->n_own_priority = this->gast_nodes[n_index_father_of_ereased_node].n_children_max_priority;
-					this->gast_nodes[n_index_father_of_ereased_node].n_children_max_priority++;
-					DPRINT("Updated priority of child index: %d of ereased node: %d\n", this->gast_nodes.end() -cl_iterator, cl_iterator->n_own_priority );
-					DPRINT("Updated number of children/max priority of node %d that is father of ereased node: %d\n", n_index_father_of_ereased_node, this->gast_nodes[n_index_father_of_ereased_node].n_children_max_priority );
-					//Distance from root is reduced by one for all the descendence of the children of the ereased node
-
-
-                } //The node that have the ereased node as father
-                //every node that points to an index that came after the ereased node needs to be reduced by one
-                else
-                {
-					//Fix the father index of later index nodes
-					if (cl_iterator->n_index_father > in_index_erease)
-					{
-						cl_iterator->n_index_father--;
-					}
-                }
-			}	//I scan the whole tree and update all node indexes
 
 			break;
 		}
@@ -1381,7 +1341,7 @@ bool Tree<Payload>::show( void )
     for (typename std::vector<Node>::iterator pst_node = this->gast_nodes.begin();pst_node < this->gast_nodes.end();pst_node++)
     {
 		//Print node
-		std::cout << ">" << this->gf_lambda_decorator((*pst_node).t_payload) << "< || Index: " << (pst_node -this->gast_nodes.begin()) << " | " << *pst_node << "\n";
+		std::cout << ">" << this->gf_lambda_decorator((*pst_node).t_payload) << " || " << *pst_node << "\n";
     }
 
     //--------------------------------------------------------------------------
@@ -1437,7 +1397,7 @@ bool Tree<Payload>::show( size_t in_index )
             }
         }
         //Print the content of the node
-        std::cout << ">" << this->gf_lambda_decorator((*cl_explore_iterator).t_payload) << "< || Index: " << cl_explore_iterator.get_index() << " | " << this->to_string(*cl_explore_iterator) << "\n";
+        std::cout << ">" << this->gf_lambda_decorator((*cl_explore_iterator).t_payload) << " || " << this->to_string(*cl_explore_iterator) << "\n";
     }
 
     //--------------------------------------------------------------------------
@@ -1750,6 +1710,8 @@ bool Tree<Payload>::init_class_vars( Payload it_payload )
     st_node.t_payload = it_payload;
     //Root starts with no children
     st_node.n_children_max_priority = 0;
+    //Root has index 0
+    st_node.n_own_index = 0;
     //Root cannot have a priority
     st_node.n_own_priority = 0;
     //Root is at depth 0
@@ -1997,6 +1959,93 @@ bool Tree<Payload>::relink_node_nocheck( size_t in_index_target_node, size_t in_
 } 	//Private Method: Private Method | relink_node_nocheck | size_t, size_t
 
 /***************************************************************************/
+//! @brief Private Method | erease_single_node | std::vector<Node>::iterator
+/***************************************************************************/
+//! @param cl_iterator_erease | iterator to node to be ereased
+//! @return bool | false = OK | true = FAIL |
+//! @details
+//! \n Erease a single node from the tree
+/***************************************************************************/
+
+template <class Payload>
+bool Tree<Payload>::erease_single_node( typename std::vector<Node>::iterator cl_iterator_erease )
+{
+    DENTER();
+    //--------------------------------------------------------------------------
+    //	BODY
+    //--------------------------------------------------------------------------
+
+	//Remember the father of the ereased node
+	size_t n_index_father_of_ereased_node = cl_iterator_erease->n_index_father;
+	//Sanity check size
+	size_t n_size_before_erease = this->gast_nodes.size();
+	size_t n_priority_of_ereased_node = cl_iterator_erease->n_own_priority;
+	//Erease the node, this invalidates the iterator
+	this->gast_nodes.erase( cl_iterator_erease );
+	//TRICKY: children priority 0 1 2 3. Erease 1. I need to change priority 0 DEL1 2-> 3->2
+	//If vector erease does't have the expected result
+	if ( (n_size_before_erease -1) != this->gast_nodes.size() )
+	{
+		DRETURN_ARG("ERR%d | Size: %d->%d | ERR Vector!!! I expected the vector to have size reduced by one...", __LINE__, n_size_before_erease, this->gast_nodes.size() );
+		return true;
+	}
+	//The father of ereased node has one fewer child
+	this->gast_nodes[n_index_father_of_ereased_node].n_children_max_priority--;
+	//I scan the whole tree and update all node indexes
+	for (auto cl_iterator = this->gast_nodes.begin(); cl_iterator < this->gast_nodes.end();cl_iterator++)
+	{
+		//If scanning the root
+		if (cl_iterator==this->gast_nodes.begin())
+		{
+			//Do nothing
+		}
+		//Update the priorities of the children of the father of the ereased node. decrease all priorities of following children to ereased one.
+		//If this node has the father of the ereased node as father and is not the root
+		else if (cl_iterator->n_index_father == n_index_father_of_ereased_node)
+		{
+			//If this node has a priority that comes after the priority of the ereased node
+			if (cl_iterator->n_own_priority > n_priority_of_ereased_node)
+			{
+				cl_iterator->n_own_priority--;
+			}
+		}
+
+		//The node that have the ereased node as father
+		if (cl_iterator->n_index_father == cl_iterator->n_own_index)
+		{
+			//Adjust depth since I'm bumping them up by one (adjust depth of their children as well)
+			cl_iterator->n_distance_from_root--;
+			//now have the father of the ereased node as father
+			cl_iterator->n_index_father = n_index_father_of_ereased_node;
+			DPRINT("Relinked node: %d as child of node: %d\n", this->gast_nodes.end() -cl_iterator, cl_iterator->n_index_father);
+			//priority needs to be updated, they are inserted as newborn children
+			cl_iterator->n_own_priority = this->gast_nodes[n_index_father_of_ereased_node].n_children_max_priority;
+			this->gast_nodes[n_index_father_of_ereased_node].n_children_max_priority++;
+			DPRINT("Updated priority of child index: %d of ereased node: %d\n", this->gast_nodes.end() -cl_iterator, cl_iterator->n_own_priority );
+			DPRINT("Updated number of children/max priority of node %d that is father of ereased node: %d\n", n_index_father_of_ereased_node, this->gast_nodes[n_index_father_of_ereased_node].n_children_max_priority );
+			//Distance from root is reduced by one for all the descendence of the children of the ereased node
+
+
+		} //The node that have the ereased node as father
+		//every node that points to an index that came after the ereased node needs to be reduced by one
+		else
+		{
+			//Fix the father index of later index nodes
+			if (cl_iterator->n_index_father > cl_iterator_erease->n_own_index )
+			{
+				cl_iterator->n_index_father--;
+			}
+		}
+	}	//I scan the whole tree and update all node indexes
+
+    //--------------------------------------------------------------------------
+    //	RETURN
+    //--------------------------------------------------------------------------
+    DRETURN();
+    return false;	//OK
+} 	//Private Method | erease_single_node | std::vector<Node>::iterator
+
+/***************************************************************************/
 //! @brief Private Method | report_error | Error_code
 /***************************************************************************/
 //! @param ips8_error_code | error string to be reported. Error strings can be stored in Error_code
@@ -2008,7 +2057,7 @@ bool Tree<Payload>::relink_node_nocheck( size_t in_index_target_node, size_t in_
 template <class Payload>
 bool Tree<Payload>::report_error( const char *ips8_error_code )
 {
-    DENTER_ARG("ERR: %p", ips8_error_code ); //Trace Enter
+    DENTER_ARG("ERR: %p", ips8_error_code );
     //--------------------------------------------------------------------------
     //	BODY
     //--------------------------------------------------------------------------
@@ -2029,7 +2078,7 @@ bool Tree<Payload>::report_error( const char *ips8_error_code )
     //--------------------------------------------------------------------------
     //	RETURN
     //--------------------------------------------------------------------------
-    DRETURN(); //Trace Return
+    DRETURN();
     return false;	//OK
 } 	//Private Method: report_error | Error_code
 
