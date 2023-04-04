@@ -1874,7 +1874,7 @@ bool Tree<Payload>::bump_children( size_t in_index_node )
     //--------------------------------------------------------------------------
 	//TRICKY: children priority 0 1 2 3. Erease 1. I need to change priority 0 DEL1 2-> 3->2
 
-	//Remember the father of the ereased node
+	//Remember the father of target node
 	size_t n_index_father_of_target_node = this->gast_nodes[in_index_node].n_index_father;
 	//I scan the whole tree and update all node indexes
 	for (auto cl_iterator = this->gast_nodes.begin(); cl_iterator < this->gast_nodes.end();cl_iterator++)
@@ -1943,7 +1943,7 @@ bool Tree<Payload>::bump_children( size_t in_index_node )
 template <class Payload>
 bool Tree<Payload>::relink_node_nocheck( size_t in_index_target_node, size_t in_index_new_father )
 {
-    DENTER();
+    DENTER_ARG("Target Index: %d | New Father: %d", in_index_target_node, in_index_new_father );
     //--------------------------------------------------------------------------
     //	BODY
     //--------------------------------------------------------------------------
@@ -1953,13 +1953,16 @@ bool Tree<Payload>::relink_node_nocheck( size_t in_index_target_node, size_t in_
     size_t n_old_priority_target = this->gast_nodes[in_index_target_node].n_own_priority;
     //Relink node to new father
 	this->gast_nodes[in_index_target_node].n_index_father = in_index_new_father;
+	DPRINT("Relink Node %d as child of %d\n", in_index_target_node, in_index_new_father );
 	//Recompute priority of taget and new father
 	this->gast_nodes[in_index_target_node].n_own_priority = this->gast_nodes[in_index_new_father].n_children_max_priority;
 	this->gast_nodes[in_index_new_father].n_children_max_priority++;
+	DPRINT("With priority %d of %d\n",this->gast_nodes[in_index_target_node].n_own_priority ,this->gast_nodes[in_index_new_father].n_children_max_priority );
 	//Recompute depth of target
 	this->gast_nodes[in_index_target_node].n_distance_from_root = this->gast_nodes[in_index_new_father].n_distance_from_root +1;
 	//Recompute number of children of old father
 	this->gast_nodes[n_index_target_old_father].n_children_max_priority--;
+	DPRINT("Old father %d now has %d children\n", n_index_target_old_father, this->gast_nodes[n_index_target_old_father].n_children_max_priority );
 	//if old father has more children, and
 	//!@todo if there is priority to be adjusted
 	if (this->gast_nodes[n_index_target_old_father].n_children_max_priority >= 1)
@@ -1967,14 +1970,20 @@ bool Tree<Payload>::relink_node_nocheck( size_t in_index_target_node, size_t in_
 		//Scan old father children to update priority
 		for (auto cl_iterator_node = this->gast_nodes.begin();cl_iterator_node < this->gast_nodes.end();cl_iterator_node++)
 		{
+			//if root
+			if (cl_iterator_node == this->gast_nodes.begin())
+			{
+				//Do nothing. Root can't be sibling of anyone
+			}
 			//If children of old father/sibling of target
-			if (cl_iterator_node->n_index_father == n_index_target_old_father)
+			else if (cl_iterator_node->n_index_father == n_index_target_old_father)
 			{
 				//if lower priority/higher number/younger sibling
 				if (cl_iterator_node->n_own_priority >= n_old_priority_target)
 				{
 					//Increase the priority/decrease priority number
 					cl_iterator_node->n_own_priority--;
+					DPRINT("Previous sibling %d now has priority %d of %d\n", cl_iterator_node -this->gast_nodes.begin(), cl_iterator_node->n_own_priority, this->gast_nodes[n_index_target_old_father].n_children_max_priority );
 				}
 			}
 		}

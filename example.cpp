@@ -451,23 +451,26 @@ class Test_bench
 
 		bool test_move( void )
 		{
-			const size_t cn_num_swap_patterns = 3;
+			const size_t cn_num_swap_patterns = 5;
 			size_t an_swap_pattern[cn_num_swap_patterns][2] =
 			{
 				//target, new father
 				{0, 0},
 				{7, 0},
 				{7, 6},
+				{6, 4},
+				{1, 0},
 
 			};
 			DENTER();
 			std::cout << "---------------------------------------------------------\n";
-			std::cout << "TEST - swap payload | patterns: " << cn_num_swap_patterns << "\n";
+			std::cout << "TEST - MOVE | patterns: " << cn_num_swap_patterns << "\n";
 			std::cout << "---------------------------------------------------------\n";
 			//FILL
 			bool x_fail;
 			x_fail = x_fail | this->gcl_tree.flush();
 			x_fail = this->fill_tree();
+			std::cout << "Explore tree:\n";
 			x_fail = x_fail | this->gcl_tree.show(0);
 			std::cout << "---------------------------------------------------------\n";
 			//Scan swap patterns
@@ -480,7 +483,7 @@ class Test_bench
 					an_swap_pattern[n_swap_pattern_index][1],
 					User::Tree<int>::Move_mode::NODE
 				);
-				std::cout << "Swap " << an_swap_pattern[n_swap_pattern_index][0] << " <-> " << an_swap_pattern[n_swap_pattern_index][1] << " | Result: " << (x_fail?"FAIL":"OK") << "\n";
+				std::cout << "Move " << an_swap_pattern[n_swap_pattern_index][0] << " <-> " << an_swap_pattern[n_swap_pattern_index][1] << " | Result: " << (x_fail?"FAIL":"OK") << "\n";
 				x_fail = x_fail | this->gcl_tree.show();
 				x_fail = x_fail | this->gcl_tree.show(0);
 				std::cout << "---------------------------------------------------------\n";
