@@ -153,7 +153,7 @@ class Test_bench
 			return x_fail;
 		}
 		//! @brief erease a node from the tree
-		bool test_erease( void )
+		bool test_erease_node( void )
 		{
 			DENTER();
 			std::cout << "---------------------------------------------------------\n";
@@ -186,6 +186,44 @@ class Test_bench
 			for (size_t n_erease_pattern_index = 0; n_erease_pattern_index < cn_num_erease_patterns;n_erease_pattern_index++)
 			{
 				x_fail = this->gcl_tree.erease( an_erease_pattern[n_erease_pattern_index], User::Tree<int>::Erease_mode::NODE );
+				std::cout << "Erease node: " << an_erease_pattern[n_erease_pattern_index] << " | Result:" << (x_fail?"FAIL":"OK") << "\n";
+				x_fail = x_fail | this->gcl_tree.show();
+				std::cout << "Explore tree\n";
+				x_fail = x_fail | this->gcl_tree.show(0);
+				std::cout << "---------------------------------------------------------\n";
+			}
+
+			DRETURN();
+			return false;
+		}
+
+		//! @brief erease a node from the tree
+		bool test_erease_subtree( void )
+		{
+			DENTER();
+			std::cout << "---------------------------------------------------------\n";
+			std::cout << "TEST erease subtree\n";
+			std::cout << "---------------------------------------------------------\n";
+
+			this->gcl_tree.flush();
+			bool x_fail = this->fill_tree();
+			x_fail = x_fail | this->gcl_tree.show();
+			x_fail = x_fail | this->gcl_tree.show(0);
+
+			std::cout << "---------------------------------------------------------\n";
+			std::cout << "Test erease root (should fail)\n";
+
+			const size_t cn_num_erease_patterns = 2;
+			size_t an_erease_pattern[cn_num_erease_patterns] =
+			{
+				1,
+				2,
+			};
+
+			//Scan swap patterns
+			for (size_t n_erease_pattern_index = 0; n_erease_pattern_index < cn_num_erease_patterns;n_erease_pattern_index++)
+			{
+				x_fail = this->gcl_tree.erease( an_erease_pattern[n_erease_pattern_index], User::Tree<int>::Erease_mode::SUBTREE );
 				std::cout << "Erease node: " << an_erease_pattern[n_erease_pattern_index] << " | Result:" << (x_fail?"FAIL":"OK") << "\n";
 				x_fail = x_fail | this->gcl_tree.show();
 				std::cout << "Explore tree\n";
@@ -659,10 +697,8 @@ bool test_bench( void )
 
 		//cl_test_bench.test_move();
 
-		//
-		cl_test_bench.test_erease();
-
-
+		//cl_test_bench.test_erease_node();
+		cl_test_bench.test_erease_subtree();
 
 		//cl_test_bench.test_tree_swap_payload();
 		//cl_test_bench.test_swap_priority();

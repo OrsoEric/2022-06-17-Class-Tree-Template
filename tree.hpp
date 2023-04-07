@@ -111,7 +111,7 @@ class Tree : public Tree_interface<Payload>
 			//Just delete the node, and relinks the children of the node, to the father of the node
 			NODE,
 			//Delete the node, and delete all the subtree under that node
-			DEEP
+			SUBTREE
         };
         //! @brief Moving nodes can be done in two different ways
 		enum class Move_mode
@@ -871,6 +871,7 @@ size_t Tree<Payload>::create_child( size_t in_father_index, Payload it_payload )
 //! @param in_index | Delete a node
 //! @param ie_delete_mode | NODE = delete node and relinks children | DEEP = delete node and all descendence
 //! @return bool | false = OK | true = FAIL |
+//! @todo slow algorithm. search for children, bump children and erease single node. I can do a much faster algorithm if I try
 //! @details
 //! \n
 //! \n Create a child of the root
@@ -947,7 +948,7 @@ bool Tree<Payload>::erease( size_t in_index_erease, Erease_mode ie_delete_mode )
 		//--------------------------------------------------------------------------
 		//	Erease a single node
 		{
-			//Bump children of ereased node, if any
+			//Bump children of ereased node
 			bool x_fail = this->bump_children( in_index_erease );
 			if (x_fail == true)
 			{
@@ -965,10 +966,34 @@ bool Tree<Payload>::erease( size_t in_index_erease, Erease_mode ie_delete_mode )
 			break;
 		}
 		//--------------------------------------------------------------------------
-		case Erease_mode::DEEP:
+		case Erease_mode::SUBTREE:
 		//--------------------------------------------------------------------------
+		//	Erease all the node of a subtree
 		{
-
+			//Init while
+			bool x_continue = true;
+			//While target has children
+			do
+			{
+				//Find all the children of the node to be ereased
+				auto ast_target_children = this->get_children( in_index_erease );
+				//if target has children
+				if (ast_target_children.size() > 0)
+				{
+					//Bump all children of target up one level (if any)
+					this->bump_children( ast_target_children[0] );
+					//erease the now childless node
+					this->erease_single_node( ast_target_children[0] );
+				}
+				else
+				{
+					//Stop the scan
+					x_continue = false;
+				}
+			}
+			while (x_continue == true);
+			//Erease the now childless root of the subtree
+			this->erease_single_node( in_index_erease );
 
 			break;
 		}
@@ -2004,7 +2029,6 @@ bool Tree<Payload>::erease_single_node( size_t in_index_erease )
 				DPRINT("Adjust priority of node %d to %d\n", cl_iterator->n_own_index, cl_iterator->n_own_priority );
 			}
 		}
-
 		//The node that have the ereased node as father
 		if (cl_iterator->n_index_father == in_index_erease)
 		{
@@ -2024,34 +2048,6 @@ bool Tree<Payload>::erease_single_node( size_t in_index_erease )
 			DPRINT("Adjusted father of node %d to %d\n", cl_iterator->n_own_index, cl_iterator->n_index_father );
 		}
 	}	//I scan the whole tree and update all node indexes
-
-		/*
-	//Bump children of node to be ereased
-	bool x_fail = this->bump_children( in_index_erease );
-	if (x_fail == true)
-	{
-		DRETURN_ARG("ERR:%d | Failed to bump children of target %d", __LINE__, in_index_erease );
-		return true;
-	}
-	//Construct an iterator that points to the correct node
-	auto cl_iterator = (this->gast_nodes.begin() +in_index_erease);
-	//Sanity check size
-	size_t n_size_before_erease = this->gast_nodes.size();
-	size_t n_priority_of_ereased_node = this->gast_nodes[in_index_erease].n_own_priority;
-	//Erease the node, this invalidates the iterator
-	this->gast_nodes.erase( cl_iterator );
-	//TRICKY: children priority 0 1 2 3. Erease 1. I need to change priority 0 DEL1 2-> 3->2
-	//If vector erease does't have the expected result
-	if ( (n_size_before_erease -1) != this->gast_nodes.size() )
-	{
-		DRETURN_ARG("ERR%d | Size: %d->%d | ERR Vector!!! I expected the vector to have size reduced by one...", __LINE__, n_size_before_erease, this->gast_nodes.size() );
-		return true;
-	}
-	//A children with given priority has been removed. Fix priority of father, and priority of all children
-	//this->fix_priority(   );
-	*/
-
-
 
     //--------------------------------------------------------------------------
     //	RETURN
