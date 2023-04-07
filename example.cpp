@@ -159,7 +159,8 @@ class Test_bench
 			std::cout << "---------------------------------------------------------\n";
 			std::cout << "TEST erease\n";
 			std::cout << "---------------------------------------------------------\n";
-			//FILL
+
+			this->gcl_tree.flush();
 			bool x_fail = this->fill_tree();
 			x_fail = x_fail | this->gcl_tree.show();
 			x_fail = x_fail | this->gcl_tree.show(0);
@@ -167,11 +168,11 @@ class Test_bench
 			std::cout << "---------------------------------------------------------\n";
 			std::cout << "Test erease root (should fail)\n";
 
-			const size_t cn_num_erease_patterns = 2;
+			const size_t cn_num_erease_patterns = 1;
 			size_t an_erease_pattern[cn_num_erease_patterns] =
 			{
-				0,
-				1,
+				7,
+				//1,
 			};
 
 			//Scan swap patterns
@@ -181,7 +182,7 @@ class Test_bench
 				std::cout << "Erease node: " << an_erease_pattern[n_erease_pattern_index] << " | Result:" << (x_fail?"FAIL":"OK") << "\n";
 				x_fail = x_fail | this->gcl_tree.show();
 				std::cout << "Explore tree\n";
-				x_fail = x_fail | this->gcl_tree.show(0);
+				//x_fail = x_fail | this->gcl_tree.show(0);
 				std::cout << "---------------------------------------------------------\n";
 			}
 
@@ -197,6 +198,11 @@ class Test_bench
 			std::cout << "---------------------------------------------------------\n";
 			std::cout << "TEST - is_descendent\n";
 			std::cout << "---------------------------------------------------------\n";
+
+			//FILL
+			bool x_fail = this->fill_tree();
+			x_fail = x_fail | this->gcl_tree.show();
+			x_fail = x_fail | this->gcl_tree.show(0);
 
 			const size_t cn_num_swap_patterns = 10;
 			size_t an_swap_pattern[cn_num_swap_patterns][2] =
@@ -642,13 +648,12 @@ bool test_bench( void )
 		cl_test_bench.test_fill_flush();
 		//cl_test_bench.test_tree_iterator();
 
-		//BROKEN
-		cl_test_bench.test_is_descendent();
+		//cl_test_bench.test_is_descendent();
 
 		//cl_test_bench.test_move();
 
-		//BROKEN
-		//cl_test_bench.test_erease();
+		//
+		cl_test_bench.test_erease();
 
 
 

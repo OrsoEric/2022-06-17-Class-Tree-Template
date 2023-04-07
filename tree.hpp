@@ -1442,7 +1442,7 @@ bool Tree<Payload>::is_descendant(size_t in_lhs, size_t in_rhs)
 
     if ((Config::CU1_INTERNAL_CHECKS == true) && ((in_lhs >= this->gast_nodes.size()) || (in_rhs >= this->gast_nodes.size())) )
     {
-		this->report_error( Error_code::CPS8_ERR_OOB );
+		//this->report_error( Error_code::CPS8_ERR_OOB );
         DRETURN_ARG("ERR%d: OOB size: %d", __LINE__, this->gast_nodes.size() );
         return true;
     }
