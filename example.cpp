@@ -168,11 +168,18 @@ class Test_bench
 			std::cout << "---------------------------------------------------------\n";
 			std::cout << "Test erease root (should fail)\n";
 
-			const size_t cn_num_erease_patterns = 1;
+			const size_t cn_num_erease_patterns = 9;
 			size_t an_erease_pattern[cn_num_erease_patterns] =
 			{
 				7,
-				//1,
+				1,
+				4,
+				1,
+				1,
+				1,
+				1,
+				1,
+				1,
 			};
 
 			//Scan swap patterns
@@ -182,7 +189,7 @@ class Test_bench
 				std::cout << "Erease node: " << an_erease_pattern[n_erease_pattern_index] << " | Result:" << (x_fail?"FAIL":"OK") << "\n";
 				x_fail = x_fail | this->gcl_tree.show();
 				std::cout << "Explore tree\n";
-				//x_fail = x_fail | this->gcl_tree.show(0);
+				x_fail = x_fail | this->gcl_tree.show(0);
 				std::cout << "---------------------------------------------------------\n";
 			}
 
