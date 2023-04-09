@@ -76,3 +76,27 @@
 1673680787 d:\data\project\project programming\project classes\2022-06-17 class tree template\tree_interface.h
 	<vector>
 
+1653285491 source:f:\data\project\project programming\project classes\2022-06-17 class tree template\debug.cpp
+	<cstdio>
+	"debug.h"
+
+1673684376 f:\data\project\project programming\project classes\2022-06-17 class tree template\debug.h
+	<cstdio>
+
+1680882539 source:f:\data\project\project programming\project classes\2022-06-17 class tree template\example.cpp
+	<cstdio>
+	<iostream>
+	"debug.h"
+	"tree.hpp"
+
+1681030753 f:\data\project\project programming\project classes\2022-06-17 class tree template\tree.hpp
+	<string>
+	<vector>
+	<stack>
+	<algorithm>
+	<functional>
+	"Tree_interface.h"
+
+1673684387 f:\data\project\project programming\project classes\2022-06-17 class tree template\tree_interface.h
+	<vector>
+
