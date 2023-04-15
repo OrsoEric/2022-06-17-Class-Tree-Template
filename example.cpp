@@ -586,7 +586,7 @@ class Test_bench_equation
 		bool show( void )
 		{
 			//Construct a custom decorator to print out the payload, since payload is a template and can even be a complex structure
-			std::string (*f_my_decorator)(std::string) = [](std::string is_payload){ return is_payload; };
+			std::string (*f_my_decorator)(std::string) = [](std::string is_payload){ return std::string("\'") +is_payload +std::string("\'"); };
 			//Link the provided decorator to replace the default decorator
 			this->gcl_tree_equation.link_decorator( f_my_decorator );
 			std::cout << "Show list of nodes\n";
@@ -686,7 +686,7 @@ bool test_bench( void )
     //----------------------------------------------------------------
     //! @details algorithm:
 
-    if (true)
+    if (false)
     {
 		//Unit tests
 		Test_bench cl_test_bench;
@@ -705,7 +705,7 @@ bool test_bench( void )
 		//cl_test_bench.test_swap_independent_subtree();
 	}
 
-	if (false)
+	if (true)
 	{
 		Test_bench_equation cl_test_equation;
 		cl_test_equation.show();
